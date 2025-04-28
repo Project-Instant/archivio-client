@@ -9,7 +9,6 @@ export default defineConfig({
     vike(),
     devServer({
       entry: "hono-entry.ts",
-
       exclude: [
         /^\/@.+$/,
         /.*\.(ts|tsx|vue)($|\?)/,
@@ -19,17 +18,14 @@ export default defineConfig({
         /^\/(public|assets|static)\/.+/,
         /^\/node_modules\/.*/,
       ],
-
       injectClientScript: false,
     }),
     react({}),
     tailwindcss(),
   ],
-
   build: {
     target: "es2022",
   },
-
   resolve: {
     alias: {
       "@": new URL("./", import.meta.url).pathname,

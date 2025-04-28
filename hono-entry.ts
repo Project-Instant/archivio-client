@@ -6,4 +6,4 @@ const app = new Hono();
 
 app.all("*", createHandler(vikeHandler)());
 
-export default app;
+export default app
