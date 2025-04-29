@@ -1,0 +1,27 @@
+import { reatomComponent } from "@reatom/npm-react";
+import { profileResource } from "../models/profile.model";
+import { Skeleton } from "@/shared/ui/skeleton";
+
+export const ProfilePageAbout = reatomComponent(({ ctx }) => {
+  if (ctx.spy(profileResource.statusesAtom).isPending) {
+    return (
+      <>
+        <Skeleton className="h-8 mb-2 w-24" />
+        <Skeleton className="h-8 w-48" />
+      </>
+    )
+  }
+
+  const about = ctx.spy(profileResource.dataAtom)?.user.about
+
+  if (!about) return null;
+
+  return (
+    <>
+      <h2 className="mb-2 text-lg font-semibold">О себе</h2>
+      <p className="text-muted-foreground">
+        {about}
+      </p>
+    </>
+  )
+}, "ProfilePageAbout")

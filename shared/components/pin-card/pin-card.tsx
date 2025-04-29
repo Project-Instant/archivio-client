@@ -20,7 +20,7 @@ export function PinCard({
     <Dialog>
       <DialogTrigger asChild>
         <div
-          className="relative group mb-4 overflow-hidden transition-all duration-200 rounded-xl group"
+          className="relative group mb-4 overflow-hidden transition-all duration-200 group"
         >
           <div className="relative w-full overflow-hidden cursor-pointer aspect-auto">
             <img
@@ -28,7 +28,7 @@ export function PinCard({
               alt={title}
               width={400}
               height={600}
-              className={`w-full object-cover transition-transform duration-500 group-hover:scale-105 scale-100`}
+              className={`w-full object-cover transition-transform rounded-xl`}
             />
             <div
               className={`absolute inset-0 bg-black/20 transition-opacity duration-300 group-hover:opacity-100 opacity-0`}

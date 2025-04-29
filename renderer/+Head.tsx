@@ -4,10 +4,12 @@ export default function HeadDefault() {
   return (
     <>
       <link rel="icon" href="/logo_bg.png" />
-      <script
-        crossOrigin="anonymous"
-        src="//unpkg.com/react-scan/dist/auto.global.js"
-      ></script>
+      {import.meta.env.DEV && (
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        ></script>
+      )}
       <script
         type="text/javascript"
         dangerouslySetInnerHTML={{

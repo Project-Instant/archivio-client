@@ -30,5 +30,5 @@ export default defineConfig({
     alias: {
       "@": new URL("./", import.meta.url).pathname,
     },
-  },
+  }
 });

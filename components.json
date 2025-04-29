@@ -3,16 +3,16 @@
   "style": "default",
   "tailwind": {
     "config": "",
-    "css": "@/layouts/tailwind.css",
+    "css": "@/shared/styles/tailwind.css",
     "baseColor": "stone",
     "cssVariables": true
   },
   "rsc": false,
   "tsx": true,
   "aliases": {
-    "utils": "@/lib/cn",
-    "components": "@/components",
-    "ui": "@/ui",
+    "utils": "@/shared/lib/cn",
+    "components": "@/shared/components",
+    "ui": "@/shared/ui",
     "lib": "@/shared/lib/cn"
   }
 }

@@ -1,14 +1,40 @@
 import { reatomComponent, useAction } from "@reatom/npm-react"
-import { userAtom, userResource } from "@/(auth)/domain/user/user.model"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/ui/tooltip"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu"
 import { ArrowDown } from "lucide-react"
 import { ActionItem } from "../action-item/action-item"
-import { Skeleton } from "@/shared/ui/skeleton"
 import { Button } from "@/shared/ui/button"
 import { Link } from "../link/Link"
-import { openAuthDialogAction } from "@/(auth)/domain/ui/auth-dialog.model"
+import { Skeleton } from "@/shared/ui/skeleton"
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/shared/ui/dialog"
+import { logoutAction, userResource } from "@/(domains)/(auth)/models/user.model"
+import { openAuthDialogAction } from "@/(domains)/(auth)/models/auth-dialog.model"
+
+const Logout = () => {
+  const logout = useAction(logoutAction)
+
+  return (
+    <Dialog>
+      <DialogTrigger>
+        <ActionItem size="mini" className="cursor-pointer">
+          Выйти
+        </ActionItem>
+      </DialogTrigger>
+      <DialogContent>
+        <p>Точно хотите выйти?</p>
+        <DialogClose asChild>
+          <button onClick={logout}>да</button>
+        </DialogClose>
+        <DialogClose asChild>
+          <button>
+            нет
+          </button>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 const HeaderUserMenu = reatomComponent(({ ctx }) => {
   const user = ctx.spy(userResource.dataAtom)
@@ -59,9 +85,7 @@ const HeaderUserMenu = reatomComponent(({ ctx }) => {
             </ActionItem>
           </Link>
         </div>
-        <ActionItem size="mini" className="cursor-pointer">
-          Выйти
-        </ActionItem>
+        <Logout />
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -69,9 +93,6 @@ const HeaderUserMenu = reatomComponent(({ ctx }) => {
 
 const HeaderUserLink = reatomComponent(({ ctx }) => {
   const user = ctx.spy(userResource.dataAtom)
-  const isLoading = ctx.spy(userResource.pendingAtom) || ctx.spy(userResource.retriesAtom)
-
-  if (isLoading) return <Skeleton className="bg-neutral-700/80 w-24 p-4" />
 
   if (!user) return null;
 
@@ -81,7 +102,7 @@ const HeaderUserLink = reatomComponent(({ ctx }) => {
         <TooltipTrigger>
           <Link href={`/u/${user.login}`}>
             <Avatar>
-              <AvatarImage src={user.avatarUrl} alt="" />
+              <AvatarImage src={user.avatarUrl ?? undefined} alt="" />
               <AvatarFallback>{user.name.split(' ')[0]}</AvatarFallback>
             </Avatar>
           </Link>
@@ -99,19 +120,25 @@ export const HeaderUser = reatomComponent(({ ctx }) => {
 
   return (
     <div className='flex items-center gap-2'>
-      {ctx.spy(userAtom) ? (
-        <>
-          <HeaderUserLink />
-          <HeaderUserMenu />
-        </>
+      {ctx.spy(userResource.statusesAtom).isPending ? (
+        <Skeleton className="h-12 w-48" />
       ) : (
         <>
-          <Button
-            onClick={() => openAuthDialog(true)}
-            className="cursor-pointer hover:bg-red-700 bg-red-600 text-neutral-50 text-lg font-semibold"
-          >
-            Войти
-          </Button>
+          {ctx.spy(userResource.dataAtom) ? (
+            <>
+              <HeaderUserLink />
+              <HeaderUserMenu />
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={() => openAuthDialog(true)}
+                className="cursor-pointer hover:bg-red-700 bg-red-600 text-neutral-50 text-lg font-semibold"
+              >
+                Войти
+              </Button>
+            </>
+          )}
         </>
       )}
     </div>

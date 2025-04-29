@@ -4,11 +4,12 @@ import { HeaderUser } from "./header-user";
 import { Sheet, SheetContent, SheetTrigger } from "@/shared/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { HeaderLinks } from "./header-links";
-import { AuthDialog } from "../../../(auth)/components/auth-dialog/auth-dialog";
 import { reatomComponent, useAction } from "@reatom/npm-react";
-import { userAtom } from "../../../(auth)/domain/user/user.model";
 import { changeThemeAction, themeAtom } from "../theme/theme.model";
 import { Switch } from "@/shared/ui/switch";
+import { Link } from "../link/Link";
+import { userResource } from "@/(domains)/(auth)/models/user.model";
+import { AuthDialog } from "@/(domains)/(auth)/components/auth-dialog/auth-dialog";
 
 const NotificationsMenu = () => {
   return (
@@ -61,39 +62,68 @@ const ThemeSwitcher = reatomComponent(({ ctx }) => {
   )
 })
 
-export const Header = reatomComponent(({ ctx }) => {
+export const PublicHeader = () => {
   return (
-    <header className="sticky bg-background top-0 z-10">
-      {!ctx.spy(userAtom) && <AuthDialog />}
-      <div className="container flex items-center h-16 mx-auto gap-x-4">
-        <div className="grow">
-          <Sheet>
-            <SheetTrigger className="flex items-center hover:bg-neutral-900/20 cursor-pointer rounded-xl px-2">
-              <img src="/logo_no_bg.png" width={48} height={48} alt="" />
-              <span className="font-bold text-neutral-900 text-lg">
-                Archivio
-              </span>
-              <Menu size={20} className="text-neutral-900 ml-2" />
-            </SheetTrigger>
-            <SheetContent side="top" className="rounded-b-xl">
-              <HeaderLinks />
-            </SheetContent>
-          </Sheet>
-        </div>
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Поиск"
-            className="pl-10 bg-gray-100 border-none rounded-full focus-visible:ring-gray-300"
-          />
-        </div>
-        <ThemeSwitcher />
-        <div className="flex items-center gap-4">
-          <HeaderMenus />
-          <HeaderUser />
-        </div>
+    <div className="shrink-0 container flex items-center h-16 mx-auto gap-x-4">
+      <Link href="/" className="flex items-center gap-2 grow">
+        <img src="/logo_no_bg.png" width={48} height={48} alt="" />
+        <span className="font-bold text-neutral-900 text-lg">
+          Archivio
+        </span>
+      </Link>
+      <div className="flex items-center gap-4">
+        <Link href="/explore" className="font-semibold text-neutral-900">
+          Исследовать
+        </Link>
+        <Link href="/business" className="font-semibold text-neutral-900">
+          Бизнес
+        </Link>
+        <Link href="/nature" className="font-semibold text-neutral-900">
+          Места
+        </Link>
+        <HeaderUser />
       </div>
-    </header>
+    </div>
+  )
+}
+
+export const Header = reatomComponent(({ ctx }) => {
+  console.log(ctx.spy(userResource.dataAtom))
+
+  return (
+    <>
+      {!ctx.spy(userResource.dataAtom) && <AuthDialog />}
+      <header className="sticky bg-background top-0 z-10">
+        <div className="container flex items-center h-16 mx-auto gap-x-4">
+          <div className="grow">
+            <Sheet>
+              <SheetTrigger className="flex items-center hover:bg-neutral-900/20 cursor-pointer rounded-xl px-2">
+                <img src="/logo_no_bg.png" width={48} height={48} alt="" />
+                <span className="font-bold text-neutral-900 text-lg">
+                  Archivio
+                </span>
+                <Menu size={20} className="text-neutral-900 ml-2" />
+              </SheetTrigger>
+              <SheetContent side="top" className="rounded-b-xl">
+                <HeaderLinks />
+              </SheetContent>
+            </Sheet>
+          </div>
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Поиск"
+              className="pl-10 bg-gray-100 border-none rounded-full focus-visible:ring-gray-300"
+            />
+          </div>
+          <ThemeSwitcher />
+          <div className="flex items-center gap-4">
+            <HeaderMenus />
+            <HeaderUser />
+          </div>
+        </div>
+      </header>
+    </>
   )
 }, "Header")

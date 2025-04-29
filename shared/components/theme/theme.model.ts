@@ -1,9 +1,9 @@
 import { action, atom, withInit } from "@reatom/framework";
 import { withCookie } from "@reatom/persist-web-storage";
 
-export const cookieThemeKey = "theme-pref"
-
 type Theme = "dark" | "light"
+
+export const cookieThemeKey = "theme-pref"
 
 const getCookie = (name: string): string | undefined => {
   const value = `; ${document.cookie}`;
@@ -30,7 +30,7 @@ export const themeAtom = atom<Theme>("light", "theme").pipe(
     
     return "light"
   }),
-  withCookie()(cookieThemeKey)
+  withCookie({ path: "/", maxAge: 999999999999 })(cookieThemeKey)
 )
 
 export const changeThemeAction = action((ctx) => {
