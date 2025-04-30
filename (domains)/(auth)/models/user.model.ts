@@ -6,9 +6,9 @@ import AvatarExample from "@/assets/cover-example.webp"
 import { toast } from "sonner"
 import * as S from "sury"
 import { navigate } from 'vike/client/router'
-import ky, { HTTPError } from "ky"
 import { authDialogAtom } from "./auth-dialog.model";
 import { Action, atom, AtomMut, Ctx, sleep, withComputed, withReset } from "@reatom/framework";
+import { client } from "@/shared/api/api-client";
 
 export type User = {
   login: string
@@ -17,11 +17,18 @@ export type User = {
 }
 
 type BaseResult = {
-  Data: string | null,
-  ErrorMessage: string | null,
-  ErrorCode: number,
-  IsSuccess: boolean
+  data: string | null,
+  errorMessage: string | null,
+  errorCode: number,
+  isSuccess: boolean
 }
+
+type LoginRes = {
+  message: string;
+  sessionId: string
+}
+
+const DEFAULT_ERROR_MSG = "Упс, произошла какая-то ошибка. Повторите попытку позже"
 
 export const currentUserData = {
   login: "belkin",
@@ -50,8 +57,14 @@ export const isLoginAtom = atom<boolean>(true, "authorizeTypeAtom")
 
 loginAtom.onChange(createValidatorField(loginSchema, loginErrorAtom))
 passwordAtom.onChange(createValidatorField(passwordSchema, passwordErrorAtom))
-
 isLoginAtom.onChange((ctx) => resetAtoms(ctx))
+
+function resetAtoms(ctx: AsyncCtx | Ctx) {
+  loginAtom.reset(ctx)
+  passwordAtom.reset(ctx)
+  loginErrorAtom.reset(ctx)
+  passwordErrorAtom.reset(ctx)
+}
 
 function createValidatorField<T>(
   schema: S.Schema<T>,
@@ -105,20 +118,7 @@ export const userResource = reatomResource<User | null>(async (ctx) => {
   }
 
   return await ctx.schedule(() => null)
-}, "userResource").pipe(
-  withDataAtom(),
-  withErrorAtom(),
-  withCache(),
-  withRetry(),
-  withStatusesAtom()
-)
-
-function resetAtoms(ctx: AsyncCtx | Ctx) {
-  loginAtom.reset(ctx)
-  passwordAtom.reset(ctx)
-  loginErrorAtom.reset(ctx)
-  passwordErrorAtom.reset(ctx)
-}
+}, "userResource").pipe(withDataAtom(), withErrorAtom(), withCache(), withRetry(), withStatusesAtom())
 
 export const authAction = reatomAsync(async (ctx) => {
   const parsed = S.safe(() =>
@@ -128,115 +128,65 @@ export const authAction = reatomAsync(async (ctx) => {
   )
 
   if (!parsed.success) {
-    return await ctx.schedule(() => authErrorAtom(
-      ctx, "Упс, произошла какая-то ошибка. Повторите попытку позже")
-    )
+    return await ctx.schedule(() => authErrorAtom(ctx, DEFAULT_ERROR_MSG))
   }
 
-  const { login, password } = parsed.value
-
   try {
-    switch (ctx.get(isLoginAtom)) {
-      case true:
-        async function loginRequest(): Promise<BaseResult> {
-          await ctx.schedule(() => sleep(5000))
+    if (ctx.get(isLoginAtom)) {
+      const response = await client.post("api/auth/login", {
+        json: { Login: parsed.value.login, Password: parsed.value.password },
+        throwHttpErrors: false
+      })
 
-          return {
-            Data: "success",
-            ErrorMessage: null,
-            ErrorCode: 0,
-            IsSuccess: true
-          }
-        }
+      const json = await response.json<BaseResult>()
 
-        // const loginRequest = await ky.post("https://0n28bw-95-73-214-243.ru.tuna.am/api/Auth/login", {
-        //   json: {
-        //     Login: login, Password: password
-        //   },
-        //   headers: {
-        //     "tuna-skip-browser-warning": "asd",
-        //     "Content-Type": "application/json"
-        //   },
-        //   credentials: "include"
-        // }).json<BaseResult>()
+      if (!response.ok || ("isSuccess" in json && !json.isSuccess)) {
+        return await ctx.schedule(() => authErrorAtom(ctx, json.errorMessage ?? DEFAULT_ERROR_MSG))
+      }
 
-        console.log(loginRequest)
+      const status = json as unknown as LoginRes
 
-        const response = await loginRequest()
+      if (status.sessionId) {
+        return await ctx.schedule(() => {
+          toast.success("Телепортируем...", { position: "top-center" })
 
-        if (!response.IsSuccess) {
-          return await ctx.schedule(() => authErrorAtom(
-            ctx, response.ErrorMessage ?? "Упс, произошла какая-то ошибка. Повторите попытку позже")
-          )
-        }
+          userResource.dataAtom(ctx, { 
+            avatarUrl: currentUserData.avatarUrl, login: parsed.value.login, name: parsed.value.login 
+          })
 
-        if (response.IsSuccess) {
-          function success() {
-            toast.success("Телепортируем...", { position: "top-center" })
+          authDialogAtom(ctx, false)
+          resetAtoms(ctx)
+          navigate(`/u/${parsed.value.login}`)
+        })
+      }
+    } else {
+      const response = await client.post("api/auth/register", {
+        json: { Login: parsed.value.login, Password: parsed.value.password },
+        throwHttpErrors: false
+      })
+      
+      const json = await response.json<BaseResult>()
 
-            userResource.dataAtom(ctx, { avatarUrl: currentUserData.avatarUrl, login, name: login })
-            authDialogAtom(ctx, false)
+      if (!response.ok || !json.isSuccess) {
+        return await ctx.schedule(() => authErrorAtom(ctx, json.errorMessage ?? DEFAULT_ERROR_MSG))
+      }
 
-            resetAtoms(ctx)
-            navigate(`/u/${login}`)
-          }
+      if (json.isSuccess) {
+        return await ctx.schedule(() => {
+          toast.success("Регистрация успешна. Теперь вы можете войти в аккаунт", {
+            position: "top-center"
+          })
 
-          return ctx.schedule(() => success())
-        }
-        break;
-      case false:
-        // const loginRequest = await ky.post("http://localhost:8000/register", {
-        //   json: {
-        //     login, password
-        //   },
-        //   credentials: "include"
-        // }).json<BaseResult>()
-
-        async function registerRequest(): Promise<BaseResult> {
-          await ctx.schedule(() => sleep(5000))
-
-          return {
-            Data: "success",
-            ErrorMessage: null,
-            ErrorCode: 0,
-            IsSuccess: true
-          }
-        }
-
-        const registerResponse = await registerRequest()
-
-        if (!registerResponse.IsSuccess) {
-          return await ctx.schedule(() => authErrorAtom(
-            ctx, response.ErrorMessage ?? "Упс, произошла какая-то ошибка. Повторите попытку позже")
-          )
-        }
-
-        if (registerResponse.IsSuccess) {
-          function resetAtoms() {
-            loginAtom.reset(ctx)
-            passwordAtom.reset(ctx)
-            loginErrorAtom.reset(ctx)
-            passwordErrorAtom.reset(ctx)
-          }
-
-          function success() {
-            toast.success("Регистрация успешна. Теперь вы можете войти в аккаунт", { position: "top-center" })
-
-            resetAtoms()
-            isLoginAtom(ctx, true)
-          }
-
-          return ctx.schedule(() => success())
-        }
-        break;
+          resetAtoms(ctx)
+          isLoginAtom(ctx, true)
+        })
+      }
     }
   } catch (e) {
-    if (e instanceof HTTPError) {
-      return await ctx.schedule(() => authErrorAtom(ctx, e.message))
-    } else {
-      return await ctx.schedule(() => {
-        authErrorAtom(ctx, "Произошла ошибка")
-      })
+    if (ctx.get(authErrorAtom)) {
+      return;
     }
+
+    authErrorAtom(ctx, DEFAULT_ERROR_MSG)
   }
 }, "authAction").pipe(withStatusesAtom())

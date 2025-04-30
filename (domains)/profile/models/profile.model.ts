@@ -22,10 +22,12 @@ type Profile = {
   tags: string[] | null
 }
 
-export const paramAtom = atom('', "profileParam")
+export const paramAtom = atom<string | null>(null, "profileParam")
 
 export const profileResource = reatomResource(async (ctx) => {
   const param = ctx.spy(paramAtom)
+
+  if (!param) return null;
 
   return await ctx.schedule(async () => {
     let data: Profile | null = null;

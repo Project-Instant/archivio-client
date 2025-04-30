@@ -58,6 +58,34 @@ const HOMEFEED_CARDS_PREVIEW = [
     location: "Tromsø, Norway",
     category: "Nature",
     saves: "5.5k",
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1740525030760-5a8614c377dd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDEzMHxGem8zenVPSE42d3x8ZW58MHx8fHx8",
+    title: "Ullswater Lake",
+    location: "Ullswater Lake",
+    category: "Nature",
+    saves: "1.2k"
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1730799582977-d267a2cae529?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDF8fHxlbnwwfHx8fHw%3D",
+    title: "Lake District National Park, United Kingdom",
+    location: "Lake District National Park, United Kingdom",
+    category: "Nature",
+    saves: "1.7k"
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1661783607393-6c4ea8f182da?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDl8fHxlbnwwfHx8fHw%3D",
+    title: "Lake District National Park, United Kingdom",
+    location: "Lake District National Park, United Kingdom",
+    category: "Nature",
+    saves: "1.7k"
+  },
+  {
+    imageUrl: "https://plus.unsplash.com/premium_photo-1706625678451-6fa31c287a0b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDIwfHx8ZW58MHx8fHx8",
+    title: "Lake District National Park, United Kingdom",
+    location: "Lake District National Park, United Kingdom",
+    category: "Nature",
+    saves: "1.7k"
   }
 ]
 

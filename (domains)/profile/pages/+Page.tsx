@@ -2,13 +2,13 @@ import { useUpdate } from '@reatom/npm-react'
 import { useData } from "vike-react/useData"
 import { Data } from "./+data"
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper"
-import { paramAtom } from "../../models/profile.model"
-import { ProfilePageInfo } from "../../components/profile-page-info"
-import { ProfilePageContent } from "../../components/profile-page-content"
-import { ProfilePageTags } from "../../components/profile-page-tags"
-import { ProfilePageFollowers } from "../../components/profile-page-followers"
-import { ProfilePageFollows } from "../../components/profile-page-follows"
-import { ProfilePageAbout } from '../../components/profile-page-about'
+import { paramAtom } from '../models/profile.model'
+import { ProfilePageInfo } from '../components/profile-page-info'
+import { ProfilePageFollows } from '../components/profile-page-follows'
+import { ProfilePageFollowers } from '../components/profile-page-followers'
+import { ProfilePageAbout } from '../components/profile-page-about'
+import { ProfilePageTags } from '../components/profile-page-tags'
+import { ProfilePageContent } from '../components/profile-page-content'
 
 const SyncProfileParam = () => useUpdate(paramAtom, [useData<Data>().id])
 
