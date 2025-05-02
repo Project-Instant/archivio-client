@@ -6,16 +6,16 @@ import { CreatePinFileUploader } from "../components/create-pin-form-file";
 export default function CreatePinPage() {
   return (
     <div className="flex items-start w-full h-svh">
-      <div className="flex flex-col py-6 items-center gap-4 w-24 h-full border-t border-r border-b border-neutral-700">
+      <div className="flex flex-col py-6 items-center gap-4 w-24 h-full border-t border-r border-b border-muted-foreground">
         <BackNavigation />
       </div>
       <div className="flex flex-col w-full h-full">
-        <div className="flex items-center w-full px-6 min-h-24 max-h-24 h-24 justify-between border-t border-r border-b border-neutral-700">
-          <h1 className="font-bold text-xl">
+        <div className="flex items-center w-full px-6 min-h-24 max-h-24 h-24 justify-between border-t border-r border-b border-muted-foreground">
+          <h1 className="font-bold text-xl text-foreground">
             Создание пина
           </h1>
           <div className="flex items-center gap-4">
-            <Button className="font-semibold text-lg hover:bg-emerald-800 bg-emerald-700 text-neutral-50">
+            <Button className="font-semibold text-lg hover:bg-emerald-800 bg-emerald-700 text-foreground">
               Создать пин
             </Button>
           </div>

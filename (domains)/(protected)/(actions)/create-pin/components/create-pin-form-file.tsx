@@ -20,8 +20,8 @@ const fileUploadAreaVariants = cva(`
   },
   variants: {
     variant: {
-      default: "bg-neutral-400/40",
-      active: "bg-emerald-400/40",
+      default: "bg-muted-foreground/30",
+      active: "bg-emerald-400/30",
       preview: "bg-transparent"
     },
     layout: {
@@ -31,7 +31,7 @@ const fileUploadAreaVariants = cva(`
     border: {
       default: "border-2 border-transparent",
       none: "border-none",
-      dashed: "border-2 border-dashed border-neutral-400"
+      dashed: "border-2 border-dashed border-muted-foreground"
     }
   }
 })
@@ -61,7 +61,7 @@ const CreatePinFilePreview = reatomComponent(({ ctx }) => {
       <div
         onClick={deleteImage}
         className="group-hover:block absolute hidden right-2 top-2 
-          bg-neutral-400 rounded-sm p-1"
+          bg-muted-foreground rounded-sm p-1"
       >
         <X size={20} />
       </div>
@@ -133,8 +133,8 @@ const CreatePinFileUploadHandler = reatomComponent(({ ctx }) => {
       variant={ctx.spy(isDraggedAtom) ? "active" : "default"}
     >
       <div className="flex items-end h-2/4 w-full justify-center">
-        <div className="flex items-center justify-center rounded-full bg-neutral-900 p-4">
-          <File size={36} className="text-neutral-100" />
+        <div className="flex items-center justify-center rounded-full bg-foreground p-4">
+          <File size={36} className="invert text-foreground" />
         </div>
         <input
           ref={inputRef}
@@ -146,10 +146,10 @@ const CreatePinFileUploadHandler = reatomComponent(({ ctx }) => {
         />
       </div>
       <div className="flex flex-col p-6 h-2/4 items-center justify-between w-full">
-        <span className="text-neutral-900 text-base">
+        <span className="text-foreground text-base">
           Выберите файл или перетащите его сюда
         </span>
-        <span className="text-neutral-900 text-center text-sm">
+        <span className="text-foreground text-center text-sm">
           Рекомендуем использовать файлы высокого качества в формате .jpg
           (размером меньше {bytesToMB(MAX_FILE_SIZE)} MB)
         </span>

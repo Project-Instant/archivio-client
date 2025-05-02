@@ -21,7 +21,7 @@ const AuthDialogFormSubmit = reatomComponent(({ ctx }) => {
 const AuthDialogFormInput = reatomComponent(({ ctx }) => {
   return (
     <div className="flex flex-col w-full gap-1">
-      <span className="text-neutral-800 text-base">Логин</span>
+      <span className="text-foreground text-base">Логин</span>
       <Input
         value={ctx.spy(loginAtom)}
         placeholder="Логин"
@@ -39,7 +39,7 @@ const AuthDialogFormInput = reatomComponent(({ ctx }) => {
 const AuthDialogFormPassword = reatomComponent(({ ctx }) => {
   return (
     <div className="flex flex-col w-full gap-1">
-      <span className="text-neutral-800 text-base">Пароль</span>
+      <span className="text-foreground text-base">Пароль</span>
       <Input
         value={ctx.spy(passwordAtom)}
         placeholder="Пароль"
@@ -95,7 +95,7 @@ export const AuthDialogForm = reatomComponent(({ ctx }) => {
   return (
     <>
       {isPending && (
-        <div className="absolute z-[5] rounded-3xl bg-neutral-600/60 w-full h-full flex items-center justify-center">
+        <div className="absolute z-[5] rounded-3xl bg-muted-foreground/60 w-full h-full flex items-center justify-center">
           <Loader />
         </div>
       )}
@@ -105,7 +105,7 @@ export const AuthDialogForm = reatomComponent(({ ctx }) => {
           Добро пожаловать
         </p>
         {!ctx.spy(isLoginAtom) && (
-          <span className="text-neutral-900">Find new ideas to try</span>
+          <span className="text-muted-foreground">Find new ideas to try</span>
         )}
       </div>
       <div

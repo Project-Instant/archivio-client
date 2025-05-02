@@ -15,31 +15,31 @@ export const CreatePinForm = reatomComponent(({ ctx }) => {
       aria-disabled={isDisabled}
     >
       <div className="flex flex-col gap-1">
-        <p className="text-neutral-900">
+        <p className="text-foreground">
           Название
         </p>
         <CreatePinFormTitle />
       </div>
       <div className="flex flex-col gap-1">
-        <p className="text-neutral-900">
+        <p className="text-foreground">
           Описание
         </p>
         <CreatePinFormDescription />
       </div>
       <div className="flex flex-col gap-1">
-        <p className="text-neutral-900">
+        <p className="text-foreground">
           Ссылка
         </p>
         <CreatePinFormLink />
       </div>
       <div className="flex flex-col gap-1">
-        <p className="text-neutral-900">
+        <p className="text-foreground">
           Коллекция
         </p>
         <CreatePinFormCollection />
       </div>
       <div className="flex flex-col gap-1">
-        <p className="text-neutral-900">
+        <p className="text-foreground">
           Темы с тегом
         </p>
         <CreatePinFormTag />

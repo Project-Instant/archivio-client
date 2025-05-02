@@ -18,10 +18,8 @@ export const ProfilePageAbout = reatomComponent(({ ctx }) => {
 
   return (
     <>
-      <h2 className="mb-2 text-lg font-semibold">О себе</h2>
-      <p className="text-muted-foreground">
-        {about}
-      </p>
+      <h2 className="mb-2 text-xl font-semibold text-foreground">О себе</h2>
+      <p className="text-lg text-muted-foreground">{about}</p>
     </>
   )
 }, "ProfilePageAbout")

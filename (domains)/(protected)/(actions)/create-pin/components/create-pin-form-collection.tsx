@@ -19,11 +19,11 @@ export const CreatePinFormCollection = reatomComponent(({ ctx }) => {
     <Select onValueChange={(value) => collectionAtom(ctx, value)}>
       <SelectTrigger>
         {ctx.spy(collectionAtom) ? (
-          <span className="text-neutral-900">
+          <span className="text-foreground">
             {ctx.spy(collectionAtom)}
           </span>
         ) : (
-          <span className="text-neutral-900">
+          <span className="text-foreground">
             Выберите коллекцию
           </span>
         )}

@@ -1,38 +1,48 @@
+import { PINS } from "@/(domains)/(protected)/homefeed/models/homefeed.model";
 import { reatomResource, withCache, withDataAtom, withErrorAtom, withStatusesAtom } from "@reatom/async";
 import { action, atom } from "@reatom/core";
-import { sleep, withComputed } from "@reatom/framework";
+import { withComputed, withReset } from "@reatom/framework";
 
 export const pinParamAtom = atom<string | null>(null, "pinParamAtom")
 
-export type Pin = {
-  id: string,
-  title: string,
-  location?: {
-    coords: {
-      latitude: number
-      longitude: number
-    }
-    address: string
-  },
-  meta?: {
-    saves: number
-  },
-  category?: string,
+export interface Location {
+  coords: {
+    lat: number;
+    lng: number;
+  };
+  addressName: string;
+}
+
+export interface Meta {
+  location: Location;
+  width: number;
+  height: number;
+  size: number; // in bytes
+}
+
+export interface Pin {
+  id: string; // UUID or slug
+  title: string;
   description?: string;
+  fullImage: string; // URL or object key
   thumbnailImage?: string;
-  fullImage: string
+  meta?: Meta;
+  saves: number;
+  tags?: string[]; // optionally model as Tag[]
+  category: string; // optionally enum
+  createdAt: Date;
+  updatedAt?: Date;
+  owner: {
+    id: string; 
+    login: string;
+    avatarUrl?: string;
+  };
 }
 
 async function request(pin: string): Promise<Pin> {
-  await sleep(1200)
+  // await sleep(1200)
 
-  return {
-    id: pin,
-    title: "New York City v1",
-    description: "test",
-    fullImage: "https://images.unsplash.com/photo-1742943892627-f7e4ddf91224?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    thumbnailImage: ""
-  }
+  return PINS.find((p) => p.id === pin) as Pin;
 }
 
 export const pinResource = reatomResource(async (ctx) => {
@@ -49,36 +59,27 @@ export const pinResource = reatomResource(async (ctx) => {
 )
 
 export const pinCommentValueAtom = atom("", "pinCommentValueAtom")
-
-export const selectedPinAtom = atom<Pin | null>(null, "selectedPinAtom")
-
-export const pinFullscreenScale = atom(1, "pinFullscreenScaleOption")
-
+export const pinFullscreenScaleAtom = atom(1, "pinFullscreenScaleOption").pipe(withReset())
 export const pinIsFullscreenAtom = atom(false, "pinIsFullscreenAtom").pipe(
   withComputed((ctx, state) => {
-    const pin = ctx.get(pinResource.dataAtom)
-
-    if (state && pin) {
-      selectedPinAtom(ctx, pin)
-    } else {
-      selectedPinAtom(ctx, null)
+    if (state === false) {
+      pinFullscreenScaleAtom.reset(ctx)
     }
-
+    
     return state;
   })
 )
 
 export const scaleAction = action((ctx, scale: boolean) => {
-  const current = ctx.get(pinFullscreenScale)
+  const current = ctx.get(pinFullscreenScaleAtom)
 
   if (scale) {
-    if (current >= 1.5) return;
+    if (current >= 10) return;
 
-    pinFullscreenScale(ctx, current + 0.1)
+    pinFullscreenScaleAtom(ctx, current + 1)
   } else {
+    if (current <= -6) return;
 
-    if (current <= 0.5) return;
-
-    pinFullscreenScale(ctx, current - 0.1)
+    pinFullscreenScaleAtom(ctx, current - 1)
   }
 })

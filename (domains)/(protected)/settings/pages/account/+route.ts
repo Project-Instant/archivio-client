@@ -1,1 +1,1 @@
-export default "/settings/edit-account"
+export default "/settings/account"

@@ -1,4 +1,4 @@
-import { reatomComponent } from "@reatom/npm-react";
+import { reatomComponent, useAction } from "@reatom/npm-react";
 import { profileResource } from "../models/profile.model";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/shared/ui/dialog"
 import { Edit, Eye } from "lucide-react";
@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { userResource } from "@/(domains)/(auth)/models/user.model";
+import { openAuthDialogAction } from "@/(domains)/(auth)/models/auth-dialog.model";
 
 type ProfileAvatar = {
   avatarUrl?: string,
@@ -20,9 +21,9 @@ const ProfileAvatar = ({ avatarUrl, login, name }: ProfileAvatar) => {
         <Avatar className="min-w-16 min-h-16 w-fit h-fit max-w-36 max-h-36 border-4 border-white">
           <AvatarImage src={avatarUrl} alt="" />
           <div className="group-hover:opacity-100 flex opacity-0 absolute duration-150 bg-black/40 cursor-pointer w-full h-full items-center justify-center">
-            <Eye size={20} className="text-neutral-50" />
+            <Eye size={20} className="text-white" />
           </div>
-          <AvatarFallback className="text-2xl text-neutral-400">
+          <AvatarFallback className="text-2xl text-muted-foreground">
             {name.split(" ").map(w => w[0]).join("")}
           </AvatarFallback>
         </Avatar>
@@ -30,12 +31,12 @@ const ProfileAvatar = ({ avatarUrl, login, name }: ProfileAvatar) => {
       <DialogContent withClose={false} className="flex flex-col gap-4 bg-transparent p-12 border-none w-fit shadow-none">
         <Avatar className="min-w-48 min-h-48 w-fit h-fit max-w-96 max-h-96 rounded-md">
           <AvatarImage src={avatarUrl} alt="" />
-          <AvatarFallback className="text-2xl text-neutral-400">
+          <AvatarFallback className="text-2xl text-secondary-foreground">
             {name.split(" ").map(w => w[0]).join("")}
           </AvatarFallback>
         </Avatar>
         <DialogClose className="flex items-center cursor-pointer justify-center h-12 w-full rounded-lg bg-white px-4 py-2">
-          <p className="text-neutral-900 font-semibold">
+          <p className="text-black font-semibold">
             Закрыть
           </p>
         </DialogClose>
@@ -45,19 +46,33 @@ const ProfileAvatar = ({ avatarUrl, login, name }: ProfileAvatar) => {
 }
 
 const ProfilePageDetails = reatomComponent(({ ctx }) => {
+  const profileData = ctx.spy(profileResource.dataAtom)
+  const currentUser = ctx.spy(userResource.dataAtom)
+  const openAuthDialog = useAction(openAuthDialogAction)
+
+  if (!profileData) return null;
+
+  if (!currentUser) return (
+    <Button onClick={() => openAuthDialog(true)} className="w-fit px-2 bg-pink-600 gap-2 hover:bg-pink-700">
+      <span className="font-semibold text-white">
+        Подписаться
+      </span>
+    </Button>
+  )
+
   return (
-    ctx.spy(profileResource.dataAtom)?.user.login === ctx.spy(userResource.dataAtom)?.login ? (
-      <a href="/settings/edit-profile" className="mt-4">
+    profileData.user.login === currentUser.login ? (
+      <a href="/settings/edit-profile">
         <Button className="bg-emerald-600 gap-2 hover:bg-emerald-700">
           <Edit size={20} />
-          <span className="font-semibold text-neutral-50">
+          <span className="font-semibold text-white">
             Изменить профиль
           </span>
         </Button>
       </a>
     ) : (
       <Button className="w-fit px-2 bg-pink-600 gap-2 hover:bg-pink-700">
-        <span className="font-semibold text-neutral-50">
+        <span className="font-semibold text-white">
           Подписаться
         </span>
       </Button>
@@ -93,10 +108,10 @@ export const ProfilePageInfo = reatomComponent(({ ctx }) => {
           avatarUrl={profile.user.avatarUrl ?? undefined}
         />
         <div className="flex flex-col">
-          <h1 className="text-2xl truncate font-bold text-neutral-900">
+          <h1 className="text-2xl truncate font-bold text-foreground">
             {profile.user.name}
           </h1>
-          <p className="text-neutral-500 truncate font-medium mb-2">
+          <p className="text-muted-foreground truncate font-medium mb-4">
             @{profile.user.login}
           </p>
           <ProfilePageDetails />

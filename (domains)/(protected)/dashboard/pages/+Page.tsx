@@ -1,4 +1,3 @@
-import { PinCard } from "@/shared/components/pin-card/pin-card";
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -143,34 +142,7 @@ export default function DashboardPage() {
               </div>
               <TabsContent value="grid">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                  <PinCard
-                    imageUrl="/placeholder.svg?height=600&width=400"
-                    title="Santorini Sunset Views"
-                    location="Santorini, Greece"
-                    category="Scenic"
-                    saves="4.2k"
-                  />
-                  <PinCard
-                    imageUrl="/placeholder.svg?height=800&width=400"
-                    title="Tokyo City Lights"
-                    location="Tokyo, Japan"
-                    category="Urban"
-                    saves="3.8k"
-                  />
-                  <PinCard
-                    imageUrl="/placeholder.svg?height=500&width=400"
-                    title="Bali Beach Retreat"
-                    location="Bali, Indonesia"
-                    category="Beach"
-                    saves="5.1k"
-                  />
-                  <PinCard
-                    imageUrl="/placeholder.svg?height=700&width=400"
-                    title="Swiss Alps Adventure"
-                    location="Zermatt, Switzerland"
-                    category="Mountains"
-                    saves="2.9k"
-                  />
+
                 </div>
               </TabsContent>
               <TabsContent value="list">

@@ -29,6 +29,8 @@ export const profileResource = reatomResource(async (ctx) => {
 
   if (!param) return null;
 
+  await sleep(2000)
+
   return await ctx.schedule(async () => {
     let data: Profile | null = null;
 
@@ -58,7 +60,7 @@ export const profileResource = reatomResource(async (ctx) => {
       }
     }
 
-    await sleep(50)
+    // await sleep(50)
     
     return data;
   })

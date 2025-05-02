@@ -1,1 +1,1 @@
-export default "/pin/@id"
+export default "/p/@id"

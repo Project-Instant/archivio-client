@@ -6,6 +6,10 @@ type LinkProps = {
   children: ReactNode | string;
 } & HTMLAttributes<HTMLAnchorElement>;
 
+const aliases: Record<string, string> = {
+  "/settings": "/settings/edit-profile"
+}
+
 export function Link({ href, children, ...props }: LinkProps) {
   const pageContext = usePageContext();
   const { urlPathname } = pageContext;
@@ -14,8 +18,16 @@ export function Link({ href, children, ...props }: LinkProps) {
     ? urlPathname === href
     : urlPathname.startsWith(href);
 
+  if (aliases[href]) {
+    href = aliases[href]
+  }
+
   return (
-    <a href={href} className={isActive ? "is-active" : undefined} {...props}>
+    <a
+      data-state={isActive ? "active" : "inactive"}
+      href={href}
+      {...props}
+    >
       {children}
     </a>
   );

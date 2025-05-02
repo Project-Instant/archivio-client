@@ -60,8 +60,8 @@ export function HeaderLinks() {
       <div className="flex flex-col lg:flex-row items-start justify-between h-full py-12 gap-2 w-full">
         {HEADER.map(i => (
           <Fragment key={i.section}>
-            <div className="flex flex-col items-start justify-start h-full gap-3 w-full">
-              <p className="font-semibold text-lg text-neutral-900">
+            <div className="flex flex-col items-start text-foreground justify-start h-full gap-3 w-full">
+              <p className="font-semibold text-lg">
                 {i.title}
               </p>
               <div className="flex flex-col gap-2 h-full w-full">
@@ -76,7 +76,7 @@ export function HeaderLinks() {
                 ))}
               </div>
             </div>
-            <Separator orientation="vertical" className="h-full bg-neutral-900" />
+            <Separator orientation="vertical" className="h-full bg-muted" />
           </Fragment>
         ))}
       </div>

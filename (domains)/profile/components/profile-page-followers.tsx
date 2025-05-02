@@ -3,13 +3,15 @@ import { paramAtom, profileResource } from "../models/profile.model"
 import { Card, CardContent } from "@/shared/ui/card"
 import { Users } from "lucide-react"
 import { Skeleton } from "@/shared/ui/skeleton"
-import { Dialog, DialogContent, DialogTrigger } from "@/shared/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/shared/ui/dialog"
 import { Button } from "@/shared/ui/button"
 import { reatomResource, withCache, withDataAtom, withStatusesAtom } from "@reatom/async"
-import { sleep } from "@reatom/framework"
+import { wrapLink } from "@/shared/lib/wrap-link"
 
 const followersList = reatomResource(async (ctx) => {
   const param = ctx.get(paramAtom)
+
+  if (!param) return null;
 
   return await ctx.schedule(async () => {
     const getFollowers = async (v: string) => {
@@ -17,8 +19,6 @@ const followersList = reatomResource(async (ctx) => {
         { id: "123", login: "pig", name: "Pig Llll" }
       ]
     }
-
-    await sleep(100)
 
     return await getFollowers(param)
   })
@@ -31,12 +31,14 @@ const FollowersList = reatomComponent(({ ctx }) => {
 
   return (
     list.map(follower => (
-      <div className="flex bg-neutral-400/20 justify-between p-2 rounded-xl w-full items-center">
-        <a href={`/u/${follower.login}`}>
-          <span>{follower.name}</span>
-        </a>
-        <Button className="bg-neural-800 rounded-xl w-fit px-4">
-          <span className="font-semibold text-base">Подписаться</span>
+      <div className="flex bg-muted-foreground/20 justify-between py-2 px-4 rounded-xl w-full items-center">
+        <DialogClose asChild> 
+          <a href={wrapLink(follower.login, "user")} className="text-foreground">
+            <span>{follower.name}</span>
+          </a>
+        </DialogClose>
+        <Button className="bg-foreground rounded-xl w-fit px-4">
+          <span className="font-semibold invert text-foreground text-base">Подписаться</span>
         </Button>
       </div>
     ))
@@ -78,7 +80,7 @@ export const ProfilePageFollowers = reatomComponent(({ ctx }) => {
         </DialogTrigger>
         <DialogContent>
           <div className="flex flex-col w-full h-full overflow-y-auto gap-4">
-            <p className="font-semibold text-lg">Подписчики</p>
+            <p className="font-semibold text-center text-foreground text-lg">Подписчики</p>
             <FollowersList />
           </div>
         </DialogContent>

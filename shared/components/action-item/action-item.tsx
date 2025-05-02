@@ -3,7 +3,7 @@ import { HTMLAttributes } from "react"
 
 type ActionItemProps = HTMLAttributes<HTMLDivElement> & VariantProps<typeof actionItemVariants>
 
-const actionItemVariants = cva("flex items-center justify-start gap-2 w-full hover:bg-neutral-800/20 rounded-lg", {
+const actionItemVariants = cva("flex items-center justify-start gap-2 w-full hover:bg-muted-foreground/20 rounded-lg", {
   defaultVariants: {
     size: "default"
   },

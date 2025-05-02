@@ -1,63 +1,74 @@
 import { Dialog, DialogContent, DialogTrigger } from "@/shared/ui/dialog";
 import { reatomComponent, useAction } from "@reatom/npm-react";
 import { Fullscreen, Minus, Plus } from "lucide-react";
-import { createPortal } from "react-dom";
 import { PinSave } from "./pin-save";
-import { pinFullscreenScale, pinIsFullscreenAtom, pinResource, scaleAction, selectedPinAtom } from "../models/pin.model";
+import { pinFullscreenScaleAtom, pinIsFullscreenAtom, pinResource, scaleAction } from "../models/pin.model";
 
-const PinScale = () => {
+const PinImageToolsBar = () => {
   const scale = useAction(scaleAction)
 
   return (
-    <>
-      <div onClick={() => scale(true)} className="flex cursor-pointer bg-white/80 rounded-lg p-2">
-        <Plus size={26} className="text-neutral-900" />
+    <div
+      className="relative -bottom-2/3 border-2 border-muted-foreground/20
+        flex justify-between gap-4 items-center bg-white/20 backdrop-blur-md p-2 rounded-lg w-full z-[60]"
+    >
+      <div id="controls-scale" className="flex items-center gap-2">
+        <div
+          onClick={() => scale(true)}
+          className="flex cursor-pointer active:scale-[0.96] bg-foreground/80 rounded-lg p-2"
+        >
+          <Plus size={22} className="text-foreground invert" />
+        </div>
+        <div
+          onClick={() => scale(false)}
+          className="flex cursor-pointer active:scale-[0.96] bg-foreground/80 rounded-lg p-2"
+        >
+          <Minus size={22} className="text-foreground invert" />
+        </div>
       </div>
-      <div onClick={() => scale(false)} className="flex cursor-pointer bg-white/80 rounded-lg p-2">
-        <Minus size={26} className="text-neutral-900" />
+      <div id="controls-details" className="flex items-center gap-2">
+        <PinSave />
       </div>
-    </>
+    </div>
   )
 }
 
-export const PinImageTools = reatomComponent(({ ctx }) => {
-  const pin = ctx.get(pinResource.dataAtom)
-  const isFullscreen = ctx.spy(pinIsFullscreenAtom)
+const PinImage = reatomComponent(({ ctx }) => {
+  const pin = ctx.spy(pinResource.dataAtom)
+
+  const zoomSteps = ctx.spy(pinFullscreenScaleAtom);
 
   if (!pin) return null;
 
   return (
-    <>
-      {isFullscreen && createPortal(
-        <>
-          <div id="controls-scale" className="fixed z-[60] bottom-4 right-4 flex flex-col gap-4">
-            <PinScale />
-          </div>
-          <div id="controls-details" className="fixed z-[60] top-4 right-4 flex flex-col gap-4">
-            <PinSave />
-          </div>
-        </>,
-        document.body
-      )}
-      <div className="absolute right-4 bottom-4 flex flex-col gap-2">
-        <Dialog open={isFullscreen} onOpenChange={v => pinIsFullscreenAtom(ctx, v)}>
-          <DialogTrigger className="flex cursor-pointer bg-white/80 rounded-lg p-2">
-            <Fullscreen size={20} className="text-neutral-900" />
-          </DialogTrigger>
-          <DialogContent
-            className="!bg-transparent h-fit !max-h-[90vh] !shadow-none !border-transparent"
-            withClose={false}
-          >
-            <img
-              draggable={false}
-              src={ctx.spy(selectedPinAtom)?.fullImage}
-              className="object-contain w-full h-full rounded-xl"
-              style={{ scale: ctx.spy(pinFullscreenScale) * 2 }}
-              alt={ctx.spy(selectedPinAtom)?.title}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-    </>
+    <img
+      draggable={false}
+      src={pin.fullImage}
+      className="object-contain w-full h-full duration-150 rounded-lg"
+      style={{
+        transform: `scale(${1 + zoomSteps * 0.1})`,
+        transformOrigin: 'center center',
+      }}
+      alt={pin.title}
+    />
+  )
+}, "PinImage")
+
+export const PinImageTools = reatomComponent(({ ctx }) => {
+  const isFullscreen = ctx.spy(pinIsFullscreenAtom)
+
+  return (
+    <Dialog open={isFullscreen} onOpenChange={v => pinIsFullscreenAtom(ctx, v)}>
+      <DialogTrigger className="flex cursor-pointer bg-foreground/80 rounded-lg p-2">
+        <Fullscreen size={20} className="text-foreground invert" />
+      </DialogTrigger>
+      <DialogContent
+        className="!bg-transparent h-fit !max-h-[90vh] !shadow-none !border-transparent"
+        withClose={false}
+      >
+        <PinImage />
+        <PinImageToolsBar />
+      </DialogContent>
+    </Dialog>
   )
 }, "PinTools")

@@ -7,8 +7,9 @@ import { toast } from "sonner"
 import * as S from "sury"
 import { navigate } from 'vike/client/router'
 import { authDialogAtom } from "./auth-dialog.model";
-import { Action, atom, AtomMut, Ctx, sleep, withComputed, withReset } from "@reatom/framework";
+import { Action, atom, AtomMut, Ctx, withComputed, withReset } from "@reatom/framework";
 import { client } from "@/shared/api/api-client";
+import { wrapLink } from "@/shared/lib/wrap-link";
 
 export type User = {
   login: string
@@ -16,16 +17,11 @@ export type User = {
   avatarUrl: string | null
 }
 
-type BaseResult = {
+export type Response = {
   data: string | null,
   errorMessage: string | null,
   errorCode: number,
   isSuccess: boolean
-}
-
-type LoginRes = {
-  message: string;
-  sessionId: string
 }
 
 const DEFAULT_ERROR_MSG = "Упс, произошла какая-то ошибка. Повторите попытку позже"
@@ -111,14 +107,17 @@ export const logoutAction = reatomAsync(async (ctx) => {
 
 export const userResource = reatomResource<User | null>(async (ctx) => {
   const isAuth = ctx.spy(isAuthAtom)
-  await ctx.schedule(() => sleep(50))
 
-  if (isAuth) {
-    return await ctx.schedule(() => currentUserData)
-  }
-
+  if (isAuth) return await ctx.schedule(() => currentUserData)
+  
   return await ctx.schedule(() => null)
-}, "userResource").pipe(withDataAtom(), withErrorAtom(), withCache(), withRetry(), withStatusesAtom())
+}, "userResource").pipe(
+  withDataAtom(), 
+  withErrorAtom(),
+  withCache(), 
+  withRetry(), 
+  withStatusesAtom()
+)
 
 export const authAction = reatomAsync(async (ctx) => {
   const parsed = S.safe(() =>
@@ -127,51 +126,52 @@ export const authAction = reatomAsync(async (ctx) => {
     }, loginFormSchema)
   )
 
-  if (!parsed.success) {
-    return await ctx.schedule(() => authErrorAtom(ctx, DEFAULT_ERROR_MSG))
-  }
+  if (!parsed.success) return await ctx.schedule(() => authErrorAtom(ctx, DEFAULT_ERROR_MSG))
 
   try {
     if (ctx.get(isLoginAtom)) {
-      const response = await client.post("api/auth/login", {
+      const response = await client.post("auth/login", {
         json: { Login: parsed.value.login, Password: parsed.value.password },
         throwHttpErrors: false
       })
 
-      const json = await response.json<BaseResult>()
-
-      if (!response.ok || ("isSuccess" in json && !json.isSuccess)) {
-        return await ctx.schedule(() => authErrorAtom(ctx, json.errorMessage ?? DEFAULT_ERROR_MSG))
-      }
-
-      const status = json as unknown as LoginRes
-
-      if (status.sessionId) {
-        return await ctx.schedule(() => {
-          toast.success("Телепортируем...", { position: "top-center" })
-
-          userResource.dataAtom(ctx, { 
-            avatarUrl: currentUserData.avatarUrl, login: parsed.value.login, name: parsed.value.login 
-          })
-
-          authDialogAtom(ctx, false)
-          resetAtoms(ctx)
-          navigate(`/u/${parsed.value.login}`)
-        })
-      }
-    } else {
-      const response = await client.post("api/auth/register", {
-        json: { Login: parsed.value.login, Password: parsed.value.password },
-        throwHttpErrors: false
-      })
-      
-      const json = await response.json<BaseResult>()
+      const json = await response.json<Response>()
 
       if (!response.ok || !json.isSuccess) {
         return await ctx.schedule(() => authErrorAtom(ctx, json.errorMessage ?? DEFAULT_ERROR_MSG))
       }
 
-      if (json.isSuccess) {
+      if (json.data) {
+        return await ctx.schedule(() => {
+          toast.success("Телепортируем...", { position: "top-center" })
+
+          userResource.dataAtom(ctx, { 
+            avatarUrl: currentUserData.avatarUrl, 
+            login: parsed.value.login, 
+            name: parsed.value.login 
+          })
+
+          authDialogAtom(ctx, false)
+          resetAtoms(ctx)
+          navigate(wrapLink(parsed.value.login, "user"))
+        })
+      }
+    } else {
+      const response = await client.post("auth/register", {
+        json: { 
+          Login: parsed.value.login, 
+          Password: parsed.value.password 
+        },
+        throwHttpErrors: false
+      })
+      
+      const json = await response.json<Response>()
+
+      if (!response.ok || !json.isSuccess) {
+        return await ctx.schedule(() => authErrorAtom(ctx, json.errorMessage ?? DEFAULT_ERROR_MSG))
+      }
+
+      if (json.data) {
         return await ctx.schedule(() => {
           toast.success("Регистрация успешна. Теперь вы можете войти в аккаунт", {
             position: "top-center"
@@ -183,10 +183,10 @@ export const authAction = reatomAsync(async (ctx) => {
       }
     }
   } catch (e) {
-    if (ctx.get(authErrorAtom)) {
-      return;
-    }
+    if (ctx.get(authErrorAtom)) return;
 
     authErrorAtom(ctx, DEFAULT_ERROR_MSG)
   }
-}, "authAction").pipe(withStatusesAtom())
+}, "authAction").pipe(
+  withStatusesAtom()
+)

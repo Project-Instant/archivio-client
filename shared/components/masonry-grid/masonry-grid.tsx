@@ -5,7 +5,7 @@ type MasonryGridProps = {
   columns?: number
 }
 
-export function MasonryGrid({ children, columns = 4 }: MasonryGridProps) {
+export function MasonryGrid({ children, columns = 5 }: MasonryGridProps) {
   const childrenArray = Children.toArray(children)
   const columnWrapper: ReactNode[][] = []
 
@@ -19,7 +19,7 @@ export function MasonryGrid({ children, columns = 4 }: MasonryGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
       {columnWrapper.map((column, index) => (
         <div key={index} className="flex flex-col gap-4">
           {column}
