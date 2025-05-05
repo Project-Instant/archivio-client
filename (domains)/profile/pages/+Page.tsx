@@ -2,7 +2,7 @@ import { useUpdate } from '@reatom/npm-react'
 import { useData } from "vike-react/useData"
 import { Data } from "./+data"
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper"
-import { paramAtom } from '../models/profile.model'
+import { profileParamAtom } from '../models/profile.model'
 import { ProfilePageInfo } from '../components/profile-page-info'
 import { ProfilePageFollows } from '../components/profile-page-follows'
 import { ProfilePageFollowers } from '../components/profile-page-followers'
@@ -10,7 +10,7 @@ import { ProfilePageAbout } from '../components/profile-page-about'
 import { ProfilePageTags } from '../components/profile-page-tags'
 import { ProfilePageContent } from '../components/profile-page-content'
 
-const SyncProfileParam = () => useUpdate(paramAtom, [useData<Data>().id])
+const SyncProfileParam = () => useUpdate(profileParamAtom, [useData<Data>().id])
 
 export default function ProfilePage() {
   return (

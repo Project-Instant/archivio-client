@@ -3,7 +3,7 @@
   "style": "default",
   "tailwind": {
     "config": "",
-    "css": "@/shared/styles/tailwind.css",
+    "css": "@/shared/styles/style.css",
     "baseColor": "stone",
     "cssVariables": true
   },

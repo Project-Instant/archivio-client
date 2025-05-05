@@ -1,7 +1,7 @@
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper"
 import { reatomComponent } from "@reatom/npm-react"
 import { authDialogAtom } from "../models/auth-dialog.model"
-import { AuthDialogForm } from "../components/auth-form/auth-form";
+import { AuthDialogForm } from "../components/auth-form";
 
 const AuthPageForm = reatomComponent(({ ctx }) => {
   if (ctx.spy(authDialogAtom)) {

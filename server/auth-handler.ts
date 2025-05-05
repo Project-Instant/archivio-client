@@ -1,9 +1,9 @@
-import { getIsAuth } from "@/(domains)/(auth)/queries/get-is-auth";
+import { validateAuthentication } from "@/(domains)/(auth)/queries/get-is-auth";
 
-export async function authHandler() {
-  const isAuth = await getIsAuth()
-  
-  return {
-    isAuth
-  }
+export const AUTH_COOKIE_KEY = "MyCookieAuth";
+
+export async function authHandler(headers: Headers) {
+  let result = await validateAuthentication(headers)
+
+  return { isAuth: result }
 }

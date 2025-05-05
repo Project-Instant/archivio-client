@@ -7,6 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { userResource } from "@/(domains)/(auth)/models/user.model";
 import { openAuthDialogAction } from "@/(domains)/(auth)/models/auth-dialog.model";
+import { reatomAsync } from "@reatom/async";
 
 type ProfileAvatar = {
   avatarUrl?: string,
@@ -18,7 +19,7 @@ const ProfileAvatar = ({ avatarUrl, login, name }: ProfileAvatar) => {
   return (
     <Dialog>
       <DialogTrigger className="group">
-        <Avatar className="min-w-16 min-h-16 w-fit h-fit max-w-36 max-h-36 border-4 border-white">
+        <Avatar className="min-w-16 min-h-16 w-fit h-fit max-w-36 max-h-36">
           <AvatarImage src={avatarUrl} alt="" />
           <div className="group-hover:opacity-100 flex opacity-0 absolute duration-150 bg-black/40 cursor-pointer w-full h-full items-center justify-center">
             <Eye size={20} className="text-white" />
@@ -45,20 +46,33 @@ const ProfileAvatar = ({ avatarUrl, login, name }: ProfileAvatar) => {
   )
 }
 
-const ProfilePageDetails = reatomComponent(({ ctx }) => {
-  const profileData = ctx.spy(profileResource.dataAtom)
-  const currentUser = ctx.spy(userResource.dataAtom)
-  const openAuthDialog = useAction(openAuthDialogAction)
+const followAction = reatomAsync(async (ctx) => {
+  const currentUser = ctx.get(userResource.dataAtom)
 
-  if (!profileData) return null;
+  if (!currentUser) {
+    return openAuthDialogAction(ctx, true)
+  }
+  
+  // todo: implement follow logic
+})
 
-  if (!currentUser) return (
-    <Button onClick={() => openAuthDialog(true)} className="w-fit px-2 bg-pink-600 gap-2 hover:bg-pink-700">
+const FollowButton = reatomComponent(({ ctx }) => {
+  const follow = useAction(followAction)
+
+  return (
+    <Button onClick={follow} className="w-fit px-2 bg-pink-600 gap-2 hover:bg-pink-700">
       <span className="font-semibold text-white">
         Подписаться
       </span>
     </Button>
   )
+}, "FollowButton")
+
+const ProfilePageDetails = reatomComponent(({ ctx }) => {
+  const profileData = ctx.spy(profileResource.dataAtom)
+  const currentUser = ctx.spy(userResource.dataAtom)
+
+  if (!profileData || !currentUser) return null;
 
   return (
     profileData.user.login === currentUser.login ? (
@@ -71,11 +85,7 @@ const ProfilePageDetails = reatomComponent(({ ctx }) => {
         </Button>
       </a>
     ) : (
-      <Button className="w-fit px-2 bg-pink-600 gap-2 hover:bg-pink-700">
-        <span className="font-semibold text-white">
-          Подписаться
-        </span>
-      </Button>
+      <FollowButton/>
     )
   )
 }, "ProfilePageDetails")
@@ -96,7 +106,6 @@ export const ProfilePageInfo = reatomComponent(({ ctx }) => {
   if (ctx.spy(profileResource.statusesAtom).isPending) return <ProfilePageInfoSkeleton />
 
   const profile = ctx.spy(profileResource.dataAtom)
-
   if (!profile) return null;
 
   return (

@@ -1,6 +1,3 @@
-import "@/shared/styles/style.css";
-import "@/shared/styles/tailwind.css";
-
 import { connectLogger, Ctx } from "@reatom/framework";
 import { clientOnly } from 'vike-react/clientOnly'
 import { Toaster } from "sonner";
@@ -8,7 +5,8 @@ import { useUpdate } from "@reatom/npm-react";
 import { usePageContext } from "vike-react/usePageContext";
 import { PropsWithChildren } from "react";
 import { isAuthAtom } from "@/(domains)/(auth)/models/user.model";
-import { AuthLayout } from "@/(domains)/(auth)/components/auth-layout/auth-layout";
+import { AuthLayout } from "@/(domains)/(auth)/components/auth-layout";
+import "@/shared/styles/style.css";
 
 const ReatomContext = clientOnly(async () => (
   await import('@/shared/providers/reatom-provider')

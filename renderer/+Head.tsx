@@ -5,7 +5,6 @@ export default function HeadDefault() {
     <>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&display=swap" rel="stylesheet" />
       <link rel="icon" href="/logo_no_bg.png" />
       <script
         type="text/javascript"

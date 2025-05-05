@@ -5,7 +5,7 @@ import {
 import AvatarExample from "@/assets/cover-example.webp"
 import { toast } from "sonner"
 import * as S from "sury"
-import { navigate } from 'vike/client/router'
+import { navigate, reload } from 'vike/client/router'
 import { authDialogAtom } from "./auth-dialog.model";
 import { Action, atom, AtomMut, Ctx, withComputed, withReset } from "@reatom/framework";
 import { client } from "@/shared/api/api-client";
@@ -14,7 +14,8 @@ import { wrapLink } from "@/shared/lib/wrap-link";
 export type User = {
   login: string
   name: string;
-  avatarUrl: string | null
+  avatarUrl: string | null,
+  description: string | null;
 }
 
 export type Response = {
@@ -26,10 +27,11 @@ export type Response = {
 
 const DEFAULT_ERROR_MSG = "Упс, произошла какая-то ошибка. Повторите попытку позже"
 
-export const currentUserData = {
+export const currentUserData: User = {
   login: "belkin",
   name: "Rus Belkin",
-  avatarUrl: AvatarExample
+  avatarUrl: AvatarExample,
+  description: null
 }
 
 const loginSchema = S.string
@@ -100,8 +102,16 @@ export const isAuthAtom = atom<boolean>(false, "isAuthAtom").pipe(
 
 export const logoutAction = reatomAsync(async (ctx) => {
   return await ctx.schedule(async (ctx) => {
-    userResource.dataAtom(ctx, null)
-    return await navigate("/auth")
+    const logout = await client.post("auth/logout", { throwHttpErrors: false })
+    const json = await logout.json<Response>()
+
+    if (json.data?.includes("Logged Out")) {
+      userResource.dataAtom(ctx, null)
+
+      return window.location.reload()
+    }
+
+    return;
   })
 })
 
@@ -109,13 +119,13 @@ export const userResource = reatomResource<User | null>(async (ctx) => {
   const isAuth = ctx.spy(isAuthAtom)
 
   if (isAuth) return await ctx.schedule(() => currentUserData)
-  
+
   return await ctx.schedule(() => null)
 }, "userResource").pipe(
-  withDataAtom(), 
+  withDataAtom(),
   withErrorAtom(),
-  withCache(), 
-  withRetry(), 
+  withCache(),
+  withRetry(),
   withStatusesAtom()
 )
 
@@ -145,12 +155,6 @@ export const authAction = reatomAsync(async (ctx) => {
         return await ctx.schedule(() => {
           toast.success("Телепортируем...", { position: "top-center" })
 
-          userResource.dataAtom(ctx, { 
-            avatarUrl: currentUserData.avatarUrl, 
-            login: parsed.value.login, 
-            name: parsed.value.login 
-          })
-
           authDialogAtom(ctx, false)
           resetAtoms(ctx)
           navigate(wrapLink(parsed.value.login, "user"))
@@ -158,13 +162,13 @@ export const authAction = reatomAsync(async (ctx) => {
       }
     } else {
       const response = await client.post("auth/register", {
-        json: { 
-          Login: parsed.value.login, 
-          Password: parsed.value.password 
+        json: {
+          Login: parsed.value.login,
+          Password: parsed.value.password
         },
         throwHttpErrors: false
       })
-      
+
       const json = await response.json<Response>()
 
       if (!response.ok || !json.isSuccess) {

@@ -1,5 +1,6 @@
 import { Pin } from "@/(domains)/pin/models/pin.model";
 import { reatomResource, withDataAtom, withErrorAtom, withStatusesAtom } from "@reatom/async";
+import { sleep } from "@reatom/framework";
 
 export const PINS: Pin[] = [
   {
@@ -23,6 +24,7 @@ export const PINS: Pin[] = [
     saves: 4200,
     owner: {
       id: "askzxjjhak1",
+      name: "Rus Belkin",
       login: "belkin"
     }
   },
@@ -47,6 +49,7 @@ export const PINS: Pin[] = [
     saves: 3800,
     owner: {
       id: "askzxjjhak1",
+      name: "Rus Belkin",
       login: "belkin"
     }
   },
@@ -71,6 +74,7 @@ export const PINS: Pin[] = [
     saves: 5100,
     owner: {
       id: "askzxjjhak1",
+      name: "Rus Belkin",
       login: "pig"
     }
   },
@@ -95,6 +99,7 @@ export const PINS: Pin[] = [
     saves: 2900,
     owner: {
       id: "askzxjjhak1",
+      name: "Rus Belkin",
       login: "belkin"
     }
   },
@@ -119,6 +124,7 @@ export const PINS: Pin[] = [
     saves: 3300,
     owner: {
       id: "askzxjjhak1",
+      name: "pig pig",
       login: "pig"
     }
   },
@@ -143,6 +149,7 @@ export const PINS: Pin[] = [
     saves: 4799,
     owner: {
       id: "asdzxcqa",
+      name: "pig pig",
       login: "pig"
     }
   },
@@ -167,6 +174,7 @@ export const PINS: Pin[] = [
     saves: 6200,
     owner: {
       id: "askzxjjhak1",
+      name: "pig pig",
       login: "pig"
     }
   },
@@ -191,6 +199,7 @@ export const PINS: Pin[] = [
     saves: 5666,
     owner: {
       id: "askzxjjhak1",
+      name: "pig pig",
       login: "pig"
     }
   },
@@ -215,6 +224,7 @@ export const PINS: Pin[] = [
     saves: 1200,
     owner: {
       id: "askzxjjhak1",
+      name: "Rus Belkin",
       login: "belkin"
     }
   },
@@ -239,6 +249,7 @@ export const PINS: Pin[] = [
     saves: 1700,
     owner: {
       id: "askzxjjhak1",
+      name: "Rus Belkin",
       login: "belkin"
     }
   },
@@ -251,6 +262,7 @@ export const PINS: Pin[] = [
     createdAt: new Date(),
     owner: {
       id: "askzxjjhak1",
+      name: "Rus Belkin",
       login: "belkin"
     }
   },
@@ -263,6 +275,7 @@ export const PINS: Pin[] = [
     createdAt: new Date(),
     owner: {
       id: "askzxjjhak1",
+      name: "Rus Belkin",
       login: "belkin"
     }
   },
@@ -287,6 +300,7 @@ export const PINS: Pin[] = [
     saves: 5500,
     owner: {
       id: "askzxjjhak1",
+      name: "pig pig",
       login: "pig"
     }
   },
@@ -311,6 +325,7 @@ export const PINS: Pin[] = [
     saves: 3800,
     owner: {
       id: "askzxjjhak1",
+      name: "pig pig",
       login: "pig"
     }
   },
@@ -335,13 +350,15 @@ export const PINS: Pin[] = [
     saves: 5100,
     owner: {
       id: "askzxjjhak1",
+      name: "Rus Belkin",
       login: "belkin"
     }
   }
 ]
 
 export const homefeedResource = reatomResource(async (ctx) => {
-  // await sleep(2500)
-
-  return await ctx.schedule(() => PINS)
+  return await ctx.schedule(async () => {
+    await sleep(2500)
+    return PINS;
+  })
 }).pipe(withDataAtom(), withStatusesAtom(), withErrorAtom())

@@ -8,5 +8,5 @@ export default{
   ssr: true,
   passToClient: [
     'isAuth'
-  ]
+  ],
 } satisfies Config;

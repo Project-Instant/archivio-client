@@ -7,15 +7,18 @@ import type { Get, UniversalHandler } from "@universal-middleware/core";
 import { authHandler } from "./auth-handler";
 
 export const vikeHandler: Get<[], UniversalHandler> = () => async (request, context, runtime) => {
-  const auth = await authHandler()
-
-  const pageContextInit = {
-    ...context, 
-    ...runtime, 
-    ...auth,
-    urlOriginal: request.url, 
-    headersOriginal: request.headers, 
+  let pageContextInit = {
+    ...context,
+    ...runtime,
+    urlOriginal: request.url,
+    headersOriginal: request.headers,
   };
+
+  const auth = await authHandler(request.headers)
+
+  pageContextInit = {
+    ...pageContextInit, ...auth
+  }
 
   const pageContext = await renderPage(pageContextInit);
   const response = pageContext.httpResponse;

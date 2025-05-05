@@ -5,7 +5,7 @@ import { HeaderLinks } from "./header-links";
 import { reatomComponent } from "@reatom/npm-react";
 import { Link } from "../../link/Link";
 import { userResource } from "@/(domains)/(auth)/models/user.model";
-import { AuthDialog } from "@/(domains)/(auth)/components/auth-dialog/auth-dialog";
+import { AuthDialog } from "@/(domains)/(auth)/components//auth-dialog";
 import { GlobalSearch, SearchTrigger } from "./header-search";
 import { HeaderUser } from "./header-user";
 import { NotificationsMenu } from "./header-notifications";
@@ -42,7 +42,7 @@ const HeaderLogo = () => {
   return (
     <>
       <img src="/logo_no_bg.png" width={48} height={48} alt="" />
-      <span className="font-bold text-foreground text-lg">Archivio</span>
+      <span className="font-bold relative right-1 text-lg">Archivio</span>
     </>
   )
 }
@@ -50,10 +50,10 @@ const HeaderLogo = () => {
 export const PublicHeader = () => {
   return (
     <div className="shrink-0 container flex items-center h-16 mx-auto gap-x-4">
-      <Link href="/" className="flex items-center gap-2 grow">
+      <Link href="/" className="flex items-end gap-2 grow">
         <HeaderLogo />
       </Link>
-      <div className="flex items-center gap-4 font-semibold text-foreground">
+      <div className="flex items-center gap-4 font-semibold">
         <Link href="/explore">Исследовать</Link>
         <Link href="/business">Бизнес</Link>
         <Link href="/nature">Места</Link>
@@ -71,7 +71,7 @@ export const Header = reatomComponent(({ ctx }) => {
         <div className="container flex items-center h-16 mx-auto gap-x-4">
           <div className="flex items-center justify-between grow">
             <Sheet>
-              <SheetTrigger className="flex items-center hover:bg-foreground/20 cursor-pointer rounded-xl px-2">
+              <SheetTrigger className="flex items-center cursor-pointer">
                 <HeaderLogo />
                 <Menu size={20} className="text-foreground ml-2" />
               </SheetTrigger>

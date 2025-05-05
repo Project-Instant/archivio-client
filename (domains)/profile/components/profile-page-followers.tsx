@@ -1,31 +1,14 @@
 import { reatomComponent } from "@reatom/npm-react"
-import { paramAtom, profileResource } from "../models/profile.model"
+import { followersListResource, profileResource } from "../models/profile.model"
 import { Card, CardContent } from "@/shared/ui/card"
 import { Users } from "lucide-react"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/shared/ui/dialog"
 import { Button } from "@/shared/ui/button"
-import { reatomResource, withCache, withDataAtom, withStatusesAtom } from "@reatom/async"
 import { wrapLink } from "@/shared/lib/wrap-link"
 
-const followersList = reatomResource(async (ctx) => {
-  const param = ctx.get(paramAtom)
-
-  if (!param) return null;
-
-  return await ctx.schedule(async () => {
-    const getFollowers = async (v: string) => {
-      return [
-        { id: "123", login: "pig", name: "Pig Llll" }
-      ]
-    }
-
-    return await getFollowers(param)
-  })
-}).pipe(withDataAtom(), withCache(), withStatusesAtom())
-
 const FollowersList = reatomComponent(({ ctx }) => {
-  const list = ctx.spy(followersList.dataAtom);
+  const list = ctx.spy(followersListResource.dataAtom);
 
   if (!list) return null;
 
@@ -68,7 +51,7 @@ export const ProfilePageFollowers = reatomComponent(({ ctx }) => {
     return <Skeleton className="w-full h-24 md:w-[calc(33.33%-1rem)]" />
   }
 
-  const followers = 1
+  const followers = ctx.spy(profileResource.dataAtom)?.followers ?? 0;
 
   return (
     followers >= 1 ? (
@@ -80,7 +63,9 @@ export const ProfilePageFollowers = reatomComponent(({ ctx }) => {
         </DialogTrigger>
         <DialogContent>
           <div className="flex flex-col w-full h-full overflow-y-auto gap-4">
-            <p className="font-semibold text-center text-foreground text-lg">Подписчики</p>
+            <p className="font-semibold text-center text-foreground text-lg">
+              Подписчики
+            </p>
             <FollowersList />
           </div>
         </DialogContent>

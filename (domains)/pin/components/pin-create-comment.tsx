@@ -14,7 +14,10 @@ export const CreatePinComment = reatomComponent(({ ctx }) => {
       />
       {ctx.spy(pinCommentValueAtom).length >= 1 && (
         <div className="flex items-center justify-center active:scale-[0.96] cursor-pointer rounded-full bg-emerald-600 p-2">
-          <Send size={16} className="text-white rotate-45 relative right-0.5" />
+          <Send
+            size={16}
+            className="text-white rotate-45 relative right-0.5"
+          />
         </div>
       )}
     </div>

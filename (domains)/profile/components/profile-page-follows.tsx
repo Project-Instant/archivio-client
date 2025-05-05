@@ -5,8 +5,10 @@ import { Users } from "lucide-react"
 import { Skeleton } from "@/shared/ui/skeleton"
 
 export const ProfilePageFollows = reatomComponent(({ ctx }) => {
-  if (ctx.spy(profileResource.statusesAtom).isPending) return <Skeleton className="w-full h-24 md:w-[calc(33.33%-1rem)]" />
-
+  if (ctx.spy(profileResource.statusesAtom).isPending) {
+    return <Skeleton className="w-full h-24 md:w-[calc(33.33%-1rem)]" />
+  }
+  
   const follows = ctx.spy(profileResource.dataAtom)?.following ?? 0
 
   return (

@@ -1,6 +1,7 @@
-import { atom, reatomResource, sleep, withCache, withDataAtom, withRetry, withStatusesAtom } from "@reatom/framework";
+import { atom, reatomResource, sleep, withCache, withDataAtom, withErrorAtom, withRetry, withStatusesAtom } from "@reatom/framework";
 import AvatarExample from "@/assets/avatar-example.jpg"
 import { currentUserData, User } from "@/(domains)/(auth)/models/user.model";
+import { PINS } from "@/(domains)/(protected)/homefeed/models/homefeed.model";
 
 type Profile = {
   user: User & {
@@ -22,14 +23,14 @@ type Profile = {
   tags: string[] | null
 }
 
-export const paramAtom = atom<string | null>(null, "profileParam")
+export const profileParamAtom = atom<string | null>(null, "profileParam")
 
 export const profileResource = reatomResource(async (ctx) => {
-  const param = ctx.spy(paramAtom)
+  const param = ctx.spy(profileParamAtom)
 
   if (!param) return null;
 
-  await sleep(2000)
+  await sleep(50)
 
   return await ctx.schedule(async () => {
     let data: Profile | null = null;
@@ -50,7 +51,8 @@ export const profileResource = reatomResource(async (ctx) => {
           name: `Realized ${param}`,
           about: `Travel enthusiast and photographer. Always seeking new adventures and capturing beautiful moments around
             the world. Based in San Francisco, but rarely home.`,
-          avatarUrl: AvatarExample
+          avatarUrl: AvatarExample,
+          description: null
         },
         collection: { pins: 0, savedPins: 0 },
         followers: 0, following: 0,
@@ -74,3 +76,32 @@ export const profileResource = reatomResource(async (ctx) => {
   }),
   withStatusesAtom(),
 )
+
+export const createdPinsResource = reatomResource(async (ctx) => {
+  const profileUser = ctx.spy(profileResource.dataAtom)
+  if (!profileUser) return null;
+
+  const pins = PINS.filter(pin => pin.owner.login === profileUser.user.login)
+
+  await sleep(50)
+
+  return await ctx.schedule(() => pins)
+}).pipe(
+  withDataAtom(), 
+  withCache(), 
+  withErrorAtom(),
+  withStatusesAtom()
+)
+
+const getFollowers = async (v: string) => {
+  return [
+    { id: "123", login: "pig", name: "Pig Llll" }
+  ]
+}
+
+export const followersListResource = reatomResource(async (ctx) => {
+  const profileParam = ctx.spy(profileParamAtom)
+  if (!profileParam) return null;
+
+  return await ctx.schedule(() => getFollowers(profileParam))
+}).pipe(withDataAtom(), withCache(), withStatusesAtom())

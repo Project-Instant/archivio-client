@@ -1,4 +1,4 @@
-import { authErrorAtom, isValidAtom, authAction, loginAtom, loginErrorAtom, passwordAtom, passwordErrorAtom, isLoginAtom } from "../../models/user.model"
+import { authErrorAtom, isValidAtom, authAction, loginAtom, loginErrorAtom, passwordAtom, passwordErrorAtom, isLoginAtom } from "../models/user.model"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Loader } from "@/shared/ui/loader"
@@ -59,7 +59,7 @@ const AuthDialogChangeAuthType = reatomComponent(({ ctx }) => {
     <div className="text-center font-semibold text-sm mt-4">
       {ctx.spy(isLoginAtom) ? "Еще не зарегистрированы?" : "Уже есть аккаунт?"}{" "}
       <span
-        onClick={() => isLoginAtom(ctx, !isLoginAtom)}
+        onClick={() => isLoginAtom(ctx, (state) => !state)}
         className="hover:underline cursor-pointer"
       >
         {ctx.spy(isLoginAtom) ? "Создать аккаунт" : "Войти в аккаунт"}

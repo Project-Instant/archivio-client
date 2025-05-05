@@ -23,6 +23,9 @@ export default defineConfig({
     react({}),
     tailwindcss(),
   ],
+  server: {
+    allowedHosts: ["mvp.fasberry.su"]
+  },
   build: {
     target: "es2022",
   },

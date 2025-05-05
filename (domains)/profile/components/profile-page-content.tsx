@@ -1,58 +1,66 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs"
 import { reatomComponent } from "@reatom/npm-react"
 import { Bookmark, Grid } from "lucide-react"
-import { profileResource } from "../models/profile.model"
+import { createdPinsResource, profileResource } from "../models/profile.model"
 import { Skeleton } from "@/shared/ui/skeleton"
-import { PINS } from "@/(domains)/(protected)/homefeed/models/homefeed.model"
 import { MasonryGrid } from "@/shared/components/masonry-grid/masonry-grid"
 import { PinCard } from "@/shared/components/pin-card/pin-card"
 
-const ContentCreatedPins = reatomComponent(({ ctx }) => {
-  if (ctx.spy(profileResource.statusesAtom).isPending) {
-    return (
-      <MasonryGrid>
-        <Skeleton className="w-full h-24" />
-        <Skeleton className="w-full h-48" />
-        <Skeleton className="w-full h-24" />
-        <Skeleton className="w-full h-36" />
-      </MasonryGrid>
-    )
-  }
-
-  const profileUser = ctx.spy(profileResource.dataAtom)?.user
-
-  if (!profileUser) return null;
-  
+const CreatedPinsSkeleton = () => {
   return (
     <MasonryGrid>
-      {PINS
-        .filter(pin => pin.owner.login === profileUser.login).map(collection => (
-          <PinCard key={collection.id} {...collection} />
-        ))}
+      <Skeleton className="w-full h-24" />
+      <Skeleton className="w-full h-48" />
+      <Skeleton className="w-full h-24" />
+      <Skeleton className="w-full h-36" />
+    </MasonryGrid>
+  )
+}
+
+const CreatedCollectionsSkeleton = () => {
+  return (
+    <>
+      <Skeleton className="w-1/2 h-full" />
+      <Skeleton className="w-1/2 h-full" />
+      <Skeleton className="w-3/4 h-1/2" />
+      <Skeleton className="w-1/4 h-1/3" />
+    </>
+  )
+}
+
+const ContentCreatedPins = reatomComponent(({ ctx }) => {
+  if (ctx.spy(createdPinsResource.statusesAtom).isPending) {
+    return <CreatedPinsSkeleton />
+  }
+
+  const content = ctx.spy(createdPinsResource.dataAtom)
+
+  if (!content) return null;
+
+  return (
+    <MasonryGrid>
+      {content.map(pin => <PinCard key={pin.id} {...pin} />)}
     </MasonryGrid>
   )
 })
 
 const ContentCreatedCollections = reatomComponent(({ ctx }) => {
   if (ctx.spy(profileResource.statusesAtom).isPending) {
-    return (
-      <>
-        <Skeleton className="w-1/2 h-full" />
-        <Skeleton className="w-1/2 h-full" />
-        <Skeleton className="w-3/4 h-1/2" />
-        <Skeleton className="w-1/4 h-1/3" />
-      </>
-    )
+    return <CreatedCollectionsSkeleton />
   }
 
   return (
     <>
-      <span className="text-foreground text-lg">Ничего не нашлось</span>
+      <span className="text-foreground text-lg">
+        Ничего не нашлось
+      </span>
     </>
   )
 })
 
-export const ProfilePageContent = () => {
+export const ProfilePageContent = reatomComponent(({ ctx }) => {
+  if (ctx.spy(profileResource.statusesAtom).isPending) return null;
+
   return (
     <Tabs defaultValue="pins">
       <TabsList className="flex gap-4 w-full rounded-none h-14 bg-transparent justify-start">
@@ -83,4 +91,4 @@ export const ProfilePageContent = () => {
       </TabsContent>
     </Tabs>
   )
-}
+}, "ProfilePageContent")

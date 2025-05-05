@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from "@/shared/ui/dialog";
 import { reatomComponent, useAction } from "@reatom/npm-react";
-import { AuthDialogForm } from "../auth-form/auth-form";
-import { authDialogAtom, openAuthDialogAction } from "../../models/auth-dialog.model";
+import { AuthDialogForm } from "./auth-form";
+import { authDialogAtom, openAuthDialogAction } from "../models/auth-dialog.model";
 
 export const AuthDialog = reatomComponent(({ ctx }) => {
   const openAction = useAction(openAuthDialogAction)
