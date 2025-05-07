@@ -7,7 +7,7 @@ const containerWrapperVariants = cva("container mx-auto", {
   },
   variants: {
     variant: {
-      screen: "min-h-screen",
+      screen: "min-h-[80vh]",
       none: ""
     }
   }

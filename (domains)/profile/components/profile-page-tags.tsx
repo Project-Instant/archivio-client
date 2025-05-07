@@ -1,5 +1,5 @@
 import { reatomComponent } from "@reatom/npm-react";
-import { profileResource } from "../models/profile.model";
+import { profileAtom } from "../models/profile.model";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 
@@ -14,11 +14,11 @@ const ProfilePageTagsSkeleton = () => {
 }
 
 export const ProfilePageTags = reatomComponent(({ ctx }) => {
-  if (ctx.spy(profileResource.statusesAtom).isPending) {
+  if (!ctx.spy(profileAtom)) {
     return <ProfilePageTagsSkeleton />
   }
 
-  const tags = ctx.spy(profileResource.dataAtom)?.tags ?? null;
+  const tags = ctx.spy(profileAtom)?.tags ?? null;
   if (!tags) return null;
 
   return tags.map((tag, idx) => (

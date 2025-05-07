@@ -16,9 +16,9 @@ const ThemeSwitcher = reatomComponent(({ ctx }) => {
 
 export default function ApperancePage() {
   return (
-    <div className="flex flex-col w-full h-full gap-6">
+    <div className="flex flex-col w-full h-full gap-8">
       <div className="flex flex-col w-full h-full gap-2">
-        <h1 className="text-xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold">
           Персонализация
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -26,7 +26,12 @@ export default function ApperancePage() {
         </p>
       </div>
       <div className="flex items-center justify-between w-full">
-        <p className="text-foreground font-semibold text-lg">Тема</p>
+        <div className="flex flex-col">
+          <p className="font-semibold text-lg">Тема</p>
+          <span className="text-muted-foreground">
+            Вы можете выбрать один из двух цветовых режимов
+          </span>
+        </div>
         <ThemeSwitcher />
       </div>
     </div>

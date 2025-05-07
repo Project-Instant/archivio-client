@@ -31,7 +31,7 @@ export const currentUserData: User = {
   login: "belkin",
   name: "Rus Belkin",
   avatarUrl: AvatarExample,
-  description: null
+  description: "I'm belkin"
 }
 
 const loginSchema = S.string

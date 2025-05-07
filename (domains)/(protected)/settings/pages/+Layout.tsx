@@ -12,10 +12,10 @@ const SETTINGS_PAGES = [
     title: "Управление аккаунтом",
     href: "/settings/account"
   },
-  {
-    title: "Конфиденциальность и данные",
-    href: "/settings/privacy"
-  },
+  // {
+  //   title: "Конфиденциальность и данные",
+  //   href: "/settings/privacy"
+  // },
   {
     title: "Персонализация",
     href: "/settings/appearance"

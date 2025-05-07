@@ -118,7 +118,6 @@ export const sendReportAction = reatomAsync(async (ctx) => {
     await sleep(50);
 
     toast.success("Репорт был создан.", {
-      // description: ctx.get(pinReportDescriptionAtom),
       position: "top-center"
     })
   }

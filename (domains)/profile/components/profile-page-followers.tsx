@@ -1,5 +1,5 @@
 import { reatomComponent } from "@reatom/npm-react"
-import { followersListResource, profileResource } from "../models/profile.model"
+import { followersListResource, profileAtom } from "../models/profile.model"
 import { Card, CardContent } from "@/shared/ui/card"
 import { Users } from "lucide-react"
 import { Skeleton } from "@/shared/ui/skeleton"
@@ -47,11 +47,11 @@ const FollowersDisplayCard = ({ followers }: FollowersDisplayCardProps) => {
 }
 
 export const ProfilePageFollowers = reatomComponent(({ ctx }) => {
-  if (ctx.spy(profileResource.statusesAtom).isPending) {
+  if (!ctx.spy(profileAtom)) {
     return <Skeleton className="w-full h-24 md:w-[calc(33.33%-1rem)]" />
   }
 
-  const followers = ctx.spy(profileResource.dataAtom)?.followers ?? 0;
+  const followers = ctx.spy(profileAtom)?.followers ?? 0;
 
   return (
     followers >= 1 ? (

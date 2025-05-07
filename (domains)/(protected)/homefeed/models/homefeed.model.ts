@@ -1,5 +1,5 @@
 import { Pin } from "@/(domains)/pin/models/pin.model";
-import { reatomResource, withDataAtom, withErrorAtom, withStatusesAtom } from "@reatom/async";
+import { reatomResource, withCache, withDataAtom, withErrorAtom, withStatusesAtom } from "@reatom/async";
 import { sleep } from "@reatom/framework";
 
 export const PINS: Pin[] = [
@@ -18,6 +18,9 @@ export const PINS: Pin[] = [
       height: 1920,
       size: 123123,
       width: 1080
+    },
+    details: {
+      commentsLength: 0
     },
     createdAt: new Date(),
     category: "Scenic",
@@ -44,6 +47,9 @@ export const PINS: Pin[] = [
       size: 123123,
       width: 1080
     },
+    details: {
+      commentsLength: 0
+    },
     createdAt: new Date(),
     category: "Urban",
     saves: 3800,
@@ -68,6 +74,9 @@ export const PINS: Pin[] = [
       height: 1920,
       size: 123123,
       width: 1080
+    },
+    details: {
+      commentsLength: 0
     },
     createdAt: new Date(),
     category: "Beach",
@@ -94,6 +103,9 @@ export const PINS: Pin[] = [
       size: 123123,
       width: 1080
     },
+    details: {
+      commentsLength: 0
+    },
     createdAt: new Date(),
     category: "Mountains",
     saves: 2900,
@@ -118,6 +130,9 @@ export const PINS: Pin[] = [
       height: 1920,
       size: 123123,
       width: 1080
+    },
+    details: {
+      commentsLength: 0
     },
     createdAt: new Date(),
     category: "Cultural",
@@ -144,6 +159,9 @@ export const PINS: Pin[] = [
       size: 123123,
       width: 1080
     },
+    details: {
+      commentsLength: 0
+    },
     createdAt: new Date(),
     category: "Urban",
     saves: 4799,
@@ -168,6 +186,9 @@ export const PINS: Pin[] = [
       height: 1920,
       size: 123123,
       width: 1080
+    },
+    details: {
+      commentsLength: 0
     },
     createdAt: new Date(),
     category: "Adventure",
@@ -194,6 +215,9 @@ export const PINS: Pin[] = [
       size: 123123,
       width: 1080
     },
+    details: {
+      commentsLength: 0
+    },
     createdAt: new Date(),
     category: "Nature",
     saves: 5666,
@@ -218,6 +242,9 @@ export const PINS: Pin[] = [
       height: 1920,
       width: 1080,
       size: 123123,
+    },
+    details: {
+      commentsLength: 0
     },
     createdAt: new Date(),
     category: "Nature",
@@ -244,6 +271,9 @@ export const PINS: Pin[] = [
       size: 123123,
       width: 1080
     },
+    details: {
+      commentsLength: 0
+    },
     createdAt: new Date(),
     category: "Nature",
     saves: 1700,
@@ -259,6 +289,9 @@ export const PINS: Pin[] = [
     title: "Lake District National Park, United Kingdom",
     category: "Nature",
     saves: 1800,
+    details: {
+      commentsLength: 0
+    },
     createdAt: new Date(),
     owner: {
       id: "askzxjjhak1",
@@ -272,6 +305,9 @@ export const PINS: Pin[] = [
     title: "Lake District National Park, United Kingdom",
     category: "Nature",
     saves: 1242,
+    details: {
+      commentsLength: 0
+    },
     createdAt: new Date(),
     owner: {
       id: "askzxjjhak1",
@@ -294,6 +330,9 @@ export const PINS: Pin[] = [
       height: 1920,
       size: 123123,
       width: 1080
+    },
+    details: {
+      commentsLength: 0
     },
     createdAt: new Date(),
     category: "Nature",
@@ -320,6 +359,9 @@ export const PINS: Pin[] = [
       size: 123123,
       width: 1080
     },
+    details: {
+      commentsLength: 0
+    },
     createdAt: new Date(),
     category: "Urban",
     saves: 3800,
@@ -345,6 +387,9 @@ export const PINS: Pin[] = [
       size: 123123,
       width: 1080
     },
+    details: {
+      commentsLength: 0
+    },
     createdAt: new Date(),
     category: "Beach",
     saves: 5100,
@@ -357,8 +402,7 @@ export const PINS: Pin[] = [
 ]
 
 export const homefeedResource = reatomResource(async (ctx) => {
-  return await ctx.schedule(async () => {
-    await sleep(2500)
-    return PINS;
-  })
-}).pipe(withDataAtom(), withStatusesAtom(), withErrorAtom())
+  await sleep(100)
+
+  return await ctx.schedule(() => PINS)
+}).pipe(withDataAtom(), withCache(), withStatusesAtom(), withErrorAtom())

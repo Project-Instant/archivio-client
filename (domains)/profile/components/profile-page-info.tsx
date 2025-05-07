@@ -1,5 +1,5 @@
 import { reatomComponent, useAction } from "@reatom/npm-react";
-import { profileResource } from "../models/profile.model";
+import { profileAtom } from "../models/profile.model";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/shared/ui/dialog"
 import { Edit, Eye } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
@@ -69,7 +69,7 @@ const FollowButton = reatomComponent(({ ctx }) => {
 }, "FollowButton")
 
 const ProfilePageDetails = reatomComponent(({ ctx }) => {
-  const profileData = ctx.spy(profileResource.dataAtom)
+  const profileData = ctx.spy(profileAtom)
   const currentUser = ctx.spy(userResource.dataAtom)
 
   if (!profileData || !currentUser) return null;
@@ -103,9 +103,9 @@ export const ProfilePageInfoSkeleton = () => {
 }
 
 export const ProfilePageInfo = reatomComponent(({ ctx }) => {
-  if (ctx.spy(profileResource.statusesAtom).isPending) return <ProfilePageInfoSkeleton />
+  if (!ctx.spy(profileAtom)) return <ProfilePageInfoSkeleton />
 
-  const profile = ctx.spy(profileResource.dataAtom)
+  const profile = ctx.spy(profileAtom)
   if (!profile) return null;
 
   return (

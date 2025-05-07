@@ -49,7 +49,7 @@ const DialogContent = ({
       {children}
       {withClose && (
         <DialogPrimitive.Close
-          className={`absolute right-4 top-4 p-1 rounded-md bg-red-400 opacity-70 
+          className={`absolute right-4 top-4 p-1 rounded-md bg-red-600 opacity-90 
         transition-opacity hover:opacity-100 focus:outline-none 
         focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none 
         data-[state=open]:bg-accent data-[state=open]:text-white`}

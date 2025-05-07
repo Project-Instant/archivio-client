@@ -28,6 +28,9 @@ export interface Pin {
   thumbnailImage?: string;
   meta?: Meta;
   saves: number;
+  details: {
+    commentsLength: number
+  },
   tags?: string[]; // optionally model as Tag[]
   category: string; // optionally enum
   createdAt: Date;

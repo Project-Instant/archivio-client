@@ -1,15 +1,15 @@
 import { reatomComponent } from "@reatom/npm-react"
-import { profileResource } from "../models/profile.model"
+import { profileAtom } from "../models/profile.model"
 import { Card, CardContent } from "@/shared/ui/card"
 import { Users } from "lucide-react"
 import { Skeleton } from "@/shared/ui/skeleton"
 
 export const ProfilePageFollows = reatomComponent(({ ctx }) => {
-  if (ctx.spy(profileResource.statusesAtom).isPending) {
+  if (!ctx.spy(profileAtom)) {
     return <Skeleton className="w-full h-24 md:w-[calc(33.33%-1rem)]" />
   }
   
-  const follows = ctx.spy(profileResource.dataAtom)?.following ?? 0
+  const follows = ctx.spy(profileAtom)?.following ?? 0
 
   return (
     <Card className="w-full md:w-[calc(33.33%-1rem)]">

@@ -26,7 +26,7 @@ export default function LayoutDefault({ children }: PropsWithChildren) {
       <div id="page-content">
         <ReatomContext extend={ctx => logger(ctx)}>
           <Sync />
-          <Toaster richColors />
+          <Toaster position="bottom-center" richColors />
           <AuthLayout>
             {children}
           </AuthLayout>

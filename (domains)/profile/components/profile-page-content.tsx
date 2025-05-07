@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs"
 import { reatomComponent } from "@reatom/npm-react"
 import { Bookmark, Grid } from "lucide-react"
-import { createdPinsResource, profileResource } from "../models/profile.model"
+import { createdPinsResource, profileAtom } from "../models/profile.model"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { MasonryGrid } from "@/shared/components/masonry-grid/masonry-grid"
 import { PinCard } from "@/shared/components/pin-card/pin-card"
@@ -45,7 +45,7 @@ const ContentCreatedPins = reatomComponent(({ ctx }) => {
 })
 
 const ContentCreatedCollections = reatomComponent(({ ctx }) => {
-  if (ctx.spy(profileResource.statusesAtom).isPending) {
+  if (!ctx.spy(profileAtom)) {
     return <CreatedCollectionsSkeleton />
   }
 
@@ -59,7 +59,7 @@ const ContentCreatedCollections = reatomComponent(({ ctx }) => {
 })
 
 export const ProfilePageContent = reatomComponent(({ ctx }) => {
-  if (ctx.spy(profileResource.statusesAtom).isPending) return null;
+  if (!ctx.spy(profileAtom)) return null;
 
   return (
     <Tabs defaultValue="pins">

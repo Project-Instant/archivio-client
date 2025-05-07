@@ -10,7 +10,7 @@ import { useRef } from "react"
 const ApplyChanges = reatomComponent(({ ctx }) => {
   return (
     <Button
-      className="bg-emerald-600 hover:bg-emerald-700 self-end w-fit px-4 text-lg text-white"
+      className="bg-emerald-600 hover:bg-emerald-700 w-fit px-4 text-lg font-semibold text-white"
       onClick={() => applyChangesAction(ctx)}
       disabled={!ctx.spy(isChangesAtom)}
     >
@@ -21,9 +21,9 @@ const ApplyChanges = reatomComponent(({ ctx }) => {
 
 export default function SettingsEditProfilePage() {
   return (
-    <div className="flex flex-col w-full h-full gap-6">
+    <div className="flex flex-col w-full h-full gap-8">
       <div className="flex flex-col w-full h-full gap-2">
-        <h1 className="text-xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold text-foreground">
           Изменение профиля
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -31,46 +31,42 @@ export default function SettingsEditProfilePage() {
           Добавляемая вами информация видна всем, кто может просматривать ваш профиль.
         </p>
       </div>
-      <div className="flex flex-col gap-6 h-full w-full">
+      <div className="flex flex-col gap-2 h-full w-full">
         <EditAvatar />
         <EditName />
         <EditDescription />
-        <ApplyChanges />
       </div>
+      <ApplyChanges />
     </div>
   )
 }
 
 const EditDescription = reatomComponent(({ ctx }) => {
   return (
-    <div className="flex flex-col w-full gap-2">
-      <span className="text-foreground text-base">Описание</span>
-      <div className="flex items-center gap-4 w-full">
-        <Input
-          type="text"
-          className="w-2/4"
-          onChange={e => newDescriptionAtom(ctx, e.target.value)}
-          placeholder="Введите описание"
-          defaultValue={ctx.spy(userResource.dataAtom)?.description ?? ""}
-        />
-      </div>
+    <div className="flex flex-col">
+      <p className="font-semibold text-lg">Описание</p>
+      <Input
+        type="text"
+        className="w-2/4"
+        onChange={e => newDescriptionAtom(ctx, e.target.value)}
+        placeholder="Введите описание"
+        defaultValue={ctx.spy(userResource.dataAtom)?.description ?? ""}
+      />
     </div>
   )
 })
 
 const EditName = reatomComponent(({ ctx }) => {
   return (
-    <div className="flex flex-col w-full gap-2">
-      <span className="text-foreground text-base">Имя</span>
-      <div className="flex items-center gap-4 w-full">
-        <Input
-          type="text"
-          className="w-2/4"
-          placeholder="Введите имя"
-          onChange={e => newNameAtom(ctx, e.target.value)}
-          defaultValue={ctx.spy(userResource.dataAtom)?.name ?? ""}
-        />
-      </div>
+    <div className="flex flex-col">
+      <p className="font-semibold text-lg">Имя</p>
+      <Input
+        type="text"
+        className="w-2/4"
+        placeholder="Введите имя"
+        onChange={e => newNameAtom(ctx, e.target.value)}
+        defaultValue={ctx.spy(userResource.dataAtom)?.name ?? ""}
+      />
     </div>
   )
 })
@@ -82,7 +78,8 @@ const EditAvatar = reatomComponent(({ ctx }) => {
 
   return (
     <div className="flex items-end w-full gap-4">
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col">
+        <p className="font-semibold text-lg">Аватар</p>
         <Avatar className="w-32 h-32">
           <AvatarImage src={ctx.spy(userResource.dataAtom)?.avatarUrl ?? undefined} />
           <AvatarFallback />
