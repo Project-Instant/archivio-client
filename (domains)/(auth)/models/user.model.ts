@@ -1,56 +1,43 @@
 import {
-  AsyncCtx, reatomAsync, reatomResource, withCache,
-  withDataAtom, withErrorAtom, withRetry, withStatusesAtom
+  AsyncCtx, reatomAsync, withAbort, withCache, withErrorAtom, withRetry, withStatusesAtom
 } from "@reatom/async";
-import AvatarExample from "@/assets/cover-example.webp"
 import { toast } from "sonner"
 import * as S from "sury"
-import { navigate, reload } from 'vike/client/router'
+import { navigate } from 'vike/client/router'
 import { authDialogAtom } from "./auth-dialog.model";
 import { Action, atom, AtomMut, Ctx, withComputed, withReset } from "@reatom/framework";
-import { client } from "@/shared/api/api-client";
+import { ApiResponse, client } from "@/shared/api/api-client";
 import { wrapLink } from "@/shared/lib/wrap-link";
 
 export type User = {
+  id: number;
   login: string
-  name: string;
+  name: string | null;
   avatarUrl: string | null,
   description: string | null;
 }
 
-export type Response = {
-  data: string | null,
-  errorMessage: string | null,
-  errorCode: number,
-  isSuccess: boolean
-}
-
 const DEFAULT_ERROR_MSG = "Упс, произошла какая-то ошибка. Повторите попытку позже"
 
-export const currentUserData: User = {
-  login: "belkin",
-  name: "Rus Belkin",
-  avatarUrl: AvatarExample,
-  description: "I'm belkin"
-}
-
 const loginSchema = S.string
-  .with(S.min, 5, "Слишком короткий логин")
-  .with(S.max, 18, "Слишком длинный логин")
+  .with(S.min, 5, "Слишком короткий логин").with(S.max, 18, "Слишком длинный логин")
 
 const passwordSchema = S.string
-  .with(S.min, 6, "Слишком короткий пароль")
-  .with(S.max, 32, "Слишком длинный пароль")
+  .with(S.min, 6, "Слишком короткий пароль").with(S.max, 32, "Слишком длинный пароль")
 
 const loginFormSchema = S.schema({
   login: loginSchema, password: passwordSchema,
 });
 
+export const currentUserAtom = atom<User | null>(null, "currentUserAtom")
+
 export const passwordAtom = atom("", "passwordAtom").pipe(withReset())
 export const loginAtom = atom("", "loginAtom").pipe(withReset())
+
 export const loginErrorAtom = atom<string | null>(null, "loginErrorAtom").pipe(withReset())
 export const passwordErrorAtom = atom<string | null>(null, "passwordErrorAtom").pipe(withReset())
-export const authErrorAtom = atom<string | null>(null, "authErrorAtom")
+export const authErrorAtom = atom<string | null>(null, "authErrorAtom").pipe(withReset())
+
 export const isLoginAtom = atom<boolean>(true, "authorizeTypeAtom")
 
 loginAtom.onChange(createValidatorField(loginSchema, loginErrorAtom))
@@ -58,6 +45,7 @@ passwordAtom.onChange(createValidatorField(passwordSchema, passwordErrorAtom))
 isLoginAtom.onChange((ctx) => resetAtoms(ctx))
 
 function resetAtoms(ctx: AsyncCtx | Ctx) {
+  authErrorAtom.reset(ctx)
   loginAtom.reset(ctx)
   passwordAtom.reset(ctx)
   loginErrorAtom.reset(ctx)
@@ -92,51 +80,45 @@ export const isValidAtom = atom(false, "isValidAtom").pipe(
 
 export const isAuthAtom = atom<boolean>(false, "isAuthAtom").pipe(
   withComputed((ctx, state) => {
-    if (state === true) {
-      ctx.spy(userResource.dataAtom)
-    }
+    if (state === true) currentUserAction(ctx)
 
     return state;
   })
 )
 
 export const logoutAction = reatomAsync(async (ctx) => {
-  return await ctx.schedule(async (ctx) => {
-    const logout = await client.post("auth/logout", { throwHttpErrors: false })
-    const json = await logout.json<Response>()
+  const logout = await client.post("auth/logout", { throwHttpErrors: false })
+  const json = await logout.json<ApiResponse<string>>()
 
-    if (json.data?.includes("Logged Out")) {
-      userResource.dataAtom(ctx, null)
+  if (json.data?.includes("Logged Out")) {
+    currentUserAtom(ctx, null)
 
-      return window.location.reload()
-    }
+    return window.location.reload()
+  }
 
-    return;
-  })
-})
+  return;
+}, "logoutAction")
 
-export const userResource = reatomResource<User | null>(async (ctx) => {
-  const isAuth = ctx.spy(isAuthAtom)
+export const currentUserAction = reatomAsync(async (ctx) => {
+  const res = await client.get("user/get-me", { signal: ctx.controller.signal })
 
-  if (isAuth) return await ctx.schedule(() => currentUserData)
+  if (!res.ok) return null;
 
-  return await ctx.schedule(() => null)
-}, "userResource").pipe(
-  withDataAtom(),
-  withErrorAtom(),
-  withCache(),
-  withRetry(),
-  withStatusesAtom()
-)
+  const json = await res.json<ApiResponse<User>>()
+
+  return currentUserAtom(ctx, json.data)
+}, "currentUserAction").pipe(withErrorAtom(), withRetry(), withCache(), withStatusesAtom(), withAbort())
 
 export const authAction = reatomAsync(async (ctx) => {
-  const parsed = S.safe(() =>
-    S.parseOrThrow({
-      login: ctx.get(loginAtom), password: ctx.get(passwordAtom)
-    }, loginFormSchema)
-  )
+  const parsed = S.safe(() => S.parseOrThrow({
+    login: ctx.get(loginAtom),
+    password: ctx.get(passwordAtom)
+  }, loginFormSchema))
 
-  if (!parsed.success) return await ctx.schedule(() => authErrorAtom(ctx, DEFAULT_ERROR_MSG))
+  if (!parsed.success) {
+    authErrorAtom(ctx, DEFAULT_ERROR_MSG);
+    return;
+  }
 
   try {
     if (ctx.get(isLoginAtom)) {
@@ -145,10 +127,11 @@ export const authAction = reatomAsync(async (ctx) => {
         throwHttpErrors: false
       })
 
-      const json = await response.json<Response>()
+      const json = await response.json<ApiResponse<string>>()
 
       if (!response.ok || !json.isSuccess) {
-        return await ctx.schedule(() => authErrorAtom(ctx, json.errorMessage ?? DEFAULT_ERROR_MSG))
+        authErrorAtom(ctx, json.errorMessage ?? DEFAULT_ERROR_MSG)
+        return
       }
 
       if (json.data) {
@@ -157,22 +140,20 @@ export const authAction = reatomAsync(async (ctx) => {
 
           authDialogAtom(ctx, false)
           resetAtoms(ctx)
-          navigate(wrapLink(parsed.value.login, "user"))
+          return navigate(wrapLink(parsed.value.login, "user"))
         })
       }
     } else {
       const response = await client.post("auth/register", {
-        json: {
-          Login: parsed.value.login,
-          Password: parsed.value.password
-        },
+        json: { Login: parsed.value.login, Password: parsed.value.password },
         throwHttpErrors: false
       })
 
-      const json = await response.json<Response>()
+      const json = await response.json<ApiResponse<string>>()
 
       if (!response.ok || !json.isSuccess) {
-        return await ctx.schedule(() => authErrorAtom(ctx, json.errorMessage ?? DEFAULT_ERROR_MSG))
+        authErrorAtom(ctx, json.errorMessage ?? DEFAULT_ERROR_MSG)
+        return
       }
 
       if (json.data) {
@@ -181,8 +162,8 @@ export const authAction = reatomAsync(async (ctx) => {
             position: "top-center"
           })
 
-          resetAtoms(ctx)
-          isLoginAtom(ctx, true)
+          resetAtoms(ctx);
+          isLoginAtom(ctx, true);
         })
       }
     }
@@ -191,6 +172,7 @@ export const authAction = reatomAsync(async (ctx) => {
 
     authErrorAtom(ctx, DEFAULT_ERROR_MSG)
   }
-}, "authAction").pipe(
-  withStatusesAtom()
-)
+}, "authAction").pipe(withStatusesAtom())
+
+isAuthAtom.onChange((_, v) => console.log(`isAuth: ${v}`))
+// currentUserAtom.onChange((_, v) => console.log(v))

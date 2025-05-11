@@ -3,7 +3,7 @@ import { profileAtom } from "../models/profile.model";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 
-const ProfilePageTagsSkeleton = () => {
+const ProfileTagsSkeleton = () => {
   return (
     <>
       <Skeleton className="w-16 h-6" />
@@ -13,9 +13,9 @@ const ProfilePageTagsSkeleton = () => {
   )
 }
 
-export const ProfilePageTags = reatomComponent(({ ctx }) => {
+export const ProfileTags = reatomComponent(({ ctx }) => {
   if (!ctx.spy(profileAtom)) {
-    return <ProfilePageTagsSkeleton />
+    return <ProfileTagsSkeleton />
   }
 
   const tags = ctx.spy(profileAtom)?.tags ?? null;

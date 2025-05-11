@@ -1,4 +1,4 @@
-import { cookieThemeKey } from "@/shared/components/theme/theme.model";
+import { THEME_KEY_COOKIE } from "@/shared/components/theme/theme.model";
 
 export default function HeadDefault() {
   return (
@@ -11,7 +11,7 @@ export default function HeadDefault() {
         dangerouslySetInnerHTML={{
           __html: `
             document.addEventListener('DOMContentLoaded', function() {
-              const c = document.cookie.split('; ').find(row => row.startsWith('${cookieThemeKey}='))
+              const c = document.cookie.split('; ').find(row => row.startsWith('${THEME_KEY_COOKIE}='))
                 ?.split('=')[1];
               if (c) {
                 try {

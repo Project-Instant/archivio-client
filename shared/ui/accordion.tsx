@@ -3,15 +3,12 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDownIcon } from "lucide-react"
 import { cn } from "@/shared/lib/cn"
 
-function Accordion({
-  ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Root>) {
+function Accordion({ ...props }: React.ComponentProps<typeof AccordionPrimitive.Root>) {
   return <AccordionPrimitive.Root data-slot="accordion" {...props} />
 }
 
 function AccordionItem({
-  className,
-  ...props
+  className, ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Item>) {
   return (
     <AccordionPrimitive.Item
@@ -23,9 +20,7 @@ function AccordionItem({
 }
 
 function AccordionTrigger({
-  className,
-  children,
-  ...props
+  className, children, ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {
   return (
     <AccordionPrimitive.Header className="flex">
@@ -45,9 +40,7 @@ function AccordionTrigger({
 }
 
 function AccordionContent({
-  className,
-  children,
-  ...props
+  className, children, ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Content>) {
   return (
     <AccordionPrimitive.Content

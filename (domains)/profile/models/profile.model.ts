@@ -25,16 +25,16 @@ export const createdPinsResource = reatomResource(async (ctx) => {
   const profileUser = ctx.spy(profileAtom)
   if (!profileUser) return null;
 
-  await sleep(50)
+  await sleep(1500)
 
   return await ctx.schedule(() => {
     const pins = PINS.filter(pin => pin.owner.login === profileUser.user.login)
 
-    return pins;
+    return pins.length ? pins : null;
   })
 }).pipe(withDataAtom(), withCache(), withErrorAtom(), withStatusesAtom())
 
-const getFollowers = async (v: string) => {
+const getFollowers = async (_: string) => {
   return [
     { id: "123", login: "pig", name: "Pig Llll" }
   ]
@@ -47,4 +47,4 @@ export const followersListResource = reatomResource(async (ctx) => {
   return await ctx.schedule(() => getFollowers(profileParam))
 }).pipe(withDataAtom(), withCache(), withStatusesAtom())
 
-profileAtom.onChange((ctx, v) => console.log(v))
+profileAtom.onChange((_, v) => console.log(v))

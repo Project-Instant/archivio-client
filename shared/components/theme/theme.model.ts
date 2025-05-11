@@ -1,43 +1,32 @@
+import { getCookieValue } from "@/shared/lib/helpers/get-cookie";
 import { action, atom, withInit } from "@reatom/framework";
 import { withCookie } from "@reatom/persist-web-storage";
 
 type Theme = "dark" | "light"
 
-export const cookieThemeKey = "theme-pref"
-
-const getCookie = (name: string): string | undefined => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  return parts.length === 2 ? parts.pop()?.split(";").shift() : undefined;
-};
+export const THEME_KEY_COOKIE = "theme-pref"
+export const DEFAULT_THEME = "light"
 
 function parseCookie<T>(cookie: string): T | undefined {
   try {
     const decoded = decodeURIComponent(cookie).replace(/^"|"$/g, "");
     return JSON.parse(decoded);
-  } catch (e) {}
+  } catch {}
 }
 
-export const themeAtom = atom<Theme>("light", "theme").pipe(
+export const themeAtom = atom<Theme>(DEFAULT_THEME, "theme").pipe(
   withInit(() => {
-    const initTheme = getCookie("theme") ?? "light"
-
-    if (initTheme) {
-      const parsedTheme = parseCookie<{ data: Theme }>(initTheme)?.data
-
-      return parsedTheme === "dark" || parsedTheme === "light" ? parsedTheme : "light";
-    }
-    
-    return "light"
+    const init = getCookieValue("theme")
+    return init ? parseCookie<{ data: Theme }>(init)?.data ?? DEFAULT_THEME : DEFAULT_THEME
   }),
-  withCookie({ path: "/", maxAge: 999999999999 })(cookieThemeKey)
+  withCookie({ path: "/", maxAge: 99999999999 })(THEME_KEY_COOKIE)
 )
 
 export const changeThemeAction = action((ctx) => {
   const currentTheme = ctx.get(themeAtom);
-  const newTheme = currentTheme === "dark" ? "light" : "dark";
+  const newTheme = currentTheme === "dark" ? "light" : "dark"
 
-  document.body.classList.toggle("dark", newTheme === "dark");
+  document.body.classList.replace(currentTheme, newTheme)
 
-  return ctx.schedule((ctx) => themeAtom(ctx, newTheme));
+  themeAtom(ctx, newTheme)
 });

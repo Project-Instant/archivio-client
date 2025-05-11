@@ -2,6 +2,7 @@ import { Separator } from "@/shared/ui/separator"
 import { SheetClose } from "@/shared/ui/sheet"
 import { Fragment } from "react/jsx-runtime"
 import { ActionItem } from "@/shared/components/action-item/action-item"
+import { Link } from "../../link/Link"
 
 export const HEADER = [
   {
@@ -67,11 +68,11 @@ export function HeaderLinks() {
               <div className="flex flex-col gap-2 h-full w-full">
                 {i.children.map((j, idx) => (
                   <SheetClose key={idx}>
-                    <a href={j.href}>
+                    <Link href={j.href}>
                       <ActionItem>
                         {j.title}
                       </ActionItem>
-                    </a>
+                    </Link>
                   </SheetClose>
                 ))}
               </div>

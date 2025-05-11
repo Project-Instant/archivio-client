@@ -2,7 +2,7 @@ import { reatomComponent } from "@reatom/npm-react";
 import { profileAtom } from "../models/profile.model";
 import { Skeleton } from "@/shared/ui/skeleton";
 
-const ProfilePageAboutSkeleton = () => {
+const ProfileAboutSkeleton = () => {
   return (
     <>
       <Skeleton className="h-8 mb-2 w-24" />
@@ -11,9 +11,9 @@ const ProfilePageAboutSkeleton = () => {
   )
 }
 
-export const ProfilePageAbout = reatomComponent(({ ctx }) => {
+export const ProfileAbout = reatomComponent(({ ctx }) => {
   if (!ctx.spy(profileAtom)) {
-    return <ProfilePageAboutSkeleton/>
+    return <ProfileAboutSkeleton/>
   }
 
   const description = ctx.spy(profileAtom)?.user.description

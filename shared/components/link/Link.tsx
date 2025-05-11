@@ -24,8 +24,8 @@ export function Link({ href, children, ...props }: LinkProps) {
 
   return (
     <a
-      data-state={isActive ? "active" : "inactive"}
       href={href}
+      data-state={isActive ? "active" : "inactive"}
       {...props}
     >
       {children}

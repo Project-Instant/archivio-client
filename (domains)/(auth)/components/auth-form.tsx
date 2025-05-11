@@ -101,7 +101,7 @@ export const AuthDialogForm = reatomComponent(({ ctx }) => {
       )}
       <img src="/logo_no_bg.png" width={128} height={128} alt="" />
       <div className="flex flex-col items-center gap-1">
-        <p className="text-2xl font-semibold text-gray-800">
+        <p className="text-2xl font-semibold">
           Добро пожаловать
         </p>
         {!ctx.spy(isLoginAtom) && (

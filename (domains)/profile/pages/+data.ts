@@ -1,44 +1,49 @@
 import { PageContextServer } from "vike/types";
 import { Profile } from "../models/profile.model";
-import AvatarExample from "@/assets/avatar-example.jpg"
-import { currentUserData } from "@/(domains)/(auth)/models/user.model";
+import { User } from "@/(domains)/(auth)/models/user.model";
 import { render } from "vike/abort";
+import { ApiResponse, client } from "@/shared/api/api-client";
 
 export type Data = Awaited<ReturnType<typeof data> & { data: Profile }>;
 
-const EXISTS_USERS: Profile[] = [
-  {
-    user: {
-      login: "pig",
-      name: `Realized pig`,
-      description: `Travel enthusiast and photographer. Always seeking new adventures and capturing beautiful moments around
-        the world. Based in San Francisco, but rarely home.`,
-      avatarUrl: AvatarExample,
-    },
-    collection: { pins: 0, savedPins: 0 },
-    followers: 0, following: 0,
-    history: { destinations: 0, saved: 1 },
-    tags: ["Снаряжение", "Природа", "Урбанизм"]
-  },
-  {
-    user: currentUserData,
-    collection: { pins: 0, savedPins: 0 },
-    followers: 0, following: 0,
-    history: { destinations: 0, saved: 1 },
-    tags: ["Фотография", "Тревел",]
+async function getUser(id: string) {
+  const res = await client.get(`user/get-user/${id}`, { throwHttpErrors: false })
+
+  let json = await res.json<ApiResponse<User>>()
+  let profile: Profile | null = null;
+  
+  if (!json.data || !json.isSuccess) {
+    if (json.errorMessage === 'User Not Found') {
+      throw render("/not-found");
+    }
+
+    throw render("/error")
   }
-]
+
+  profile = {
+    user: json.data,
+    collection: { 
+      pins: 0, 
+      savedPins: 0 
+    },
+    followers: 1, 
+    following: 0,
+    history: { 
+      destinations: 0, 
+      saved: 1 
+    },
+    tags: ["Снаряжение", "Природа", "Урбанизм"]
+  }
+
+  return profile
+}
 
 export async function data(pageContext: PageContextServer) {
-  const profile = EXISTS_USERS.find(v => v.user.login === pageContext.routeParams.id)
-
-  if (!profile) {
-    throw render("/not-found");
-  }
+  const data = await getUser(pageContext.routeParams.id)
 
   return {
     id: pageContext.routeParams.id,
-    title: profile?.user.login ?? "Не найдено",
-    data: profile ?? null
+    title: data?.user.login ?? "Не найдено",
+    data
   }
 }

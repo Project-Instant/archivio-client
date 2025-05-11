@@ -1,5 +1,6 @@
+import { ConfirmDialog, confirmDialogIsOpenAtom } from "@/shared/components/modals/confirm-dialog";
 import { Button } from "@/shared/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/shared/ui/dialog";
+import { DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shared/ui/radio-group";
@@ -7,12 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from "@/shared/ui/se
 import { reatomAsync } from "@reatom/async";
 import { atom } from "@reatom/core";
 import { reatomComponent } from "@reatom/npm-react";
-import { PropsWithChildren } from "react";
 
 const newEmailAtom = atom<string | null>(null, "newEmailAtom")
 const newPasswordAtom = atom<string | null>(null, "newPasswordAtom")
-
-const confirmDialogIsOpenAtom = atom(false, "confirmDialogIsOpen");
 
 type Gender = "male" | "female" | "other"
 
@@ -46,14 +44,6 @@ const deleteAccountAction = reatomAsync(async (ctx) => {
   return await ctx.schedule((ctx) => {
     confirmDialogIsOpenAtom(ctx, false)
   })
-})
-
-const ConfirmDialog = reatomComponent<PropsWithChildren>(({ ctx, children }) => {
-  return (
-    <Dialog open={ctx.spy(confirmDialogIsOpenAtom)} onOpenChange={v => confirmDialogIsOpenAtom(ctx, v)}>
-      {children}
-    </Dialog>
-  )
 })
 
 const EditGender = reatomComponent(({ ctx }) => {

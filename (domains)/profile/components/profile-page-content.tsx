@@ -5,13 +5,14 @@ import { createdPinsResource, profileAtom } from "../models/profile.model"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { MasonryGrid } from "@/shared/components/masonry-grid/masonry-grid"
 import { PinCard } from "@/shared/components/pin-card/pin-card"
+import { ContentNotFoundTemplate } from "@/shared/components/templates/not-found-template"
 
 const CreatedPinsSkeleton = () => {
   return (
     <MasonryGrid>
-      <Skeleton className="w-full h-24" />
-      <Skeleton className="w-full h-48" />
-      <Skeleton className="w-full h-24" />
+      <Skeleton className="w-full h-36" />
+      <Skeleton className="w-full h-36" />
+      <Skeleton className="w-full h-36" />
       <Skeleton className="w-full h-36" />
     </MasonryGrid>
   )
@@ -19,12 +20,12 @@ const CreatedPinsSkeleton = () => {
 
 const CreatedCollectionsSkeleton = () => {
   return (
-    <>
-      <Skeleton className="w-1/2 h-full" />
-      <Skeleton className="w-1/2 h-full" />
-      <Skeleton className="w-3/4 h-1/2" />
-      <Skeleton className="w-1/4 h-1/3" />
-    </>
+    <div className="grid grid-cols-5 auto-rows-auto gap-2 w-full">
+      <Skeleton className="w-full h-36" />
+      <Skeleton className="w-full h-36" />
+      <Skeleton className="w-full h-36" />
+      <Skeleton className="w-full h-36" />
+    </div>
   )
 }
 
@@ -35,14 +36,14 @@ const ContentCreatedPins = reatomComponent(({ ctx }) => {
 
   const content = ctx.spy(createdPinsResource.dataAtom)
 
-  if (!content) return null;
+  if (!content) return <ContentNotFoundTemplate />
 
   return (
     <MasonryGrid>
       {content.map(pin => <PinCard key={pin.id} {...pin} />)}
     </MasonryGrid>
   )
-})
+}, "ContentCreatedPins")
 
 const ContentCreatedCollections = reatomComponent(({ ctx }) => {
   if (!ctx.spy(profileAtom)) {
@@ -51,44 +52,34 @@ const ContentCreatedCollections = reatomComponent(({ ctx }) => {
 
   return (
     <>
-      <span className="text-foreground text-lg">
-        Ничего не нашлось
-      </span>
+      <ContentNotFoundTemplate />
     </>
   )
-})
+}, "ContentCreatedCollections")
 
-export const ProfilePageContent = reatomComponent(({ ctx }) => {
-  if (!ctx.spy(profileAtom)) return null;
-
+export const ProfileContent = () => {
   return (
-    <Tabs defaultValue="pins">
-      <TabsList className="flex gap-4 w-full rounded-none h-14 bg-transparent justify-start">
-        <TabsTrigger
-          value="pins"
-          className="data-[state=active]:border-b-4 cursor-pointer data-[state=active]:border-emerald-600 rounded-xl h-14 px-6"
-        >
-          <Grid className="w-4 h-4 mr-2" />
-          <span className="font-semibold text-lg">
+    <Tabs defaultValue="pins" className="flex justify-center w-full">
+      <TabsList className="flex justify-center items-center gap-4 w-full *:cursor-pointer">
+        <TabsTrigger value="pins" className="justify-end group gap-2 !w-fit">
+          <Grid className="w-6 h-6" />
+          <span className="group-data-[state=active]:underline-offset-4 group-data-[state=active]:underline font-semibold text-lg">
             Созданные
           </span>
         </TabsTrigger>
-        <TabsTrigger
-          value="saved"
-          className="data-[state=active]:border-b-4 cursor-pointer data-[state=active]:border-emerald-600 rounded-xl h-14 px-6"
-        >
-          <Bookmark className="w-4 h-4 mr-2" />
-          <span className="font-semibold text-lg">
+        <TabsTrigger value="saved" className="justify-start group gap-2 !w-fit">
+          <Bookmark className="w-6 h-6" />
+          <span className="group-data-[state=active]:underline-offset-4 group-data-[state=active]:underline font-semibold text-lg">
             Сохраненные
           </span>
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="pins" className="my-6">
+      <TabsContent value="pins" className="mt-8">
         <ContentCreatedPins />
       </TabsContent>
-      <TabsContent value="saved" className="my-6">
+      <TabsContent value="saved" className="mt-8">
         <ContentCreatedCollections />
       </TabsContent>
     </Tabs>
   )
-}, "ProfilePageContent")
+}

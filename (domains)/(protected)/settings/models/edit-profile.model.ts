@@ -1,84 +1,106 @@
-import { User, userResource } from "@/(domains)/(auth)/models/user.model";
-import { validateStringLength } from "@/shared/lib/helpers/validate-string";
+import { currentUserAtom, User } from "@/(domains)/(auth)/models/user.model";
+import { validateString } from "@/shared/lib/helpers/validate-string";
 import { reatomAsync } from "@reatom/async";
-import { atom, Ctx, sleep, withReset } from "@reatom/framework";
+import { action, atom, Ctx, withInit, withReset } from "@reatom/framework";
 import { toast } from "sonner";
 import * as S from "sury"
 
-type ExistsModifiedFields = keyof Pick<User, "name" | "description">
+type ExistsModifiedFields = keyof Pick<User, "name" | "description" | "avatarUrl">
 
-type ModifiedFields = ExistsModifiedFields | "avatar"
+type StringNullableField = string | null;
 
-type NullableField = string | null;
+type Changes = { [key: string]: StringNullableField }
 
-type Changes = {
-  [key: string]: NullableField
-}
+export const MAX_NAME_LENGTH = 64
+export const MAX_DESCRIPTION_LENGTH = 200;
 
-const nameSchema = S.string.with(S.min, 2)
-const descriptionSchema = S.nullable(S.string.with(S.min, 2).with(S.max, 64))
-const avatarSchema = S.nullable(S.string.with(S.min, 1))
+const nameSchema = S.nullable(
+  S.string.with(S.min, 2).with(S.max, MAX_NAME_LENGTH)
+)
+const descriptionSchema = S.nullable(
+  S.string.with(S.min, 2).with(S.max, MAX_DESCRIPTION_LENGTH)
+)
+const avatarSchema = S.nullable(
+  S.string.with(S.min, 1)
+)
 
-export const isChangesAtom = atom(false, "isChangesAtom").pipe(withReset());
-export const changesAtom = atom<Changes>({}, "changesAtom")
-export const newNameAtom = atom<NullableField>(null, "newNameAtom")
-export const newDescriptionAtom = atom<NullableField>(null, "newDescriptionAtom")
-export const newAvatarAtom = atom<NullableField>(null, "newAvatarAtom");
-
-const keySchema: Record<ModifiedFields, S.Schema<unknown>> = {
+const keySchema: Record<ExistsModifiedFields, S.Schema<unknown>> = {
   "name": nameSchema,
   "description": descriptionSchema,
-  "avatar": avatarSchema
+  "avatarUrl": avatarSchema
 }
 
-function validateChanges(ctx: Ctx, newState: Changes) {
-  const [k, v] = Object.entries(newState)[0];
-  
-  const currentValue = ctx.get(userResource.dataAtom)?.[k as ExistsModifiedFields]
+export const isChangesAtom = atom<boolean>((ctx) => {
+  const changes = ctx.spy(changesAtom)
 
-  if (currentValue !== v) {
-    changesAtom(ctx, (state) => ({ ...state, [k]: v }))
+  if (Object.keys(changes).length < 1) return false
+
+  const [key, value] = Object.entries(changes)[0]
+
+  return S.safe(() => S.parseOrThrow(value, keySchema[key as ExistsModifiedFields])).success === true;
+}, "isChangesAtom")
+
+export const changesAtom = atom<Changes>({}, "changesAtom").pipe(withReset())
+export const newNameAtom = atom<StringNullableField>(null, "newNameAtom").pipe(
+  withInit((ctx) => ctx.get(currentUserAtom)?.name ?? null),
+  withReset()
+)
+export const newDescriptionAtom = atom<StringNullableField>(null, "newDescriptionAtom").pipe(
+  withInit((ctx) => ctx.get(currentUserAtom)?.description ?? null),
+  withReset()
+)
+export const newAvatarAtom = atom<StringNullableField>(null, "newAvatarAtom").pipe(
+  withInit((ctx) => ctx.get(currentUserAtom)?.avatarUrl ?? null),
+  withReset()
+);
+
+newNameAtom.onChange((ctx, value) => validateChanges(ctx, { "name": validateString(value) }))
+newDescriptionAtom.onChange((ctx, value) => validateChanges(ctx, { "description": validateString(value) }))
+newAvatarAtom.onChange((ctx, value) => validateChanges(ctx, { "avatarUrl": validateString(value) }));
+
+function validateChanges(ctx: Ctx, newState: Changes) {
+  const [key, value] = Object.entries(newState)[0];
+  const currentValue = ctx.get(currentUserAtom)?.[key as ExistsModifiedFields]
+
+  if (currentValue !== value) {
+    changesAtom(ctx, (state) => ({ ...state, [key]: value }))
   } else {
     changesAtom(ctx, (state) => {
       return Object.fromEntries(
-        Object.entries(state).filter(([key]) => key !== k)
+        Object.entries(state).filter(([changesKey]) => changesKey !== key)
       )
     })
   }
 }
 
-newNameAtom.onChange(
-  (ctx, value) => validateChanges(ctx, { "name": validateStringLength(value) })
-)
-newDescriptionAtom.onChange(
-  (ctx, value) => validateChanges(ctx, { "description": validateStringLength(value) })
-)
-newAvatarAtom.onChange(
-  (ctx, value) => validateChanges(ctx, { "avatar": validateStringLength(value) })
-);
+export const resetAvatarAction = action((ctx) => {
+  const newAvatar = ctx.get(newAvatarAtom)
+  if (!newAvatar) return;
 
-changesAtom.onChange((ctx, state) => {
-  let r: boolean = false;
-
-  if (Object.keys(state).length >= 1) {
-    const [k, v] = Object.entries(state)[0]
-
-    r = S.safe(() => S.parseOrThrow(v, keySchema[k as ModifiedFields])).success
-  };
-
-  isChangesAtom(ctx, r)
+  URL.revokeObjectURL(newAvatar)
+  newAvatarAtom(ctx, null)
 })
 
 export const applyChangesAction = reatomAsync(async (ctx) => {
   const changes = ctx.get(changesAtom)
 
-  return await ctx.schedule(() => {
-    userResource.dataAtom(ctx, (state) => state ? ({ ...state, ...changes }) : null)
-  })
+  currentUserAtom(ctx, (state) => state ? ({ ...state, ...changes }) : null)
+
+  return changes;
 }, {
-  onFulfill: async (ctx) => {
-    isChangesAtom.reset(ctx);
-    await sleep(25);
-    toast.success("Сохранено")
+  name: "applyChangesAction",
+  onFulfill: (ctx, _appliedChanges) => {
+    const avatarInputValue = ctx.get(newAvatarAtom);
+
+    if (avatarInputValue && avatarInputValue.startsWith("blob:")) {
+      URL.revokeObjectURL(avatarInputValue);
+    }
+
+    changesAtom.reset(ctx)
+
+    toast.success("Сохранено");
+  },
+  onReject: (ctx, error) => {
+    toast.error("Произошла ошибка при сохранении");
   }
 })

@@ -27,7 +27,7 @@ export default function Page() {
   const { is404 } = usePageContext()
 
   return (
-    <ContainerWrapper>
+    <ContainerWrapper className="flex flex-col justify-center items-center gap-4">
       {is404 ? <NotFoundTemplate /> : <ErrorPage />}
     </ContainerWrapper>
   );

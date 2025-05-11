@@ -1,7 +1,7 @@
 import { PINS } from "@/(domains)/(protected)/homefeed/models/homefeed.model";
 import { reatomResource, withCache, withDataAtom, withErrorAtom, withStatusesAtom } from "@reatom/async";
 import { action, atom } from "@reatom/core";
-import { withComputed, withReset } from "@reatom/framework";
+import { sleep, withComputed, withReset } from "@reatom/framework";
 
 export const pinParamAtom = atom<string | null>(null, "pinParamAtom")
 
@@ -44,7 +44,7 @@ export interface Pin {
 }
 
 async function request(pin: string): Promise<Pin> {
-  // await sleep(1200)
+  await sleep(50)
 
   return PINS.find((p) => p.id === pin) as Pin;
 }

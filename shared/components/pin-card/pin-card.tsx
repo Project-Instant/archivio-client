@@ -4,7 +4,7 @@ import { Pin } from "@/(domains)/pin/models/pin.model"
 import { wrapLink } from "@/shared/lib/wrap-link"
 
 export function PinCard({
-  fullImage, title, saves, meta, id
+  fullImage, title, meta, id
 }: Pin) {
   return (
     <Link

@@ -1,8 +1,6 @@
-import { redirect } from "vike/abort";
 import { GuardAsync } from "vike/types";
+import { guardAuthentication } from "../queries/validate-authentication";
 
 export const guard: GuardAsync = async (pageContext): ReturnType<GuardAsync> => {
-  if (pageContext.isAuth) {
-    throw redirect("/homefeed")
-  }
+  return await guardAuthentication(pageContext)
 }

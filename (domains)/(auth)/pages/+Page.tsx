@@ -9,7 +9,7 @@ const AuthPageForm = reatomComponent(({ ctx }) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center m-2 gap-6 max-w-lg sm:m-0 p-6 bg-white rounded-3xl relative">
+    <div className="flex flex-col bg-background items-center justify-center m-2 gap-6 max-w-lg sm:m-0 p-6 rounded-3xl relative">
       <AuthDialogForm />
     </div>
   )
