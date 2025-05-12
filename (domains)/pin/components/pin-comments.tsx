@@ -1,5 +1,5 @@
 import { Link } from "@/shared/components/link/Link";
-import { wrapLink } from "@/shared/lib/wrap-link";
+import { wrapLink } from "@/shared/lib/helpers/wrap-link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Skeleton } from "@/shared/ui/skeleton"
 import { reatomResource, withCache, withDataAtom, withStatusesAtom } from "@reatom/async"

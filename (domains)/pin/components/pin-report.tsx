@@ -1,6 +1,6 @@
 import { ActionItem } from "@/shared/components/action-item/action-item";
 import { Button } from "@/shared/ui/button";
-import { Dialog, DialogClose, DialogContent } from "@/shared/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/shared/ui/dialog";
 import { Label } from "@/shared/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shared/ui/radio-group";
 import { Textarea } from "@/shared/ui/textarea";
@@ -102,7 +102,7 @@ export const PinReport = reatomComponent(({ ctx }) => {
         <span className="text-base font-semibold">Пожаловаться</span>
       </ActionItem>
       <DialogContent className="flex flex-col gap-4 min-h-48 w-full">
-        <p className="text-xl text-center font-semibold">Жалоба на пин</p>
+        <DialogTitle className="text-center">Жалоба на пин</DialogTitle>
         {PIN_STEPS[ctx.spy(pinReportStepAtom)]}
       </DialogContent>
     </Dialog>

@@ -1,6 +1,7 @@
 import { ApiResponse, client } from "@/shared/api/api-client";
 import { redirect, render } from "vike/abort";
 import { PageContext } from "vike/types";
+import { consola } from "consola";
 
 // Status code:
 // 1 - auth service is down
@@ -33,7 +34,13 @@ export const validateAuthentication = async (
 }
 
 export const guardAuthentication = async (pageContext: PageContext) => {
-  console.log(`Pathname: ${pageContext.urlParsed.pathname}\nAuth: ${pageContext.isAuth}`)
+  consola.info(`Guard`,
+    JSON.stringify({
+      isAuth: pageContext.isAuth, 
+      statusCode: pageContext.statusCode, 
+      url: pageContext.urlParsed.pathname
+    }, null, 2)
+  )
 
   if (pageContext.statusCode === 7) {
     throw render('/development')
@@ -43,7 +50,7 @@ export const guardAuthentication = async (pageContext: PageContext) => {
     if (pageContext.isAuth) {
       throw redirect('/homefeed')
     }
-    
+
   } else {
     if (!pageContext.isAuth) {
       throw redirect('/auth')

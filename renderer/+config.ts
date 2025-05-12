@@ -4,7 +4,11 @@ import vikeServer from 'vike-server/config'
 
 export default{
   title: "Archivio",
-  extends: [vikeReact, vikeServer],
+  clientRouting: true,
+  extends: [
+    vikeReact, 
+    vikeServer
+  ],
   reactStrictMode: false,
   ssr: true,
   server: 'server/index.js',

@@ -1,7 +1,7 @@
 import { MapPin } from "lucide-react"
 import { Link } from "../link/Link"
 import { Pin } from "@/(domains)/pin/models/pin.model"
-import { wrapLink } from "@/shared/lib/wrap-link"
+import { wrapLink } from "@/shared/lib/helpers/wrap-link"
 
 export function PinCard({
   fullImage, title, meta, id

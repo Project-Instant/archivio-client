@@ -7,12 +7,12 @@ import { Button } from "@/shared/ui/button"
 import { Link } from "../../link/Link"
 import { DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/shared/ui/dialog"
 import { currentUserAtom, logoutAction } from "@/(domains)/(auth)/models/user.model"
-import { openAuthDialogAction } from "@/(domains)/(auth)/models/auth-dialog.model"
-import { wrapLink } from "@/shared/lib/wrap-link"
+import { authDialogAtom } from "@/(domains)/(auth)/models/auth-dialog.model"
+import { wrapLink } from "@/shared/lib/helpers/wrap-link"
 import { Separator } from "@/shared/ui/separator"
 import { ConfirmDialog, confirmDialogIsOpenAtom } from "../../modals/confirm-dialog"
 
-const Logout = reatomComponent(({ ctx }) => {
+const HeaderLogoutDialog = reatomComponent(({ ctx }) => {
   return (
     <ConfirmDialog>
       <DialogContent>
@@ -33,7 +33,7 @@ const Logout = reatomComponent(({ ctx }) => {
       </DialogContent>
     </ConfirmDialog>
   )
-}, "Logout")
+}, "HeaderLogoutDialog")
 
 const HeaderUserCard = reatomComponent(({ ctx }) => {
   const currentUser = ctx.get(currentUserAtom)
@@ -54,16 +54,18 @@ const HeaderUserCard = reatomComponent(({ ctx }) => {
       </div>
     </div>
   )
-}, "HeaderUserCard")
+}, "HeaderLogoutDialog")
 
 export const HeaderUser = reatomComponent(({ ctx }) => {
   const currentUser = ctx.spy(currentUserAtom)
 
-  if (!currentUser) return (
-    <Button onClick={() => openAuthDialogAction(ctx, true)} className="text-base font-semibold">
-      Войти
-    </Button>
-  )
+  if (!currentUser) {
+    return (
+      <Button onClick={() => authDialogAtom(ctx, true)} className="text-base font-semibold">
+        Войти
+      </Button>
+    )
+  }
 
   return (
     <>
@@ -82,7 +84,7 @@ export const HeaderUser = reatomComponent(({ ctx }) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <Logout />
+      <HeaderLogoutDialog />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger className="hover:bg-muted-foreground/20 data-[state=open]:bg-muted-foreground/20 group cursor-pointer rounded-xl p-2">
           <ArrowDown size={20} className="text-foreground group-data-[state=open]:rotate-180 transition-transform duration-300" />

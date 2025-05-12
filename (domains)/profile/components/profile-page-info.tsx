@@ -1,14 +1,13 @@
 import { reatomComponent } from "@reatom/npm-react";
 import { profileAtom } from "../models/profile.model";
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/shared/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/shared/ui/dialog"
 import { Edit, Eye, Share } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { openAuthDialogAction } from "@/(domains)/(auth)/models/auth-dialog.model";
-import { reatomAsync } from "@reatom/async";
 import { currentUserAtom } from "@/(domains)/(auth)/models/user.model";
 import { Link } from "@/shared/components/link/Link";
+import { followAction } from "../models/follow.model";
 
 const ProfileAvatarOrigin = reatomComponent(({ ctx }) => {
   const profile = ctx.spy(profileAtom)
@@ -41,6 +40,7 @@ const ProfileAvatar = reatomComponent(({ ctx }) => {
         <ProfileAvatarOrigin />
       </DialogTrigger>
       <DialogContent withClose={false} className="flex flex-col gap-4 bg-transparent p-12 border-none w-fit shadow-none">
+        <DialogTitle></DialogTitle>
         <Avatar className="min-w-48 min-h-48 w-fit h-fit max-w-96 max-h-96 rounded-md">
           <AvatarImage src={avatarUrl ?? undefined} />
           <AvatarFallback className="text-2xl text-secondary-foreground">
@@ -59,19 +59,9 @@ const ProfileAvatar = reatomComponent(({ ctx }) => {
   )
 }, "ProfileAvatar")
 
-const followAction = reatomAsync(async (ctx) => {
-  const currentUser = ctx.get(currentUserAtom)
-
-  if (!currentUser) {
-    return openAuthDialogAction(ctx, true)
-  }
-
-
-})
-
-const FollowButton = reatomComponent(({ ctx }) => {
+const FollowButton = reatomComponent<{ userLogin: string }>(({ ctx, userLogin }) => {
   return (
-    <Button onClick={() => followAction(ctx)} className="h-9 w-fit px-2 bg-emerald-600 gap-2 hover:bg-emerald-700">
+    <Button onClick={() => followAction(ctx, userLogin)} className="h-9 w-fit px-2 bg-emerald-600 gap-2 hover:bg-emerald-700">
       <span className="font-semibold text-base text-white">
         Подписаться
       </span>
@@ -99,7 +89,7 @@ const ProfileDetails = reatomComponent(({ ctx }) => {
         </Button>
       </Link>
     ) : (
-      <FollowButton />
+      <FollowButton userLogin={profileUserLogin} />
     )
   )
 }, "ProfilePageDetails")

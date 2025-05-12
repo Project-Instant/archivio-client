@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTrigger } from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/shared/ui/dialog";
 import { reatomComponent, useAction } from "@reatom/npm-react";
 import { Fullscreen, Minus, Plus } from "lucide-react";
 import { PinSave } from "./pin-save";
@@ -66,6 +66,7 @@ export const PinImageTools = reatomComponent(({ ctx }) => {
         className="!bg-transparent h-fit !max-h-[90vh] !shadow-none !border-transparent"
         withClose={false}
       >
+        <DialogTitle></DialogTitle>
         <PinImage />
         <PinImageToolsBar />
       </DialogContent>

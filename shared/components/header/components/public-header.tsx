@@ -5,7 +5,7 @@ import { HeaderUser } from "./header-user"
 export const PublicHeader = () => {
   return (
     <div className="shrink-0 container flex items-center h-16 mx-auto gap-x-4">
-      <Link href="/" className="flex items-end gap-2 grow">
+      <Link href="/" className="flex items-center gap-2 grow">
         <HeaderLogo />
       </Link>
       <div className="flex items-center gap-4 font-semibold">

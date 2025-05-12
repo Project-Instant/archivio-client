@@ -1,19 +1,5 @@
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper"
-import { reatomComponent } from "@reatom/npm-react"
-import { authDialogAtom } from "../models/auth-dialog.model"
 import { AuthDialogForm } from "../components/auth-form";
-
-const AuthPageForm = reatomComponent(({ ctx }) => {
-  if (ctx.spy(authDialogAtom)) {
-    return null;
-  }
-
-  return (
-    <div className="flex flex-col bg-background items-center justify-center m-2 gap-6 max-w-lg sm:m-0 p-6 rounded-3xl relative">
-      <AuthDialogForm />
-    </div>
-  )
-}, "AuthPageForm")
 
 export default function AuthPage() {
   return (
@@ -22,6 +8,7 @@ export default function AuthPage() {
         <img
           src="https://images.unsplash.com/photo-1437846972679-9e6e537be46e?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           className="object-cover h-full w-full brightness-75"
+          alt="Login"
         />
       </div>
       <ContainerWrapper variant="none">
@@ -29,7 +16,7 @@ export default function AuthPage() {
           <h1 className="m-2 text-4xl xl:leading-20 xl:text-6xl font-bold text-white xl:w-[30%]">
             Log in to get your ideas
           </h1>
-          <AuthPageForm />
+          <AuthDialogForm />
         </div>
       </ContainerWrapper>
     </div>

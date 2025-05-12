@@ -1,20 +1,4 @@
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { reatomComponent } from "@reatom/npm-react"
-import { applyChangesAction, isChangesAtom, MAX_DESCRIPTION_LENGTH, MAX_NAME_LENGTH, newDescriptionAtom, newNameAtom } from "../../models/edit-profile.model"
-import { EditAvatar } from "../../components/edit-avatar"
-
-const ApplyChanges = reatomComponent(({ ctx }) => {
-  return (
-    <Button
-      className="bg-emerald-600 hover:bg-emerald-700 w-fit px-4 text-lg font-semibold text-white"
-      onClick={() => applyChangesAction(ctx)}
-      disabled={!ctx.spy(isChangesAtom)}
-    >
-      Сохранить
-    </Button>
-  )
-}, "ApplyChanges")
+import { EditDescription, EditName, EditAvatar, EditProfileApply } from "../../components/edit-profile-form"
 
 export default function SettingsEditProfilePage() {
   return (
@@ -39,33 +23,7 @@ export default function SettingsEditProfilePage() {
           <EditDescription />
         </div>
       </div>
-      <ApplyChanges />
+      <EditProfileApply />
     </div>
   )
 }
-
-const EditDescription = reatomComponent(({ ctx }) => {
-  return (
-    <Input
-      type="text"
-      className="w-2/4"
-      maxLength={MAX_DESCRIPTION_LENGTH}
-      value={ctx.spy(newDescriptionAtom) ?? ""}
-      onChange={e => newDescriptionAtom(ctx, e.target.value)}
-      placeholder="Введите описание"
-    />
-  )
-})
-
-const EditName = reatomComponent(({ ctx }) => {
-  return (
-    <Input
-      type="text"
-      className="w-2/4"
-      maxLength={MAX_NAME_LENGTH}
-      placeholder="Введите имя"
-      value={ctx.spy(newNameAtom) ?? ""}
-      onChange={e => newNameAtom(ctx, e.target.value)}
-    />
-  )
-})

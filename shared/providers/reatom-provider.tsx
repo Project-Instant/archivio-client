@@ -1,12 +1,10 @@
-// only client
-
 import { PropsWithChildren } from "react";
 import type { Devtools } from "@reatom/devtools";
-import { Ctx } from "@reatom/framework";
-import { reatomContext, useCreateCtx } from '@reatom/npm-react'
+import { connectLogger, Ctx } from "@reatom/framework";
+import { reatomContext, useCreateCtx, useUpdate } from '@reatom/npm-react'
 
 interface ReatomContextProviderProps extends PropsWithChildren {
-	extend?: (ctx: Ctx) => void
+  extend?: (ctx: Ctx) => void
 }
 
 declare global {
@@ -15,24 +13,36 @@ declare global {
 
 async function loadDevtools(ctx: Ctx) {
   if (import.meta.env.DEV) {
-    const { createDevtools } = await import('@reatom/devtools')
-  
-    globalThis.DEVTOOLS = createDevtools({ ctx, initVisibility: true })
+    try {
+      const { createDevtools } = await import('@reatom/devtools');
+      console.info('Connecting Reatom DevTools...');
+
+      globalThis.DEVTOOLS = createDevtools({ ctx });
+
+      console.info('Reatom DevTools connected.');
+    } catch (error) {
+      globalThis.DEVTOOLS = undefined;
+    }
   } else {
-    globalThis.DEVTOOLS = undefined
+    globalThis.DEVTOOLS = undefined;
   }
 }
 
-export function ReatomContextProvider({ 
-  children, extend 
+const logger = (ctx: Ctx) => 
+  typeof window !== 'undefined' && import.meta.env.DEV ? connectLogger(ctx) : undefined
+
+const SyncDevtools = () => useUpdate(loadDevtools, [])
+const SyncLogger = () => useUpdate(logger, [])
+
+export function ReatomContextProvider({
+  children, extend
 }: ReatomContextProviderProps) {
-  const ctx = useCreateCtx(async (ctx) => {
-    extend?.(ctx);
-    await loadDevtools(ctx);
-  });
+  const ctx = useCreateCtx(extend);
 
   return (
     <reatomContext.Provider value={ctx}>
+      <SyncDevtools />
+      <SyncLogger/>
       {children}
     </reatomContext.Provider>
   );

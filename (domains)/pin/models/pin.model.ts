@@ -17,50 +17,48 @@ export interface Meta {
   location: Location;
   width: number;
   height: number;
-  size: number; // in bytes
+  size: number;
 }
 
 export interface Pin {
-  id: string; // UUID or slug
+  id: string; 
   title: string;
-  description?: string;
-  fullImage: string; // URL or object key
-  thumbnailImage?: string;
-  meta?: Meta;
+  description: string | null;
+  fullImage: string; 
+  thumbnailImage: string | null;
+  meta: Meta;
   saves: number;
   details: {
-    commentsLength: number
+    likesLength: number;
+    commentsLength: number,
+    isReported: boolean;
+    isSaved: boolean;
+    isLiked: boolean;
   },
-  tags?: string[]; // optionally model as Tag[]
-  category: string; // optionally enum
+  tags: string[]; 
+  category: string; 
   createdAt: Date;
-  updatedAt?: Date;
+  updatedAt: Date | null;
   owner: {
-    id: string; 
+    id: number;
     login: string;
-    name: string;
-    avatarUrl?: string;
+    name: string | null;
+    avatarUrl: string | null;
   };
 }
 
 async function request(pin: string): Promise<Pin> {
-  await sleep(50)
-
   return PINS.find((p) => p.id === pin) as Pin;
 }
 
 export const pinResource = reatomResource(async (ctx) => {
   const param = ctx.spy(pinParamAtom)
-
   if (!param) return null;
 
+  await sleep(60)
+
   return await ctx.schedule(() => request(param))
-}).pipe(
-  withDataAtom(),
-  withStatusesAtom(),
-  withErrorAtom(),
-  withCache()
-)
+}).pipe(withDataAtom(), withStatusesAtom(), withErrorAtom(), withCache())
 
 export const pinCommentValueAtom = atom("", "pinCommentValueAtom")
 export const pinFullscreenScaleAtom = atom(1, "pinFullscreenScaleOption").pipe(withReset())
@@ -69,7 +67,7 @@ export const pinIsFullscreenAtom = atom(false, "pinIsFullscreenAtom").pipe(
     if (state === false) {
       pinFullscreenScaleAtom.reset(ctx)
     }
-    
+
     return state;
   })
 )

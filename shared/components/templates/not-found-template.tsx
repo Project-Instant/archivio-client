@@ -31,7 +31,7 @@ export const ContentNotFoundTemplate = () => {
                             -.094a1 1 0 0 0 -1.497 -1.32l-1.293 1.292l-1.293 -1.292l-.094
                              -.083z`}
           fill="currentColor"
-          stroke-width="0"
+          strokeWidth="0"
         />
       </svg>
       <span className="font-semibold text-xl lg:text-2xl">Ничего не нашлось</span>
@@ -51,7 +51,8 @@ export const NotFoundTemplate = () => {
           fill="none"
           stroke="currentColor"
           stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round"
+          strokeLinecap="round" 
+          strokeLinejoin="round"
           className="text-foreground"
         >
           <path stroke="none" d="M0 0h24v24H0z" fill="none" />

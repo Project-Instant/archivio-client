@@ -1,18 +1,4 @@
-import { changeThemeAction, themeAtom } from "@/shared/components/theme/theme.model";
-import { Switch } from "@/shared/ui/switch";
-import { reatomComponent, useAction } from "@reatom/npm-react";
-
-const ThemeSwitcher = reatomComponent(({ ctx }) => {
-  const toggleTheme = useAction(changeThemeAction);
-
-  return (
-    <Switch
-      checked={ctx.spy(themeAtom) === "dark"}
-      value={ctx.spy(themeAtom)}
-      onClick={toggleTheme}
-    />
-  )
-})
+import { ThemeSwitcher } from "../../components/edit-appearance-form";
 
 export default function ApperancePage() {
   return (

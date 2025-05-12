@@ -2,10 +2,9 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
-import { useIsMobile } from "@/shared/lib/use-mobile"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip"
 import { Sheet, SheetContent } from "./sheet"
-import { cn } from "@/shared/lib/cn"
+import { cn } from "@/shared/lib/utils/cn"
 import { Button } from "./button"
 import { Input } from "./input"
 import { Separator } from "./separator"
@@ -37,6 +36,26 @@ function useSidebar() {
   }
 
   return context
+}
+
+import { useEffect, useState } from "react"
+
+const MOBILE_BREAKPOINT = 768
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined)
+
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    }
+    mql.addEventListener("change", onChange)
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
+
+  return !!isMobile
 }
 
 const SidebarProvider = ({

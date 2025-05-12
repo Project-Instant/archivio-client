@@ -2,7 +2,7 @@ import { useUpdate } from '@reatom/npm-react'
 import { useData } from "vike-react/useData"
 import { Data } from "./+data"
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper"
-import { profileAtom, profileParamAtom } from '../models/profile.model'
+import { initProfileAction, profileParamAtom } from '../models/profile.model'
 import { ProfileInfo } from '../components/profile-page-info'
 import { ProfileFollows } from '../components/profile-page-follows'
 import { ProfileFollowers } from '../components/profile-page-followers'
@@ -12,7 +12,11 @@ import { ProfileContent } from '../components/profile-page-content'
 import { Calendar } from 'lucide-react'
 
 const SyncProfileParam = () => useUpdate(profileParamAtom, [useData<Data>().id])
-const SyncProfile = () => useUpdate(profileAtom, [useData<Data>().data])
+const SyncProfile = () => {
+  const data = useData<Data>().data
+  useUpdate((ctx) => initProfileAction(ctx, data), [data])
+  return null;
+}
 
 export default function ProfilePage() {
   return (

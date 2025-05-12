@@ -4,11 +4,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/shared
 import { HeaderLinks } from "./header-links";
 import { reatomComponent } from "@reatom/npm-react";
 import { currentUserAtom } from "@/(domains)/(auth)/models/user.model";
-import { AuthDialog } from "@/(domains)/(auth)/components//auth-dialog";
 import { GlobalSearch, SearchTrigger } from "./header-search";
 import { HeaderUser } from "./header-user";
 import { NotificationsMenu } from "./header-notifications";
 import { HeaderLogo } from "./header-logo";
+import { lazy, Suspense } from "react";
+
+const AuthDialog = lazy(() => import("@/(domains)/(auth)/components/auth-dialog").then(m => ({ default: m.AuthDialog })))
 
 const MENUS = [
   {
@@ -26,7 +28,11 @@ const MENUS = [
 export const Header = reatomComponent(({ ctx }) => {
   return (
     <>
-      {!ctx.spy(currentUserAtom) && <AuthDialog />}
+      {!ctx.spy(currentUserAtom) && (
+        <Suspense>
+          <AuthDialog />
+        </Suspense>
+      )}
       <header className="sticky bg-background top-0 z-10">
         <div className="container flex items-center h-16 mx-auto gap-x-4">
           <div className="flex items-center justify-between grow">

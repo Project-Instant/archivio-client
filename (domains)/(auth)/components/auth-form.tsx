@@ -1,16 +1,16 @@
+import { Link } from "@/shared/components/link/Link"
 import { authErrorAtom, isValidAtom, authAction, loginAtom, loginErrorAtom, passwordAtom, passwordErrorAtom, isLoginAtom } from "../models/user.model"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Loader } from "@/shared/ui/loader"
-import { reatomComponent, useAction } from "@reatom/npm-react"
+import { reatomComponent } from "@reatom/npm-react"
+import { authDialogAtom } from "../models/auth-dialog.model"
 
 const AuthDialogFormSubmit = reatomComponent(({ ctx }) => {
-  const authorize = useAction(authAction)
-
   return (
     <Button
       disabled={!ctx.spy(isValidAtom)}
-      onClick={authorize}
+      onClick={() => authAction(ctx)}
       className="bg-red-600 self-end font-semibold py-2 px-4 min-w-1/3 text-lg hover:bg-red-700 text-white rounded-full"
     >
       {ctx.spy(isLoginAtom) ? "Войти" : "Зарегистрироваться"}
@@ -20,8 +20,7 @@ const AuthDialogFormSubmit = reatomComponent(({ ctx }) => {
 
 const AuthDialogFormInput = reatomComponent(({ ctx }) => {
   return (
-    <div className="flex flex-col w-full gap-1">
-      <span className="text-foreground text-base">Логин</span>
+    <>
       <Input
         value={ctx.spy(loginAtom)}
         placeholder="Логин"
@@ -32,14 +31,13 @@ const AuthDialogFormInput = reatomComponent(({ ctx }) => {
       <span className="text-red-400 text-sm">
         {ctx.spy(loginErrorAtom) && ctx.spy(loginErrorAtom)}
       </span>
-    </div>
+    </>
   )
 }, "AuthDialogFormInput")
 
 const AuthDialogFormPassword = reatomComponent(({ ctx }) => {
   return (
-    <div className="flex flex-col w-full gap-1">
-      <span className="text-foreground text-base">Пароль</span>
+    <>
       <Input
         value={ctx.spy(passwordAtom)}
         placeholder="Пароль"
@@ -50,13 +48,13 @@ const AuthDialogFormPassword = reatomComponent(({ ctx }) => {
       <span className="text-red-400 text-sm">
         {ctx.spy(passwordErrorAtom) && ctx.spy(passwordErrorAtom)}
       </span>
-    </div>
+    </>
   )
 }, "AuthDialogFormPassword")
 
 const AuthDialogChangeAuthType = reatomComponent(({ ctx }) => {
   return (
-    <div className="text-center font-semibold text-sm mt-4">
+    <>
       {ctx.spy(isLoginAtom) ? "Еще не зарегистрированы?" : "Уже есть аккаунт?"}{" "}
       <span
         onClick={() => isLoginAtom(ctx, (state) => !state)}
@@ -64,7 +62,7 @@ const AuthDialogChangeAuthType = reatomComponent(({ ctx }) => {
       >
         {ctx.spy(isLoginAtom) ? "Создать аккаунт" : "Войти в аккаунт"}
       </span>
-    </div>
+    </>
   )
 }, "AuthDialogChangeAuthType")
 
@@ -72,10 +70,13 @@ const LoginForm = () => {
   return (
     <>
       <AuthDialogFormInput />
-      <AuthDialogFormPassword />
-      <a href="#" className="w-fit text-xs text-gray-600 text-right hover:underline">
+      <div className="flex flex-col w-full gap-1">
+        <span className="text-foreground text-base">Пароль</span>
+        <AuthDialogFormPassword />
+      </div>
+      <Link href="#" className="w-fit text-xs text-gray-600 text-right hover:underline">
         Забыли пароль?
-      </a>
+      </Link>
     </>
   )
 }
@@ -83,17 +84,24 @@ const LoginForm = () => {
 const RegisterForm = () => {
   return (
     <>
-      <AuthDialogFormInput />
+      <div className="flex flex-col w-full gap-1">
+        <span className="text-foreground text-base">Логин</span>
+        <AuthDialogFormInput />
+      </div>
       <AuthDialogFormPassword />
     </>
   )
 }
 
 export const AuthDialogForm = reatomComponent(({ ctx }) => {
+  if (ctx.spy(authDialogAtom)) {
+    return null;
+  }
+
   const isPending = ctx.spy(authAction.statusesAtom).isPending
 
   return (
-    <>
+    <div className="flex flex-col bg-background items-center justify-center m-2 gap-6 max-w-lg sm:m-0 p-6 rounded-3xl relative">
       {isPending && (
         <div className="absolute z-[5] rounded-3xl bg-muted-foreground/60 w-full h-full flex items-center justify-center">
           <Loader />
@@ -129,8 +137,10 @@ export const AuthDialogForm = reatomComponent(({ ctx }) => {
           </a>
         </p>
         {ctx.spy(authErrorAtom) && <span className="text-red-500 text-sm">{ctx.spy(authErrorAtom)}</span>}
-        <AuthDialogChangeAuthType />
+        <div className="text-center font-semibold text-sm mt-4">
+          <AuthDialogChangeAuthType />
+        </div>
       </div>
-    </>
+    </div>
   )
 }, "AuthDialogForm")

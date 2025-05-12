@@ -1,9 +1,46 @@
-import { currentUserAtom } from "@/(domains)/(auth)/models/user.model";
-import { reatomComponent } from "@reatom/npm-react";
-import { ReactNode, useRef } from "react";
-import { newAvatarAtom, resetAvatarAction } from "../models/edit-profile.model";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { Upload, X } from "lucide-react";
+import { Input } from "@/shared/ui/input"
+import { reatomComponent } from "@reatom/npm-react"
+import { 
+  applyChangesAction, 
+  isChangesAtom, 
+  MAX_DESCRIPTION_LENGTH, 
+  MAX_NAME_LENGTH, 
+  newAvatarAtom, 
+  newDescriptionAtom, 
+  newNameAtom, 
+  resetAvatarAction 
+} from "../models/edit-profile.model"
+import { ReactNode, useRef } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar"
+import { Upload, X } from "lucide-react"
+import { currentUserAtom } from "@/(domains)/(auth)/models/user.model"
+import { Button } from "@/shared/ui/button"
+
+export const EditName = reatomComponent(({ ctx }) => {
+  return (
+    <Input
+      type="text"
+      className="w-2/4"
+      maxLength={MAX_NAME_LENGTH}
+      placeholder="Введите имя"
+      value={ctx.spy(newNameAtom) ?? ""}
+      onChange={e => newNameAtom(ctx, e.target.value)}
+    />
+  )
+})
+
+export const EditDescription = reatomComponent(({ ctx }) => {
+  return (
+    <Input
+      type="text"
+      className="w-2/4"
+      maxLength={MAX_DESCRIPTION_LENGTH}
+      value={ctx.spy(newDescriptionAtom) ?? ""}
+      onChange={e => newDescriptionAtom(ctx, e.target.value)}
+      placeholder="Введите описание"
+    />
+  )
+})
 
 const ActionWrapper = ({ children, onClick }: { onClick: () => void, children: ReactNode }) => {
   return (
@@ -61,3 +98,15 @@ export const EditAvatar = reatomComponent(({ ctx }) => {
     </div>
   )
 }, "EditAvatar")
+
+export const EditProfileApply = reatomComponent(({ ctx }) => {
+  return (
+    <Button
+      className="bg-emerald-600 hover:bg-emerald-700 w-fit px-4 text-lg font-semibold text-white"
+      onClick={() => applyChangesAction(ctx)}
+      disabled={!ctx.spy(isChangesAtom)}
+    >
+      Сохранить
+    </Button>
+  )
+}, "ApplyChanges")

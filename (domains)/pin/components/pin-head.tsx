@@ -11,7 +11,7 @@ import { PinAnalytics } from "./pin-analytics"
 import { pinIsHiddenAtom } from "../models/pin-actions.model"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar"
 import { Link } from "@/shared/components/link/Link"
-import { wrapLink } from "@/shared/lib/wrap-link"
+import { wrapLink } from "@/shared/lib/helpers/wrap-link"
 import { PinComments } from "./pin-comments"
 import { cva, VariantProps } from "class-variance-authority"
 import { HTMLAttributes } from "react"
@@ -43,9 +43,9 @@ const PinHeadOwner = reatomComponent(({ ctx }) => {
   return (
     <Link href={wrapLink(pin.owner.login, "user")} className="flex items-center gap-2">
       <Avatar className="min-h-12 min-w-12 max-h-12 max-w-12">
-        <AvatarImage src={pin.owner.avatarUrl} />
+        <AvatarImage src={pin.owner.avatarUrl ?? undefined} />
         <AvatarFallback>
-          {pin.owner.name.split(" ").map(w => w[0]).join("")}
+          {pin.owner.login[0].toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <p className="font-semibold">{pin.owner.login}</p>

@@ -1,3 +1,4 @@
+import { validateString } from "@/shared/lib/helpers/validate-string";
 import { action, atom } from "@reatom/core";
 import { reatomAsync, sleep, withComputed, withReset, withStatusesAtom } from "@reatom/framework";
 import { toast } from "sonner";
@@ -61,8 +62,10 @@ export const REPORT_REASONS = [
 ] as const;
 
 const pinReportSchema = S.schema({
-  report: S.string.with(S.min, 1),
-  description: S.optional(S.string.with(S.min, 2).with(S.max, 256))
+  report: S.string.with(S.min, 1).with(S.max, 128),
+  description: S.nullable(
+    S.string.with(S.min, 2).with(S.max, 256)
+  )
 })
 
 export const pinIsReportedAtom = atom(false, "pinIsReportedAtom")
@@ -100,8 +103,10 @@ export const sendReportAction = reatomAsync(async (ctx) => {
   return await ctx.schedule(async () => {
     const parsed = S.safe(() => S.parseOrThrow({
       report: ctx.get(pinReportReasonAtom),
-      description: ctx.get(pinReportDescriptionAtom)
+      description: validateString(ctx.get(pinReportDescriptionAtom))
     }, pinReportSchema))
+
+    console.log(parsed)
 
     if (!parsed.success) {
       return pinReportErrorAtom(ctx, parsed.error.message ?? "Что-то пошло не так")

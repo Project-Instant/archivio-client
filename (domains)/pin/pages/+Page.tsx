@@ -14,14 +14,16 @@ const SyncPinParam = () => useUpdate(pinParamAtom, [useData<Data>().id])
 
 export default function PinPage() {
   return (
-    <ContainerWrapper>
+    <>
       <SyncPinParam />
-      <div className="flex flex-col gap-12 w-full justify-center h-full pt-16">
-        <PinHead />
-        <Suspense>
-          <PinRecommendations />
-        </Suspense>
-      </div>
-    </ContainerWrapper>
+      <ContainerWrapper>
+        <div className="flex flex-col gap-12 w-full justify-center h-full pt-16">
+          <PinHead />
+          <Suspense>
+            <PinRecommendations />
+          </Suspense>
+        </div>
+      </ContainerWrapper>
+    </>
   )
 }

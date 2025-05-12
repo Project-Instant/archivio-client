@@ -7,13 +7,14 @@ import { navigate } from 'vike/client/router'
 import { authDialogAtom } from "./auth-dialog.model";
 import { Action, atom, AtomMut, Ctx, withComputed, withReset } from "@reatom/framework";
 import { ApiResponse, client } from "@/shared/api/api-client";
-import { wrapLink } from "@/shared/lib/wrap-link";
+import { wrapLink } from "@/shared/lib/helpers/wrap-link";
 
 export type User = {
   id: number;
   login: string
   name: string | null;
   avatarUrl: string | null,
+  createdAt: Date,
   description: string | null;
 }
 

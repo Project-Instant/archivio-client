@@ -6,6 +6,8 @@ export const PINS: Pin[] = [
   {
     id: "asd0918xk",
     fullImage: "https://images.unsplash.com/photo-1744619438376-30bfc6c4666c?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    thumbnailImage: null,
+    description: null,
     title: "Santorini Sunset Views",
     meta: {
       location: {
@@ -20,21 +22,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: false,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Scenic",
     saves: 4200,
     owner: {
-      id: "askzxjjhak1",
-      name: "Rus Belkin",
-      login: "belkin"
+      id: 4,
+      name: null,
+      login: "belkin",
+      avatarUrl: null
     }
   },
   {
     id: "as9z871mxz",
     fullImage: "https://images.unsplash.com/photo-1744479357124-ef43ab9d6a9f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "Tokyo City Lights",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Tokyo, Japan",
@@ -48,21 +59,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: true,
+      isSaved: true,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Urban",
     saves: 3800,
     owner: {
-      id: "askzxjjhak1",
-      name: "Rus Belkin",
-      login: "belkin"
+      id: 4,
+      name: null,
+      login: "belkin",
+      avatarUrl: null
     }
   },
   {
     id: "as9zxc1sz871mxz",
     fullImage: "https://images.unsplash.com/photo-1732316128244-b47689811656?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "Bali Beach Retreat",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Bali, Indonesia",
@@ -76,21 +96,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: true,
+      isSaved: true,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Beach",
     saves: 5100,
     owner: {
-      id: "askzxjjhak1",
-      name: "Rus Belkin",
-      login: "pig"
+      id: 4,
+      name: null,
+      login: "belkin",
+      avatarUrl: null
     }
   },
   {
     id: "bass9zz871mxz",
     fullImage: "https://images.unsplash.com/photo-1743923754513-ce8fb35d4d69?q=80&w=1990&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "Swiss Alps Adventure",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Zermatt, Switzerland",
@@ -104,21 +133,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Mountains",
     saves: 2900,
     owner: {
-      id: "askzxjjhak1",
-      name: "Rus Belkin",
-      login: "belkin"
+      id: 4,
+      name: null,
+      login: "belkin",
+      avatarUrl: null
     }
   },
   {
     id: "hexa1szz",
     fullImage: "https://images.unsplash.com/photo-1732786923075-d5880b9dde86?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "Kyoto Temple Tour",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Kyoto, Japan",
@@ -132,21 +170,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Cultural",
     saves: 3300,
     owner: {
-      id: "askzxjjhak1",
-      name: "pig pig",
-      login: "pig"
+      id: 1,
+      name: null,
+      login: "aboba1234",
+      avatarUrl: null
     }
   },
   {
     id: "azxx1asd",
     fullImage: "https://images.unsplash.com/photo-1743482858217-5aef42cfc636?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "New York City Skyline",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "New York, USA",
@@ -160,21 +207,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Urban",
     saves: 4799,
     owner: {
-      id: "asdzxcqa",
-      name: "pig pig",
-      login: "pig"
+      id: 1,
+      name: null,
+      login: "aboba1234",
+      avatarUrl: null
     }
   },
   {
     id: "asdsazx12",
     fullImage: "https://images.unsplash.com/photo-1742943679519-ee406c510232?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "Machu Picchu Hike",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Cusco, Peru",
@@ -188,21 +244,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Adventure",
     saves: 6200,
     owner: {
-      id: "askzxjjhak1",
-      name: "pig pig",
-      login: "pig"
+      id: 1,
+      name: null,
+      login: "aboba1234",
+      avatarUrl: null
     }
   },
   {
     id: "ahas1zxcas",
     fullImage: "https://images.unsplash.com/photo-1741851373559-6879db14fd8a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "Northern Lights Experience",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Tromsø, Norway",
@@ -216,21 +281,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Nature",
     saves: 5666,
     owner: {
-      id: "askzxjjhak1",
-      name: "pig pig",
-      login: "pig"
+      id: 1,
+      name: null,
+      login: "aboba1234",
+      avatarUrl: null
     }
   },
   {
     id: "sadf1234zxc",
     fullImage: "https://images.unsplash.com/photo-1740525030760-5a8614c377dd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDEzMHxGem8zenVPSE42d3x8ZW58MHx8fHx8",
     title: "Ullswater Lake",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Lake District National Park, United Kingdom",
@@ -244,21 +318,30 @@ export const PINS: Pin[] = [
       size: 123123,
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Nature",
     saves: 1200,
     owner: {
-      id: "askzxjjhak1",
-      name: "Rus Belkin",
-      login: "belkin"
+      id: 4,
+      name: null,
+      login: "belkin",
+      avatarUrl: null
     }
   },
   {
     id: "asdfasdasd12",
     fullImage: "https://images.unsplash.com/photo-1730799582977-d267a2cae529?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDF8fHxlbnwwfHx8fHw%3D",
     title: "Lake District National Park, United Kingdom",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Lake District National Park, United Kingdom",
@@ -272,53 +355,104 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Nature",
     saves: 1700,
     owner: {
-      id: "askzxjjhak1",
-      name: "Rus Belkin",
-      login: "belkin"
+      id: 4,
+      name: null,
+      login: "belkin",
+      avatarUrl: null
     }
   },
   {
     id: "asfsagasdf",
     fullImage: "https://images.unsplash.com/photo-1661783607393-6c4ea8f182da?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDl8fHxlbnwwfHx8fHw%3D",
     title: "Lake District National Park, United Kingdom",
+    thumbnailImage: null,
+    description: null,
     category: "Nature",
     saves: 1800,
-    details: {
-      commentsLength: 0
+    meta: {
+      location: {
+        addressName: "Lake District National Park, United Kingdom",
+        coords: {
+          lat: 36.321944,
+          lng: 27.425278
+        }
+      },
+      height: 1920,
+      width: 1080,
+      size: 123123,
     },
+    details: {
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
+    },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     owner: {
-      id: "askzxjjhak1",
-      name: "Rus Belkin",
-      login: "belkin"
+      id: 4,
+      name: null,
+      login: "belkin",
+      avatarUrl: null
     }
   },
   {
     id: "hezxcbnzxc",
     fullImage: "https://plus.unsplash.com/premium_photo-1706625678451-6fa31c287a0b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDIwfHx8ZW58MHx8fHx8",
     title: "Lake District National Park, United Kingdom",
+    thumbnailImage: null,
+    description: null,
     category: "Nature",
     saves: 1242,
-    details: {
-      commentsLength: 0
+    meta: {
+      location: {
+        addressName: "Lake District National Park, United Kingdom",
+        coords: {
+          lat: 36.321944,
+          lng: 27.425278
+        }
+      },
+      height: 1920,
+      width: 1080,
+      size: 123123,
     },
+    details: {
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
+    },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     owner: {
-      id: "askzxjjhak1",
-      name: "Rus Belkin",
-      login: "belkin"
+      id: 4,
+      name: null,
+      login: "belkin",
+      avatarUrl: null
     }
   },
   {
     id: "asd12kkzxcj",
     fullImage: "https://images.unsplash.com/photo-1741851373559-6879db14fd8a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "Northern Lights Experience",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Tromsø, Norway",
@@ -332,21 +466,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Nature",
     saves: 5500,
     owner: {
-      id: "askzxjjhak1",
-      name: "pig pig",
-      login: "pig"
+      id: 1,
+      name: null,
+      login: "aboba1234",
+      avatarUrl: null
     }
   },
   {
     id: "asdsadzxc",
     fullImage: "https://images.unsplash.com/photo-1744479357124-ef43ab9d6a9f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "Tokyo City Lights",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Tokyo, Japan",
@@ -360,21 +503,30 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Urban",
     saves: 3800,
     owner: {
-      id: "askzxjjhak1",
-      name: "pig pig",
-      login: "pig"
+      id: 1,
+      name: null,
+      login: "aboba1234",
+      avatarUrl: null
     }
   },
   {
     id: "asdzxcas",
     fullImage: "https://images.unsplash.com/photo-1732316128244-b47689811656?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     title: "Bali Beach Retreat",
+    thumbnailImage: null,
+    description: null,
     meta: {
       location: {
         addressName: "Bali, Indonesia",
@@ -388,15 +540,22 @@ export const PINS: Pin[] = [
       width: 1080
     },
     details: {
-      commentsLength: 0
+      commentsLength: 0,
+      isLiked: false,
+      isSaved: false,
+      isReported: true,
+      likesLength: 0
     },
+    tags: [],
+    updatedAt: null,
     createdAt: new Date(),
     category: "Beach",
     saves: 5100,
     owner: {
-      id: "askzxjjhak1",
-      name: "Rus Belkin",
-      login: "belkin"
+      id: 4,
+      name: null,
+      login: "belkin",
+      avatarUrl: null
     }
   }
 ]
