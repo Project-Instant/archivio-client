@@ -1,8 +1,15 @@
 import { ActionItem } from "@/shared/components/action-item/action-item"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu"
 import { MoreHorizontal, Share } from "lucide-react"
-import { PinHide } from "./pin-hide"
 import { PinReport } from "./pin-report"
+import { hideAction } from "../models/pin-actions.model"
+import { reatomComponent } from "@reatom/npm-react"
+import { reatomAsync } from "@reatom/async"
+import { experimentalClient } from "@/shared/api/api-client"
+import { Encoder } from "cbor-x"
+import { currentUserAtom } from "@/(domains)/(auth)/models/user.model"
+
+let encoder = new Encoder()
 
 const PinShare = () => {
   return (
@@ -19,9 +26,43 @@ const PinShare = () => {
   )
 }
 
+const PinHide = reatomComponent(({ ctx }) => {
+  return (
+    <ActionItem onClick={() => hideAction(ctx)} size="mini" className="cursor-pointer">
+      <span className="text-base font-semibold">Скрыть пин</span>
+    </ActionItem>
+  )
+}, "PinHide")
+
+const sendSignalAction = reatomAsync(async (ctx) => {
+  if (!ctx.get(currentUserAtom)) return;
+
+  const payload = {
+    key: "analytics",
+    value: {
+      target: "pin",
+      initiator: ctx.get(currentUserAtom),
+      checked: true
+    }
+  }
+
+  return await ctx.schedule(() => experimentalClient.post("analytics/send", {
+    body: encoder.encode(payload),
+    headers: { "Content-Type": "application/cbor" },
+  }))
+})
+
+const PinSendAnalytics = reatomComponent(({ ctx }) => {
+  return (
+    <ActionItem onClick={() => sendSignalAction(ctx)} size="mini" className="cursor-pointer">
+      <span className="text-base font-semibold">Отправить сигнал</span>
+    </ActionItem>
+  )
+}, "PinHide")
+
 const PinActions = () => {
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger className="active:bg-muted-foreground/20 p-2 rounded-full cursor-pointer">
         <MoreHorizontal size={24} className="text-foreground" />
       </DropdownMenuTrigger>
@@ -31,6 +72,7 @@ const PinActions = () => {
         </ActionItem>
         <PinHide />
         <PinReport />
+        <PinSendAnalytics />
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -40,7 +82,7 @@ export const PinMoreTools = () => {
   return (
     <>
       <PinShare />
-      <PinActions/>
+      <PinActions />
     </>
   )
 }

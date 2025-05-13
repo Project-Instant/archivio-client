@@ -1,6 +1,7 @@
 import { Input } from "@/shared/ui/input"
-import { linkAtom, MAX_LINK_LENGTH } from "../models/create-pin.model"
+import { linkAtom } from "../models/create-pin.model"
 import { reatomComponent } from "@reatom/npm-react"
+import { MAX_LINK_LENGTH } from "../constants/create-pin-limitations"
 
 export const CreatePinFormLink = reatomComponent(({ ctx }) => {
   return (

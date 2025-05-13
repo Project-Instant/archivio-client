@@ -1,7 +1,6 @@
 import { reatomComponent } from "@reatom/npm-react"
 import { profileFollowingAtom } from "../models/profile.model"
 import { Users } from "lucide-react"
-import { Skeleton } from "@/shared/ui/skeleton"
 import { Dialog, DialogContent, DialogTrigger } from "@/shared/ui/dialog"
 import { DialogTitle } from "@radix-ui/react-dialog"
 

@@ -1,4 +1,5 @@
 import ky from "ky";
+import { createKyWithCborSupport } from "./api-utils";
 
 export type ApiResponse<T> = {
   data: T,
@@ -6,6 +7,11 @@ export type ApiResponse<T> = {
   errorCode: number,
   isSuccess: boolean
 }
+
+export const experimentalClient = createKyWithCborSupport({
+  prefixUrl: "/experimental/v1",
+  credentials: "include"
+})
 
 export const client = ky.extend({
   prefixUrl: "https://archivio.fasberry.su/api",

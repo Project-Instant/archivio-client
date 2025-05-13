@@ -1,6 +1,7 @@
 import { Input } from "@/shared/ui/input"
-import { descriptionAtom, MAX_DESCRIPTION_LENGTH } from "../models/create-pin.model"
+import { descriptionAtom } from "../models/create-pin.model"
 import { reatomComponent } from "@reatom/npm-react"
+import { MAX_DESCRIPTION_LENGTH } from "../constants/create-pin-limitations"
 
 export const CreatePinFormDescription = reatomComponent(({ ctx }) => {
   return (

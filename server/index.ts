@@ -1,34 +1,44 @@
-import { Hono } from 'hono/tiny'
+import { Hono } from 'hono'
 import { apply } from 'vike-server/hono'
 import { serve } from 'vike-server/hono/serve'
 import { languageDetector } from 'hono/language'
-import { getConnInfo } from '@hono/node-server/conninfo'
 import { consola } from "consola";
+import { timing, startTime, endTime } from 'hono/timing'
+import type { TimingVariables } from 'hono/timing'
+import { createHonoCborEncodingMiddleware, HONO_SHOULD_ENCODE_CBOR_KEY } from './middlewares/cbor-middleware';
+import { createPin, getHomefeedPins, getPin, getPinComments, getSimilarPinsByPin, getUserCollections, getUserPins, sendAnalytics } from './routes';
+
+declare module 'hono' {
+  interface ContextVariableMap {
+    [HONO_SHOULD_ENCODE_CBOR_KEY]?: boolean;
+  }
+  interface Variables {
+    Variables: TimingVariables
+  }
+}
 
 async function startServer() {
   const app = new Hono()
-
-  app
     .use(
-      languageDetector({ supportedLanguages: ['en', 'ru'], fallbackLanguage: 'ru', })
+      timing(),
+      languageDetector({ supportedLanguages: ['en', 'ru'], fallbackLanguage: 'ru', }),
+      createHonoCborEncodingMiddleware({ encoderOptions: {} }),
     )
-    .on('GET', ["/", "/u/*", "/homefeed"], async (ctx, next) => {
-      consola.info("Request",
-        JSON.stringify({
-          ...getConnInfo(ctx),
-          lang: ctx.get("language")
-        }, null, 2)
-      );
-
-      return await next()
-    })
+    .route("/experimental/v1", sendAnalytics)
+    .route("/experimental/v1", createPin)
+    .route("/experimental/v1", getUserCollections)
+    .route("/experimental/v1", getPin)
+    .route("/experimental/v1", getHomefeedPins)
+    .route("/experimental/v1", getUserPins)
+    .route("/experimental/v1", getSimilarPinsByPin)
+    .route("/experimental/v1", getPinComments)
 
   apply(app, {
     pageContext(runtime) {
       consola.info(`Runtime`,
         JSON.stringify({
-          isAuth: runtime.isAuth ?? null,
-          statusCode: runtime.statusCode ?? null
+          // @ts-ignore
+          isAuth: runtime.isAuth ?? null, statusCode: runtime.statusCode ?? null
         }, null, 2)
       )
 

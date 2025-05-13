@@ -1,7 +1,9 @@
-import { PINS } from "@/(domains)/(protected)/homefeed/models/homefeed.model";
+import { pageContextAtom } from "@/(domains)/(auth)/models/user.model";
+import { ApiResponse, experimentalClient } from "@/shared/api/api-client";
 import { reatomResource, withCache, withDataAtom, withErrorAtom, withStatusesAtom } from "@reatom/async";
 import { action, atom } from "@reatom/core";
-import { sleep, withComputed, withReset } from "@reatom/framework";
+import { withComputed, withReset } from "@reatom/framework";
+import { navigate } from "vike/client/router";
 
 export const pinParamAtom = atom<string | null>(null, "pinParamAtom")
 
@@ -21,10 +23,10 @@ export interface Meta {
 }
 
 export interface Pin {
-  id: string; 
+  id: string;
   title: string;
   description: string | null;
-  fullImage: string; 
+  fullImage: string;
   thumbnailImage: string | null;
   meta: Meta;
   saves: number;
@@ -35,8 +37,8 @@ export interface Pin {
     isSaved: boolean;
     isLiked: boolean;
   },
-  tags: string[]; 
-  category: string; 
+  tags: string[];
+  category: string;
   createdAt: Date;
   updatedAt: Date | null;
   owner: {
@@ -47,17 +49,28 @@ export interface Pin {
   };
 }
 
-async function request(pin: string): Promise<Pin> {
-  return PINS.find((p) => p.id === pin) as Pin;
+async function request(param: string, signal: AbortSignal): Promise<Pin | null> {
+  const res = await experimentalClient(`pin/${param}`, { throwHttpErrors: false, signal })
+  const json = await res.json<ApiResponse<Pin | null>>()
+
+  if (!res.ok || !json.isSuccess) {
+    return null;
+  }
+
+  return json.data;
 }
 
 export const pinResource = reatomResource(async (ctx) => {
   const param = ctx.spy(pinParamAtom)
   if (!param) return null;
 
-  await sleep(60)
+  const pin = await request(param, ctx.controller.signal)
 
-  return await ctx.schedule(() => request(param))
+  if (!pin) {
+    return navigate("/not-found", { pageContext: { isAuth: ctx.get(pageContextAtom) } })
+  }
+
+  return pin;
 }).pipe(withDataAtom(), withStatusesAtom(), withErrorAtom(), withCache())
 
 export const pinCommentValueAtom = atom("", "pinCommentValueAtom")

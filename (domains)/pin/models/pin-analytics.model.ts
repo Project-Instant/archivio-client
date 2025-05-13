@@ -12,9 +12,4 @@ export const pinAnalyticsResource = reatomResource(async (ctx) => {
   if (!isOwner) return null
 
   return await ctx.schedule(() => defaultData)
-}).pipe(
-  withDataAtom(), 
-  withStatusesAtom(), 
-  withErrorAtom(),
-  withCache()
-)
+}).pipe(withDataAtom(), withStatusesAtom(), withErrorAtom(),withCache())

@@ -6,3 +6,7 @@ export function validateString(value: string | null | undefined, trimInput: bool
 
   return processedValue; 
 }
+
+export function sanitazeParseErrorString(input: string) {
+  return input.replace("Failed parsing:", "").trim()
+}

@@ -18,7 +18,6 @@ export const HomefeedContent = reatomComponent(({ ctx }) => {
   }
 
   const data = ctx.spy(homefeedResource.dataAtom);
-
   if (!data) return null;
 
   return (

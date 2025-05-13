@@ -1,12 +1,13 @@
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/shared/ui/dialog";
-import { reatomComponent, useAction } from "@reatom/npm-react";
+import { reatomComponent } from "@reatom/npm-react";
 import { Fullscreen, Minus, Plus } from "lucide-react";
 import { PinSave } from "./pin-save";
 import { pinFullscreenScaleAtom, pinIsFullscreenAtom, pinResource, scaleAction } from "../models/pin.model";
+import { action } from "@reatom/core";
+import { authDialogAtom } from "@/(domains)/(auth)/models/auth-dialog.model";
+import { currentUserAtom } from "@/(domains)/(auth)/models/user.model";
 
-const PinImageToolsBar = () => {
-  const scale = useAction(scaleAction)
-
+const PinImageToolsBar = reatomComponent(({ ctx }) => {
   return (
     <div
       className="relative -bottom-2/3 border-2 border-muted-foreground/20
@@ -14,13 +15,13 @@ const PinImageToolsBar = () => {
     >
       <div id="controls-scale" className="flex items-center gap-2">
         <div
-          onClick={() => scale(true)}
+          onClick={() => scaleAction(ctx, true)}
           className="flex cursor-pointer active:scale-[0.96] bg-foreground/80 rounded-lg p-2"
         >
           <Plus size={22} className="text-foreground invert" />
         </div>
         <div
-          onClick={() => scale(false)}
+          onClick={() => scaleAction(ctx, false)}
           className="flex cursor-pointer active:scale-[0.96] bg-foreground/80 rounded-lg p-2"
         >
           <Minus size={22} className="text-foreground invert" />
@@ -31,11 +32,10 @@ const PinImageToolsBar = () => {
       </div>
     </div>
   )
-}
+}, "PinImageToolsBar")
 
 const PinImage = reatomComponent(({ ctx }) => {
   const pin = ctx.spy(pinResource.dataAtom)
-
   const zoomSteps = ctx.spy(pinFullscreenScaleAtom);
 
   if (!pin) return null;
@@ -54,11 +54,17 @@ const PinImage = reatomComponent(({ ctx }) => {
   )
 }, "PinImage")
 
-export const PinImageTools = reatomComponent(({ ctx }) => {
-  const isFullscreen = ctx.spy(pinIsFullscreenAtom)
+const pinControlDialogAction = action((ctx, open: boolean) => {
+  if (!ctx.get(currentUserAtom)) {
+    return authDialogAtom(ctx, true)
+  }
 
+  pinIsFullscreenAtom(ctx, open)
+})
+
+export const PinImageTools = reatomComponent(({ ctx }) => {
   return (
-    <Dialog open={isFullscreen} onOpenChange={v => pinIsFullscreenAtom(ctx, v)}>
+    <Dialog open={ctx.spy(pinIsFullscreenAtom)} onOpenChange={v => pinControlDialogAction(ctx, v)}>
       <DialogTrigger className="flex cursor-pointer bg-foreground/80 rounded-lg p-2">
         <Fullscreen size={20} className="text-foreground invert" />
       </DialogTrigger>

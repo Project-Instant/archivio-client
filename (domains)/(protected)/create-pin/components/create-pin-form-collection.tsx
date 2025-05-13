@@ -5,6 +5,7 @@ import { CloudDrizzleIcon } from "lucide-react"
 
 const Collections = reatomComponent(({ ctx }) => {
   const collections = ctx.spy(fetchCollections.dataAtom)
+  if (!collections) return null;
 
   return (
     collections.map((collection, idx) => (

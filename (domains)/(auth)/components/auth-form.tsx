@@ -94,9 +94,6 @@ const RegisterForm = () => {
 }
 
 export const AuthDialogForm = reatomComponent(({ ctx }) => {
-  if (ctx.spy(authDialogAtom)) {
-    return null;
-  }
 
   const isPending = ctx.spy(authAction.statusesAtom).isPending
 

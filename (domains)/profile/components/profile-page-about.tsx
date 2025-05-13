@@ -1,29 +1,46 @@
 import { reatomComponent } from "@reatom/npm-react";
-import { profileAtom } from "../models/profile.model";
-import { Skeleton } from "@/shared/ui/skeleton";
+import { profileUserAtom } from "../models/profile.model";
+import { Calendar } from "lucide-react";
+import dayjs from "dayjs";
+import "dayjs/locale/ru"
 
-const ProfileAboutSkeleton = () => {
+type ProfileDescriptionProps = {
+  description: string
+}
+
+export const ProfileDescription = ({ description }: ProfileDescriptionProps) => {
   return (
-    <>
-      <Skeleton className="h-8 mb-2 w-24" />
-      <Skeleton className="h-8 w-48" />
-    </>
+    <p className="text-lg text-muted-foreground">
+      {description}
+    </p>
+  )
+}
+
+type ProfileCreatedAtProps = {
+  createdAt: Date
+}
+
+export const ProfileCreatedAt = ({ createdAt }: ProfileCreatedAtProps) => {
+  const formatted = dayjs(createdAt).locale("ru").format(`С MMM YYYY`)
+
+  return (
+    <div className="flex items-center gap-1">
+      <Calendar size={16} />
+      <span className="text-muted-foreground">{formatted}</span>
+    </div>
   )
 }
 
 export const ProfileAbout = reatomComponent(({ ctx }) => {
-  if (!ctx.spy(profileAtom)) {
-    return <ProfileAboutSkeleton/>
-  }
-
-  const description = ctx.spy(profileAtom)?.user.description
-
-  if (!description) return null;
+  const profileUser = ctx.spy(profileUserAtom)
+  if (!profileUser) return null;
 
   return (
     <>
-      <h2 className="mb-2 text-xl font-semibold text-foreground">О себе</h2>
-      <p className="text-lg text-muted-foreground">{description}</p>
+      {profileUser.description && <ProfileDescription description={profileUser.description} />}
+      <div className="flex items-center gap-2">
+        <ProfileCreatedAt createdAt={profileUser.createdAt} />
+      </div>
     </>
   )
-}, "ProfilePageAbout")
+}, "ProfileAbout")

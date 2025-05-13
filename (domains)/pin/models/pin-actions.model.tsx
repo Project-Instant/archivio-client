@@ -1,3 +1,4 @@
+import { currentUserAtom } from "@/(domains)/(auth)/models/user.model";
 import { spawnTimerToast } from "@/shared/lib/utils/spawn-timer-toast";
 import { action, atom } from "@reatom/core";
 
@@ -14,9 +15,15 @@ const successAction = action((ctx) => {
 })
 
 export const hideAction = action((ctx) => {
+  if (!ctx.get(currentUserAtom)) return;
+
   pinIsHiddenAtom(ctx, true);
 
   spawnTimerToast({ 
-    name: "pin_hide", cancelAction: cancelAction,successAction: successAction, message: "Пин скрыт" 
+    name: "pin_hide", 
+    cancelAction: cancelAction,
+    successAction: successAction, 
+    message: "Пин скрыт",
+    buttonMessage: "Отменить"
   }).create(ctx)
 })

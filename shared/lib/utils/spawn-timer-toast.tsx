@@ -8,8 +8,9 @@ import { toast } from "sonner"
 type SpawnToast = {
   name: string,
   message: string,
-  cancelAction?: Action<[], void>,
-  successAction?: Action<[], void>
+  cancelAction?: Action<Array<unknown>, void>,
+  successAction?: Action<[], void>,
+  buttonMessage: string
 }
 
 type RemainsProps = { 
@@ -29,7 +30,7 @@ const Remains = reatomComponent<RemainsProps>(({ ctx, remains }) => (
 ), 'Remains')
 
 export const spawnTimerToast = ({
-  name, cancelAction, message, successAction
+  name, cancelAction, message, successAction, buttonMessage
 }: SpawnToast) => {
   const timer = reatomTimer({
     name: `_${name}.timer`,
@@ -46,7 +47,7 @@ export const spawnTimerToast = ({
       className: "w-full",
       cancel: (
         <Button className="self-end" onClick={() => remove(ctx)} variant="secondary">
-          Отменить
+          {buttonMessage}
         </Button>
       ),
       action: <Remains remains={remains} />,

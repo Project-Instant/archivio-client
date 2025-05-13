@@ -1,4 +1,5 @@
-import { client } from "@/shared/api/api-client";
+import { wrapLink } from '@/shared/lib/helpers/wrap-link';
+import { ApiResponse, experimentalClient } from "@/shared/api/api-client";
 import { bytesToMB, getImageDimensions } from "@/shared/lib/helpers/file-helpers"
 import {
   action, atom, reatomAsync, reatomResource,
@@ -9,6 +10,11 @@ import * as S from "sury"
 import { Encoder } from 'cbor-x'
 import { validateString } from "@/shared/lib/helpers/validate-string";
 import { toast } from "sonner";
+import { spawnTimerToast } from "@/shared/lib/utils/spawn-timer-toast";
+import { navigate } from "vike/client/router";
+import { currentUserAtom, pageContextAtom } from '@/(domains)/(auth)/models/user.model';
+import { MAX_FILE_SIZE, MAX_TAGS_LENGTH } from '../constants/create-pin-limitations';
+import { createPinSchema } from '../constants/create-pin-schemas';
 
 type ImageMeta = S.Output<typeof createPinSchema>["fileMeta"];
 
@@ -18,45 +24,10 @@ type Collection = {
   tags: string[];
 };
 
-export const MAX_FILE_SIZE = 20 * 1024 * 1024;
-const MAX_IMAGE_WIDTH = 4096;
-const MAX_IMAGE_HEIGHT = 4096;
-
-export const MAX_TITLE_LENGTH = 200;
-export const MAX_DESCRIPTION_LENGTH = 1000;
-export const MAX_LINK_LENGTH = 200;
-export const MAX_TAGS_LENGTH = 16;
-export const MAX_COLLECTIONS_LENGTH = 3;
-
-let encoder = new Encoder();
-
-const createPinSchema = S.schema({
-  title: S.string.with(S.min, 2).with(S.max, 200),
-  description: S.nullable(
-    S.string.with(S.min, 2).with(S.max, MAX_DESCRIPTION_LENGTH)
-  ),
-  link: S.nullable(
-    S.url(S.string).with(S.max, MAX_LINK_LENGTH)
-  ),
-  collection: S.nullable(
-    S.array(
-      S.string
-    ).with(S.min, 1).with(S.max, MAX_COLLECTIONS_LENGTH)
-  ),
-  tags: S.array(
-    S.string
-  ).with(S.max, MAX_TAGS_LENGTH),
-  location: S.nullable(
-    S.string
-  ),
-  imageUrl: S.string,
-  fileMeta: S.schema({
-    width: S.number,
-    height: S.number,
-    type: S.string,
-    rawFilename: S.nullish(S.string)
-  }),
-})
+export type CreatePinPayload = {
+  meta: S.Output<typeof createPinSchema>,
+  file: Uint8Array<ArrayBuffer>
+}
 
 export const imageUrlAtom = atom<string | null>(null, "imageUlrAtom").pipe(withReset())
 export const imageMetaAtom = atom<ImageMeta | null>(null, "imageMetaAtom").pipe(withReset())
@@ -71,6 +42,8 @@ export const locationAtom = atom<string | null>(null, "locationAtom").pipe(withR
 export const inputTagAtom = atom("", "inputTagAtom").pipe(withReset())
 export const isValidTagsAtom = atom<boolean>((ctx) => ctx.spy(tagsAtom).length < MAX_TAGS_LENGTH, "isValidTagsAtom")
 
+const TAGS_EXAMPLE = ["abc", "bca", "cba", "cab", "abc", "bca", "cba", "cab"]
+
 export const similarTagsResource = reatomResource(async (ctx) => {
   if (!ctx.spy(isValidTagsAtom)) return;
 
@@ -78,7 +51,7 @@ export const similarTagsResource = reatomResource(async (ctx) => {
 
   await sleep(15)
 
-  return await ctx.schedule(() => ["abc", "bca", "cba", "cab", "abc", "bca", "cba", "cab"])
+  return await ctx.schedule(() => TAGS_EXAMPLE)
 }).pipe(withDataAtom(), withCache(), withStatusesAtom())
 
 export const controlTagsAction = action((ctx, value: string, type: "add" | "remove") => {
@@ -108,7 +81,7 @@ export const isValidAtom = atom<boolean>((ctx) => {
     location: validateString(ctx.spy(locationAtom)),
     imageUrl: ctx.spy(imageUrlAtom),
     fileMeta: ctx.spy(imageMetaAtom),
-  }, createPinSchema))
+  }, S.merge(createPinSchema, S.schema({ imageUrl: S.string }))))
 
   return result.success === true;
 }, "isValidAtom")
@@ -121,6 +94,21 @@ export const isRejectedAtom = atom<boolean>(false, "isRejectedAtom").pipe(
     return state
   }),
 )
+
+const createdPinIdAtom = atom<string | null>(null, "createdPinIdAtom").pipe(withReset())
+
+createdPinIdAtom.onChange((ctx, state) => {
+  if (state) {
+    spawnTimerToast({
+      name: "pin_created",
+      message: "Пин создан",
+      buttonMessage: "Перейти к пину",
+      cancelAction: redirectToCreatedPin
+    }).create(ctx)
+  }
+
+  return state;
+})
 
 export const resetErrorAction = action(async (ctx, isLazy: boolean) => {
   if (isLazy) await sleep(2000);
@@ -149,11 +137,11 @@ async function validateFileSize(target: File) {
 }
 
 export const uploadImageAction = reatomAsync(async (ctx, target: File) => {
-  return await ctx.schedule(async () => {
-    await validateFileSize(target)
+  await validateFileSize(target)
 
-    const { height, width } = await getImageDimensions(target)
+  const { height, width } = await getImageDimensions(target)
 
+  return await ctx.schedule(() => {
     imageUrlAtom(ctx, URL.createObjectURL(target))
     imageMetaAtom(ctx, {
       width, height,
@@ -170,6 +158,15 @@ export const uploadImageAction = reatomAsync(async (ctx, target: File) => {
   }
 }).pipe(withStatusesAtom())
 
+const redirectToCreatedPin = action((ctx) => {
+  const createdPinId = ctx.get(createdPinIdAtom)
+  const pc = ctx.get(pageContextAtom)
+  if (!createdPinId || !pc) return;
+
+  navigate(wrapLink(createdPinId, "pin"), { pageContext: { isAuth: pc.isAuth } })
+  createdPinIdAtom.reset(ctx)
+})
+
 export const uploadPinAction = reatomAsync(async (ctx) => {
   if (!ctx.get(isValidAtom)) return;
 
@@ -180,7 +177,7 @@ export const uploadPinAction = reatomAsync(async (ctx) => {
     collection: ctx.get(collectionAtom),
     tags: ctx.get(tagsAtom),
     location: ctx.get(locationAtom),
-    file: ctx.get(imageMetaAtom),
+    fileMeta: ctx.get(imageMetaAtom)
   };
 
   const fileUrl = ctx.get(imageUrlAtom);
@@ -188,28 +185,33 @@ export const uploadPinAction = reatomAsync(async (ctx) => {
   if (!fileUrl || !meta) return;
 
   const fileBlob = await fetch(fileUrl).then(res => res.blob());
-  const fileArrayBuffer = await fileBlob.arrayBuffer();
 
+  const fileArrayBuffer = await fileBlob.arrayBuffer();
   if (!fileArrayBuffer) return;
 
   const fileUint8Array = new Uint8Array(fileArrayBuffer);
 
-  const payload = { meta, file: fileUint8Array }
-  const payloadEncoded = encoder.encode(payload);
-  console.log(payload, payloadEncoded)
+  // @ts-expect-error
+  const payload: CreatePinPayload = { meta, file: fileUint8Array }
+  const payloadEncoded = new Encoder().encode(payload);
 
-  await sleep(1000)
+  await sleep(200);
 
-  const res = await client.post('pin/create-pin', { body: payloadEncoded })
+  const res = await experimentalClient.post("pin/create-pin", {
+    body: payloadEncoded,
+    throwHttpErrors: false,
+    signal: ctx.controller.signal
+  })
 
-  console.log(res.ok, res.status)
+  const json = await res.json<ApiResponse<{ id: string } | null>>()
+
+  if (!res.ok || !json.isSuccess) {
+    throw new Error(json.errorMessage ?? "Не удалось создать пин")
+  }
+
+  if (json.data) createdPinIdAtom(ctx, json.data.id)
 }, {
   name: "uploadPinAction",
-  onReject(ctx, e) {
-    if (e instanceof Error) {
-      toast.error(e.message)
-    }
-  },
   onFulfill(ctx) {
     titleAtom.reset(ctx)
     descriptionAtom.reset(ctx)
@@ -218,16 +220,28 @@ export const uploadPinAction = reatomAsync(async (ctx) => {
     tagsAtom.reset(ctx)
     locationAtom.reset(ctx)
     deleteImageAction(ctx)
-    toast.success("Пин создан")
-  }
+  },
+  onReject(ctx, e) {
+    if (e instanceof Error) {
+      toast.error(e.message)
+    }
+  },
 }).pipe(withStatusesAtom(), withAbort())
 
-async function getCollections(...params: Parameters<typeof fetch>): Promise<Array<Collection>> {
-  return [
-    { id: "1", title: "Default Collection", tags: ["Nature"] }
-  ]
+async function getCollections(param: string, signal: AbortSignal): Promise<Collection[] | null> {
+  const res = await experimentalClient(`user/${param}/get-collections`, { throwHttpErrors: false, signal })
+  const json = await res.json<ApiResponse<Collection[]>>()
+
+  if (!res.ok || !json.isSuccess) {
+    return null;
+  }
+
+  return json.data
 }
 
 export const fetchCollections = reatomResource(async (ctx) => {
-  return await getCollections("", ctx.controller)
+  const currentUser = ctx.get(currentUserAtom)
+  if (!currentUser) return;
+  
+  return await ctx.schedule(() => getCollections(currentUser.login, ctx.controller.signal))
 }).pipe(withDataAtom([]), withRetry(), withErrorAtom(), withStatusesAtom(), withCache({ swr: false }))

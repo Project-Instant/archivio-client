@@ -106,8 +106,6 @@ export const sendReportAction = reatomAsync(async (ctx) => {
       description: validateString(ctx.get(pinReportDescriptionAtom))
     }, pinReportSchema))
 
-    console.log(parsed)
-
     if (!parsed.success) {
       return pinReportErrorAtom(ctx, parsed.error.message ?? "Что-то пошло не так")
     }
@@ -122,8 +120,6 @@ export const sendReportAction = reatomAsync(async (ctx) => {
 
     await sleep(50);
 
-    toast.success("Репорт был создан.", {
-      position: "top-center"
-    })
+    toast.success("Репорт был создан.")
   }
 }).pipe(withStatusesAtom())

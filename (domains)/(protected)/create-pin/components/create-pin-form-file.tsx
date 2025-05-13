@@ -1,11 +1,12 @@
 import { reatomComponent, useAction } from "@reatom/npm-react"
-import { deleteImageAction, imageUrlAtom, isRejectedAtom, isRejectedErrorAtom, MAX_FILE_SIZE, resetErrorAction, uploadImageAction } from "../models/create-pin.model"
+import { deleteImageAction, imageUrlAtom, isRejectedAtom, isRejectedErrorAtom, resetErrorAction, uploadImageAction } from "../models/create-pin.model"
 import { cva, VariantProps } from "class-variance-authority"
 import { HTMLAttributes, useRef } from "react"
 import { isDraggedAtom } from "../models/file-area.model"
 import { File, X } from "lucide-react"
 import { bytesToMB } from "@/shared/lib/helpers/file-helpers"
 import { Button } from "@/shared/ui/button"
+import { MAX_FILE_SIZE } from "../constants/create-pin-limitations"
 
 type FileUploadAreProps = HTMLAttributes<HTMLDivElement>
   & VariantProps<typeof fileUploadAreaVariants>

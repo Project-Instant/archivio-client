@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs"
 import { reatomComponent } from "@reatom/npm-react"
 import { Bookmark, Grid } from "lucide-react"
-import { createdPinsResource, profileAtom } from "../models/profile.model"
+import { createdPinsResource, profileCollectionAtom } from "../models/profile.model"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { MasonryGrid } from "@/shared/components/masonry-grid/masonry-grid"
 import { PinCard } from "@/shared/components/pin-card/pin-card"
@@ -46,7 +46,7 @@ const ContentCreatedPins = reatomComponent(({ ctx }) => {
 }, "ContentCreatedPins")
 
 const ContentCreatedCollections = reatomComponent(({ ctx }) => {
-  if (!ctx.spy(profileAtom)) {
+  if (!ctx.spy(profileCollectionAtom)) {
     return <CreatedCollectionsSkeleton />
   }
 

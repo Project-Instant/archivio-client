@@ -16,6 +16,9 @@ import {
   REPORT_REASONS,
   ReportReason
 } from "../models/pin-report.model";
+import { action } from "@reatom/core";
+import { currentUserAtom } from "@/(domains)/(auth)/models/user.model";
+import { authDialogAtom } from "@/(domains)/(auth)/models/auth-dialog.model";
 
 const PinReportDescription = reatomComponent(({ ctx }) => {
   return (
@@ -87,16 +90,24 @@ const PIN_STEPS: Record<number, JSX.Element> = {
   2: <PinReportDescription />
 }
 
+const pinReportDialogAction = action((ctx, open: boolean) => {
+  if (!ctx.get(currentUserAtom)) {
+    return authDialogAtom(ctx, true)
+  }
+
+  pinReportDialogIsOpenAtom(ctx, open)
+})
+
 export const PinReport = reatomComponent(({ ctx }) => {
   return (
     <Dialog
       open={ctx.spy(pinReportDialogIsOpenAtom)}
-      onOpenChange={v => pinReportDialogIsOpenAtom(ctx, v)}
+      onOpenChange={v => pinReportDialogAction(ctx, v)}
     >
       <ActionItem
         size="mini"
         data-state={!ctx.spy(pinIsReportedAtom) ? "active" : "inactive"}
-        onClick={() => pinReportDialogIsOpenAtom(ctx, true)}
+        onClick={() => pinReportDialogAction(ctx, true)}
         className="cursor-pointer data-[state=inactive]:pointer-events-none data-[state=inactive]:opacity-50"
       >
         <span className="text-base font-semibold">Пожаловаться</span>

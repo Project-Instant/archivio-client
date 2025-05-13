@@ -1,16 +1,17 @@
+import { ApiResponse, experimentalClient } from "@/shared/api/api-client";
 import { Link } from "@/shared/components/link/Link";
 import { wrapLink } from "@/shared/lib/helpers/wrap-link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Skeleton } from "@/shared/ui/skeleton"
 import { reatomResource, withCache, withDataAtom, withStatusesAtom } from "@reatom/async"
-import { sleep } from "@reatom/framework";
 import { reatomComponent } from "@reatom/npm-react"
+import { pinResource } from "../models/pin.model";
 
-type Comment = {
+export type PinComment = {
   id: string,
   message: string,
   owner: {
-    id: string,
+    id: number,
     login: string,
     name: string | null,
     avatarUrl: string | null;
@@ -19,39 +20,22 @@ type Comment = {
   updatedAt: string | null;
 }
 
-const data: Comment[] = [
-  {
-    id: "1asdjk",
-    createdAt: new Date(),
-    message: "крутой пин",
-    owner: {
-      id: "asd91",
-      avatarUrl: "https://images.unsplash.com/photo-1746309820600-4832cf957235?q=80&w=1983&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      login: "pigi",
-      name: null
-    },
-    updatedAt: null
-  },
-  {
-    id: "asdsad1",
-    createdAt: new Date(),
-    message: "плохой пин",
-    owner: {
-      id: "askzja",
-      avatarUrl: "https://images.unsplash.com/photo-1746311460525-31a29b35f4c6?q=80&w=2026&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      login: "matvei",
-      name: null
-    },
-    updatedAt: null
+async function request(param: string, signal: AbortSignal) {
+  const res = await experimentalClient(`pin/${param}/get-comments`, { throwHttpErrors: false, signal })
+  const json = await res.json<ApiResponse<PinComment[] | null>>()
+
+  if (!res.ok || !json.isSuccess) {
+    return null;
   }
-]
+
+  return json.data
+}
 
 const commentsResource = reatomResource(async (ctx) => {
-  await sleep(300)
+  const currentPinId = ctx.spy(pinResource.dataAtom)?.id
+  if (!currentPinId) return
 
-  return await ctx.schedule( () => {
-    return data
-  })
+  return await ctx.schedule( () => request(currentPinId, ctx.controller.signal))
 }).pipe(withDataAtom([]), withCache(), withStatusesAtom())
 
 const List = reatomComponent(({ ctx }) => {
@@ -62,14 +46,17 @@ const List = reatomComponent(({ ctx }) => {
     </>
   )
 
+  const comments = ctx.spy(commentsResource.dataAtom)
+  if (!comments) return null
+
   return (
-    ctx.spy(commentsResource.dataAtom).map(comment => (
+    comments.map(comment => (
       <div key={comment.id} className="flex items-center gap-3 w-full">
         <Link href={wrapLink(comment.owner.login, "user")} className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
             <AvatarImage src={comment.owner.avatarUrl ?? undefined} />
             <AvatarFallback>
-              {comment.owner.login}
+              {comment.owner.login[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <p className="text-base font-semibold">{comment.owner.login}</p>

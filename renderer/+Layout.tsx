@@ -5,14 +5,22 @@ import { Toaster } from "sonner";
 import { useUpdate } from "@reatom/npm-react";
 import { usePageContext } from "vike-react/usePageContext";
 import { PropsWithChildren } from "react";
-import { isAuthAtom } from "@/(domains)/(auth)/models/user.model";
+import { pageContextAtom } from "@/(domains)/(auth)/models/user.model";
 import { AuthLayout } from "@/(domains)/(auth)/components/auth-layout";
 import { Loader } from '@/shared/ui/loader';
 
 const ReatomContext = clientOnly(async () => (await import('@/shared/providers/reatom-provider')).ReatomContextProvider);
 const NextTopLoader = clientOnly(() => import("nextjs-toploader"))
 
-const SyncIsAuth = () => useUpdate(isAuthAtom, [usePageContext().isAuth])
+const SyncPageContext = () => {
+  const { isAuth, isBackwardNavigation, isPageContext } = usePageContext()
+
+  useUpdate((ctx) => pageContextAtom(ctx, { 
+    isAuth, isBackwardNavigation, isPageContext
+   }), [usePageContext().isAuth, usePageContext().isBackwardNavigation, usePageContext().isPageContext])
+
+  return null;
+}
 
 const PageSkeleton = () => {
   return (
@@ -27,10 +35,10 @@ export default function LayoutDefault({ children }: PropsWithChildren) {
   return (
     <div id="page-container">
       <div id="page-content">
-        <Toaster position="bottom-center" richColors />
         <NextTopLoader color="#059669" showSpinner={false} shadow="0 0 10px #2299DD,0 0 5px #2299DD" />
         <ReatomContext fallback={<PageSkeleton />}>
-          <SyncIsAuth />
+          <Toaster position="bottom-center" richColors />
+          <SyncPageContext />
           <AuthLayout>
             {children}
           </AuthLayout>

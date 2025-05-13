@@ -1,6 +1,7 @@
 import { Input } from "@/shared/ui/input"
 import { reatomComponent } from "@reatom/npm-react"
-import { MAX_TITLE_LENGTH, titleAtom } from "../models/create-pin.model"
+import { titleAtom } from "../models/create-pin.model"
+import { MAX_TITLE_LENGTH } from "../constants/create-pin-limitations"
 
 export const CreatePinFormTitle = reatomComponent(({ ctx }) => {
   return (
