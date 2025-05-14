@@ -100,7 +100,7 @@ export const applyChangesAction = reatomAsync(async (ctx) => {
 
     toast.success("Сохранено");
   },
-  onReject: (ctx, error) => {
+  onReject: () => {
     toast.error("Произошла ошибка при сохранении");
   }
 })

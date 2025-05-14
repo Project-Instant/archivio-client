@@ -1,5 +1,5 @@
 import { decode } from "cbor-x";
-import ky, { AfterResponseHook, HTTPError, KyInstance, KyResponse, NormalizedOptions, Options } from "ky"
+import ky, { AfterResponseHook, KyInstance, KyResponse, NormalizedOptions, Options } from "ky"
 
 export class CborDecodingError extends Error {
   public readonly response: KyResponse;

@@ -13,7 +13,7 @@ export async function data(pageContext: PageContextServer) {
 
   config({
     Head: <>
-      {data.user.description && <meta name="description" content={data.user.description} />}
+      <meta name="description" content={data.user.description ?? `Страница пользователя ${data.user.login}`} />
       {data.user.avatarUrl && <meta property="og:image" content={data.user.avatarUrl} />}
       <meta property="og:type" content="website" />
       <meta property="og:url" content={`https://mvp.fasberry.su/${data.user.login}`} />

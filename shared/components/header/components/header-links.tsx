@@ -4,7 +4,7 @@ import { Fragment } from "react/jsx-runtime"
 import { ActionItem } from "@/shared/components/action-item/action-item"
 import { Link } from "../../link/Link"
 
-export const HEADER = [
+export const LINKS = [
   {
     section: "panel",
     title: "Быстрый доступ",
@@ -55,32 +55,36 @@ export const HEADER = [
   }
 ]
 
-export function HeaderLinks() {
+const HeaderLink = ({ children, title }: Omit<typeof LINKS[number], "section">) => {
   return (
-    <div className="container mx-auto h-full">
-      <div className="flex flex-col lg:flex-row items-start justify-between h-full py-12 gap-2 w-full">
-        {HEADER.map(i => (
-          <Fragment key={i.section}>
-            <div className="flex flex-col items-start text-foreground justify-start h-full gap-3 w-full">
-              <p className="font-semibold text-lg">
-                {i.title}
-              </p>
-              <div className="flex flex-col gap-2 h-full w-full">
-                {i.children.map((j, idx) => (
-                  <SheetClose key={idx}>
-                    <Link href={j.href}>
-                      <ActionItem>
-                        {j.title}
-                      </ActionItem>
-                    </Link>
-                  </SheetClose>
-                ))}
-              </div>
-            </div>
-            <Separator orientation="vertical" className="h-full bg-muted" />
-          </Fragment>
+    <div className="flex flex-col items-start text-foreground justify-start h-full gap-3 w-full">
+      <p className="font-semibold text-lg">
+        {title}
+      </p>
+      <div className="flex flex-col gap-2 h-full w-full">
+        {children.map((j, idx) => (
+          <SheetClose key={idx}>
+            <Link href={j.href}>
+              <ActionItem>
+                {j.title}
+              </ActionItem>
+            </Link>
+          </SheetClose>
         ))}
       </div>
+    </div>
+  )
+}
+
+export function HeaderLinks() {
+  return (
+    <div className="flex flex-col lg:flex-row items-start justify-between h-full py-12 gap-2 w-full">
+      {LINKS.map(link => (
+        <Fragment key={link.section}>
+          <HeaderLink title={link.title} children={link.children} />
+          <Separator orientation="vertical" className="h-full bg-muted" />
+        </Fragment>
+      ))}
     </div>
   )
 }

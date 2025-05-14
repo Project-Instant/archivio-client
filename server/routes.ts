@@ -7,7 +7,7 @@ import { bytesToMB } from '@/shared/lib/helpers/file-helpers';
 import { MAX_FILE_SIZE } from '@/(domains)/(protected)/create-pin/constants/create-pin-limitations';
 import { createPinSchema } from '@/(domains)/(protected)/create-pin/constants/create-pin-schemas';
 import { Pin } from '@/(domains)/pin/models/pin.model';
-import { COMMENTS, PINS } from './data';
+import { COMMENTS, FOLLOWERS, PINS, REPORT_REASONS } from './data';
 import { PinComment } from '@/(domains)/pin/components/pin-comments';
 import { markHonoResponseForCbor } from './middlewares/cbor-middleware';
 import { Hono } from 'hono';
@@ -158,4 +158,30 @@ export const sendAnalytics = new Hono().post("analytics/send", async (ctx) => {
   const dec = new Encoder().decode(new Uint8Array(ab))
 
   return ctx.json(dec, 200)
+})
+
+export const getRepostReasons = new Hono().get("pin/report/get-reasons", async (ctx) => {
+  markHonoResponseForCbor(ctx);
+
+  return ctx.json<ApiResponse<typeof REPORT_REASONS>>({ data: REPORT_REASONS, ...successMeta }, 200)
+})
+
+const DEFAULT_TAGS = ["abc", "bca", "cba", "cab", "abc", "bca", "cba", "cab"]
+
+export const getSearchedTags = new Hono().get("search/:query", async (ctx) => {
+  const { query } = ctx.req.param()
+
+  const searchedTags = DEFAULT_TAGS.filter(t => t.includes(query))
+
+  return ctx.json<ApiResponse<string[]>>({ data: searchedTags, ...successMeta }, 200)
+})
+
+export const getUserFollowers = new Hono().get("user/:id/get-followers", async (ctx) => {
+  markHonoResponseForCbor(ctx);
+
+  const { id } = ctx.req.param()
+
+  const followers = FOLLOWERS.length >= 1 ? FOLLOWERS.filter(f => f.init === id).map(d => d.data) : null
+
+  return ctx.json<ApiResponse<typeof followers>>({ data: followers, ...successMeta }, 200)
 })

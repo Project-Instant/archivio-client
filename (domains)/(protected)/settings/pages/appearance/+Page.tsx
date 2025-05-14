@@ -1,4 +1,8 @@
-import { ThemeSwitcher } from "../../components/edit-appearance-form";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { clientOnly } from "vike-react/clientOnly";
+
+const ThemeSwitcher = clientOnly(async () => (await import("../../components/edit-appearance-form")).ThemeSwitcher)
+const GridColumnsNumberSelector = clientOnly(async () => (await import("../../components/edit-appearance-form")).GridColumnsNumberSelector)
 
 export default function ApperancePage() {
   return (
@@ -18,7 +22,16 @@ export default function ApperancePage() {
             Вы можете выбрать один из двух цветовых режимов
           </span>
         </div>
-        <ThemeSwitcher />
+        <ThemeSwitcher fallback={<Skeleton className="h-9 w-12"/>} />
+      </div>
+      <div className="flex items-center justify-between w-full">
+        <div className="flex flex-col">
+          <p className="font-semibold text-lg">Сетка</p>
+          <span className="text-muted-foreground">
+            От этого зависит количество колонок в сетке
+          </span>
+        </div>
+        <GridColumnsNumberSelector fallback={<Skeleton className="h-9 w-12"/>}/>
       </div>
     </div>
   )

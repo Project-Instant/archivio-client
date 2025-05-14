@@ -3,10 +3,10 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import vike from "vike/plugin";
 // import oxlintPlugin from 'vite-plugin-oxlint'
-// import minipic from 'vite-plugin-minipic'
+import minipic from 'vite-plugin-minipic'
 import { visualizer } from 'rollup-plugin-visualizer'; 
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   plugins: [
     vike(),
     react(),
@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
       brotliSize: true,
     }),
     // oxlintPlugin(),
-    // minipic()
+    minipic()
   ],
   optimizeDeps: {
     include: ['react', 'react-dom'],
@@ -39,4 +39,4 @@ export default defineConfig(({ mode }) => ({
       "@": new URL("./", import.meta.url).pathname,
     },
   }
-}));
+});

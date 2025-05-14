@@ -6,11 +6,13 @@ import { ArrowDown } from "lucide-react"
 import { Button } from "@/shared/ui/button"
 import { Link } from "../../link/Link"
 import { DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/shared/ui/dialog"
-import { currentUserAtom, logoutAction } from "@/(domains)/(auth)/models/user.model"
-import { authDialogAtom } from "@/(domains)/(auth)/models/auth-dialog.model"
+import { getCurrentUser, isAuthAtom } from "@/(domains)/(auth)/models/user.model"
+import { authDialogIsOpenAtom } from "@/(domains)/(auth)/models/auth-dialog.model"
 import { wrapLink } from "@/shared/lib/helpers/wrap-link"
 import { Separator } from "@/shared/ui/separator"
 import { ConfirmDialog, confirmDialogIsOpenAtom } from "../../modals/confirm-dialog"
+import { logoutAction } from "@/(domains)/(auth)/models/auth.model"
+import { Skeleton } from "@/shared/ui/skeleton"
 
 const HeaderLogoutDialog = reatomComponent(({ ctx }) => {
   return (
@@ -36,8 +38,7 @@ const HeaderLogoutDialog = reatomComponent(({ ctx }) => {
 }, "HeaderLogoutDialog")
 
 const HeaderUserCard = reatomComponent(({ ctx }) => {
-  const currentUser = ctx.get(currentUserAtom)
-  if (!currentUser) return null;
+  const currentUser = getCurrentUser(ctx)
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -48,24 +49,30 @@ const HeaderUserCard = reatomComponent(({ ctx }) => {
           <AvatarFallback>{currentUser.login[0].toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <p className="truncate">{currentUser.name}</p>
-          <span className="text-secondary-foreground">Личный аккаунт</span>
+          <p className="truncate text-base">{currentUser.name ?? currentUser.login}</p>
+          <span className="text-sm text-secondary-foreground">Личный аккаунт</span>
         </div>
       </div>
     </div>
   )
 }, "HeaderLogoutDialog")
 
-export const HeaderUser = reatomComponent(({ ctx }) => {
-  const currentUser = ctx.spy(currentUserAtom)
+const HeaderAuthorizeButton = reatomComponent(({ ctx }) => {
+  return (
+    <Button onClick={() => authDialogIsOpenAtom(ctx, true)} className="text-base font-semibold">
+      Войти
+    </Button>
+  )
+}, "HeaderAuthorizeButton")
 
-  if (!currentUser) {
-    return (
-      <Button onClick={() => authDialogAtom(ctx, true)} className="text-base font-semibold">
-        Войти
-      </Button>
-    )
+export const HeaderUser = reatomComponent(({ ctx }) => {
+  const currentUser = getCurrentUser(ctx, { throwError: false })
+
+  if (!currentUser && ctx.spy(isAuthAtom)) {
+    return <Skeleton className="h-9 w-24" />
   }
+
+  if (!currentUser) return <HeaderAuthorizeButton />
 
   return (
     <>
@@ -75,19 +82,22 @@ export const HeaderUser = reatomComponent(({ ctx }) => {
             <Link href={wrapLink(currentUser.login, "user")}>
               <Avatar>
                 <AvatarImage src={currentUser.avatarUrl ?? undefined} alt="" />
-                <AvatarFallback>{currentUser.login[0].toUpperCase()}</AvatarFallback>
+                <AvatarFallback>
+                  {currentUser.login[0].toUpperCase()}
+                </AvatarFallback>
               </Avatar>
             </Link>
           </TooltipTrigger>
-          <TooltipContent>
-            <span>Профиль</span>
-          </TooltipContent>
+          <TooltipContent>Профиль</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <HeaderLogoutDialog />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger className="hover:bg-muted-foreground/20 data-[state=open]:bg-muted-foreground/20 group cursor-pointer rounded-xl p-2">
-          <ArrowDown size={20} className="text-foreground group-data-[state=open]:rotate-180 transition-transform duration-300" />
+          <ArrowDown
+            size={20}
+            className="text-foreground group-data-[state=open]:rotate-180 transition-transform duration-300"
+          />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" className="flex flex-col gap-2 p-3" >
           <HeaderUserCard />
@@ -99,7 +109,10 @@ export const HeaderUser = reatomComponent(({ ctx }) => {
             <Link href="/misc/privacy" className="px-4 py-2 w-full">Конфиденциальность</Link>
           </DropdownMenuItem>
           <Separator />
-          <DropdownMenuItem onSelect={() => confirmDialogIsOpenAtom(ctx, true)} className="px-4 py-2 w-full">
+          <DropdownMenuItem
+            onSelect={() => confirmDialogIsOpenAtom(ctx, true)}
+            className="px-4 py-2 w-full"
+          >
             Выйти
           </DropdownMenuItem>
         </DropdownMenuContent>

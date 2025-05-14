@@ -14,7 +14,7 @@ export function PinCard({
       <div className="relative w-full rounded-xl overflow-hidden cursor-pointer aspect-auto">
         <img
           src={fullImage}
-          alt={title}
+          alt={title.slice(0, 8) + '...'}
           width={400}
           height={400}
           className="w-full object-cover transition-transform rounded-xl"

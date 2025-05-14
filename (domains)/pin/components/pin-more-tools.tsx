@@ -9,8 +9,6 @@ import { experimentalClient } from "@/shared/api/api-client"
 import { Encoder } from "cbor-x"
 import { currentUserAtom } from "@/(domains)/(auth)/models/user.model"
 
-let encoder = new Encoder()
-
 const PinShare = () => {
   return (
     <DropdownMenu>
@@ -47,7 +45,7 @@ const sendSignalAction = reatomAsync(async (ctx) => {
   }
 
   return await ctx.schedule(() => experimentalClient.post("analytics/send", {
-    body: encoder.encode(payload),
+    body: new Encoder().encode(payload),
     headers: { "Content-Type": "application/cbor" },
   }))
 })

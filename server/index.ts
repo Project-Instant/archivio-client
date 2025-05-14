@@ -3,10 +3,23 @@ import { apply } from 'vike-server/hono'
 import { serve } from 'vike-server/hono/serve'
 import { languageDetector } from 'hono/language'
 import { consola } from "consola";
-import { timing, startTime, endTime } from 'hono/timing'
+import { timing } from 'hono/timing'
 import type { TimingVariables } from 'hono/timing'
 import { createHonoCborEncodingMiddleware, HONO_SHOULD_ENCODE_CBOR_KEY } from './middlewares/cbor-middleware';
-import { createPin, getHomefeedPins, getPin, getPinComments, getSimilarPinsByPin, getUserCollections, getUserPins, sendAnalytics } from './routes';
+import { 
+  createPin, 
+  getHomefeedPins, 
+  getPin, 
+  getPinComments, 
+  getRepostReasons, 
+  getSearchedTags, 
+  getSimilarPinsByPin, 
+  getUserCollections,
+  getUserFollowers, 
+  getUserPins, 
+  sendAnalytics 
+} from './routes';
+import { logger } from "hono/logger"
 
 declare module 'hono' {
   interface ContextVariableMap {
@@ -20,6 +33,7 @@ declare module 'hono' {
 async function startServer() {
   const app = new Hono()
     .use(
+      logger(),
       timing(),
       languageDetector({ supportedLanguages: ['en', 'ru'], fallbackLanguage: 'ru', }),
       createHonoCborEncodingMiddleware({ encoderOptions: {} }),
@@ -32,6 +46,9 @@ async function startServer() {
     .route("/experimental/v1", getUserPins)
     .route("/experimental/v1", getSimilarPinsByPin)
     .route("/experimental/v1", getPinComments)
+    .route("/experimental/v1", getRepostReasons)
+    .route("/experimental/v1", getSearchedTags)
+    .route("/experimental/v1", getUserFollowers)
 
   apply(app, {
     pageContext(runtime) {

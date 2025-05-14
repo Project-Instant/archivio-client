@@ -1,10 +1,10 @@
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/shared/ui/dialog";
 import { reatomComponent } from "@reatom/npm-react";
 import { Fullscreen, Minus, Plus } from "lucide-react";
 import { PinSave } from "./pin-save";
 import { pinFullscreenScaleAtom, pinIsFullscreenAtom, pinResource, scaleAction } from "../models/pin.model";
 import { action } from "@reatom/core";
-import { authDialogAtom } from "@/(domains)/(auth)/models/auth-dialog.model";
+import { authDialogIsOpenAtom } from "@/(domains)/(auth)/models/auth-dialog.model";
 import { currentUserAtom } from "@/(domains)/(auth)/models/user.model";
 
 const PinImageToolsBar = reatomComponent(({ ctx }) => {
@@ -35,9 +35,10 @@ const PinImageToolsBar = reatomComponent(({ ctx }) => {
 }, "PinImageToolsBar")
 
 const PinImage = reatomComponent(({ ctx }) => {
-  const pin = ctx.spy(pinResource.dataAtom)
+  const data = ctx.spy(pinResource.dataAtom)
   const zoomSteps = ctx.spy(pinFullscreenScaleAtom);
-
+  const pin = data?.data
+  
   if (!pin) return null;
 
   return (
@@ -56,7 +57,7 @@ const PinImage = reatomComponent(({ ctx }) => {
 
 const pinControlDialogAction = action((ctx, open: boolean) => {
   if (!ctx.get(currentUserAtom)) {
-    return authDialogAtom(ctx, true)
+    return authDialogIsOpenAtom(ctx, true)
   }
 
   pinIsFullscreenAtom(ctx, open)
@@ -73,6 +74,7 @@ export const PinImageTools = reatomComponent(({ ctx }) => {
         withClose={false}
       >
         <DialogTitle></DialogTitle>
+        <DialogDescription></DialogDescription>
         <PinImage />
         <PinImageToolsBar />
       </DialogContent>

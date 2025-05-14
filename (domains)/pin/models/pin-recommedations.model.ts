@@ -1,6 +1,7 @@
-import { reatomResource, withCache, withDataAtom, withStatusesAtom } from "@reatom/framework";
+import { reatomResource, withDataAtom, withStatusesAtom } from "@reatom/framework";
 import { Pin, pinResource } from "./pin.model";
 import { ApiResponse, experimentalClient } from "@/shared/api/api-client";
+import { currentUserAction, currentUserAtom, getCurrentUser } from "@/(domains)/(auth)/models/user.model";
 
 async function request(param: string, signal: AbortSignal) {
   const res = await experimentalClient(`pin/${param}/get-similar`, { throwHttpErrors: false, signal });
@@ -13,13 +14,28 @@ async function request(param: string, signal: AbortSignal) {
   return json.data;
 }
 
-export const pinRecommendationsResource = reatomResource(async (ctx) => {
-  const currentParam = ctx.spy(pinResource.dataAtom)?.id;
-  if (!currentParam) return null;
+type PinRecommendationsResource = {
+  data: Pin[] | null,
+  status: "unauthorized" | null
+}
 
-  return await ctx.schedule(() => request(currentParam, ctx.controller.signal))
-}).pipe(
-  withDataAtom(),
-  withStatusesAtom(),
-  withCache({ staleTime: 10 * 60 * 1000 })
-)
+export const pinRecommendationsResource = reatomResource<PinRecommendationsResource>(async (ctx) => {
+  const currentParam = ctx.spy(pinResource.dataAtom)?.data?.id;
+  if (!currentParam) return { data: null, status: null };
+
+  const currentUser = getCurrentUser(ctx, { throwError: false })
+
+  if (!currentUser) {
+    return { data: null, status: "unauthorized" };
+  }
+
+  if (ctx.spy(currentUserAction.statusesAtom).isPending) {
+    return { data: null, status: null };
+  }
+
+  return await ctx.schedule(async () => {
+    const pins = await request(currentParam, ctx.controller.signal)
+
+    return { data: pins, status: null };
+  })
+}).pipe(withDataAtom(), withStatusesAtom())

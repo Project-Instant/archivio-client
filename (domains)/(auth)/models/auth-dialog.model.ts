@@ -1,3 +1,3 @@
 import { atom } from "@reatom/core"
 
-export const authDialogAtom = atom(false, "authDialogAtom")
+export const authDialogIsOpenAtom = atom(false, "authDialogAtom")

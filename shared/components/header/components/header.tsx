@@ -1,68 +1,63 @@
-import { Bell, Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/shared/ui/sheet";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-import { HeaderLinks } from "./header-links";
 import { reatomComponent } from "@reatom/npm-react";
-import { currentUserAtom } from "@/(domains)/(auth)/models/user.model";
-import { GlobalSearch, SearchTrigger } from "./header-search";
-import { HeaderUser } from "./header-user";
-import { NotificationsMenu } from "./header-notifications";
-import { HeaderLogo } from "./header-logo";
-import { lazy, Suspense } from "react";
+import { currentUserAction, getCurrentUser, isAuthAtom } from "@/(domains)/(auth)/models/user.model";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { lazy, PropsWithChildren, Suspense } from "react";
+import { logImport } from "@/shared/lib/utils/log-import";
 
-const AuthDialog = lazy(() => import("@/(domains)/(auth)/components/auth-dialog").then(m => ({ default: m.AuthDialog })))
+const PublicHeader = lazy(() => {
+  const component = import("./public-header").then(m => ({ default: m.PublicHeader }))
+  logImport("PublicHeader", component)
+  return component
+})
 
-const MENUS = [
-  {
-    name: "notifications",
-    trigger: (
-      <div className="flex items-center justify-center">
-        <Bell size={20} className="text-foreground" />
-        <span className="sr-only">Notifications</span>
-      </div>
-    ),
-    children: <NotificationsMenu />
-  },
-]
+const ProtectedHeader = lazy(() => {
+  const component = import("./protected-header").then(m => ({ default: m.ProtectedHeader }))
+  logImport("ProtectedHeader", component)
+  return component
+})
 
-export const Header = reatomComponent(({ ctx }) => {
+const HeaderSkeleton = () => {
   return (
     <>
-      {!ctx.spy(currentUserAtom) && (
-        <Suspense>
-          <AuthDialog />
-        </Suspense>
-      )}
-      <header className="sticky bg-background top-0 z-10">
-        <div className="container flex items-center h-16 mx-auto gap-x-4">
-          <div className="flex items-center justify-between grow">
-            <Sheet>
-              <SheetTrigger className="flex items-center cursor-pointer">
-                <HeaderLogo />
-                <Menu size={20} className="text-foreground ml-2" />
-              </SheetTrigger>
-              <SheetContent side="top" className="rounded-b-xl">
-                <HeaderLinks />
-              </SheetContent>
-            </Sheet>
-            <GlobalSearch />
-          </div>
-          <div className="flex items-center gap-4">
-            <SearchTrigger />
-            {MENUS.map(i => (
-              <DropdownMenu key={i.name}>
-                <DropdownMenuTrigger className="hover:bg-muted-foreground/20 data-[state=open]:bg-muted-foreground/20 group cursor-pointer rounded-xl p-2">
-                  {i.trigger}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="p-2">
-                  {i.children}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ))}
-            <HeaderUser />
-          </div>
-        </div>
-      </header>
+      <div className="grow" />
+      <>
+        <Skeleton className="h-9 w-9 rounded-full" />
+        <Skeleton className="h-9 w-9 rounded-full" />
+        <Skeleton className="h-9 w-9 rounded-full" />
+        <Skeleton className="h-9 w-9 rounded-full" />
+      </>
     </>
   )
+}
+
+const HeaderWrapper = ({ children }: PropsWithChildren) => {
+  return (
+    <header className="sticky bg-background top-0 z-10 h-16">
+      <div className="container h-full flex items-center mx-auto gap-x-4">
+        {children}
+      </div>
+    </header>
+  )
+}
+
+const HeaderChild = reatomComponent(({ ctx }) => {
+  const currentUser = getCurrentUser(ctx, { throwError: false })
+
+  const isLoading = (!currentUser && ctx.spy(isAuthAtom)) || (ctx.spy(currentUserAction.statusesAtom).isPending && ctx.spy(isAuthAtom))
+
+  if (isLoading) return <HeaderSkeleton />
+
+  return (
+    <Suspense fallback={<HeaderSkeleton />}>
+      {!currentUser ? <PublicHeader /> : <ProtectedHeader />}
+    </Suspense>
+  )
 }, "Header")
+
+export const Header = () => {
+  return (
+    <HeaderWrapper>
+      <HeaderChild />
+    </HeaderWrapper>
+  )
+}

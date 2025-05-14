@@ -1,13 +1,14 @@
-import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/shared/ui/dialog";
 import { reatomComponent } from "@reatom/npm-react";
 import { AuthDialogForm } from "./auth-form";
-import { authDialogAtom } from "../models/auth-dialog.model";
+import { authDialogIsOpenAtom } from "../models/auth-dialog.model";
 
 export const AuthDialog = reatomComponent(({ ctx }) => {
   return (
-    <Dialog open={ctx.spy(authDialogAtom)} onOpenChange={v => authDialogAtom(ctx, v)}>
+    <Dialog open={ctx.spy(authDialogIsOpenAtom)} onOpenChange={v => authDialogIsOpenAtom(ctx, v)}>
       <DialogContent className="max-w-lg rounded-4xl p-8">
         <DialogTitle></DialogTitle>
+        <DialogDescription></DialogDescription>
         <div className="flex flex-col items-center gap-6">
           <AuthDialogForm />
         </div>

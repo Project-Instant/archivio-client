@@ -1,6 +1,6 @@
 import { ActionItem } from "@/shared/components/action-item/action-item";
 import { Button } from "@/shared/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/shared/ui/dialog";
 import { Label } from "@/shared/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shared/ui/radio-group";
 import { Textarea } from "@/shared/ui/textarea";
@@ -13,12 +13,11 @@ import {
   pinReportDialogIsOpenAtom,
   pinReportReasonAtom,
   pinReportStepAtom,
-  REPORT_REASONS,
-  ReportReason
+  reportReasonsResource
 } from "../models/pin-report.model";
 import { action } from "@reatom/core";
 import { currentUserAtom } from "@/(domains)/(auth)/models/user.model";
-import { authDialogAtom } from "@/(domains)/(auth)/models/auth-dialog.model";
+import { authDialogIsOpenAtom } from "@/(domains)/(auth)/models/auth-dialog.model";
 
 const PinReportDescription = reatomComponent(({ ctx }) => {
   return (
@@ -48,15 +47,18 @@ const PinReportDescription = reatomComponent(({ ctx }) => {
 }, "PinReportDescription")
 
 const PinReportSelectReason = reatomComponent(({ ctx }) => {
+  const data = ctx.spy(reportReasonsResource.dataAtom)
+  if (!data) return null;
+
   return (
     <>
       <div className="flex flex-col gap-2 w-full h-full">
         <RadioGroup
           value={ctx.spy(pinReportReasonAtom)}
-          onValueChange={v => pinReportReasonAtom(ctx, v as ReportReason)}
+          onValueChange={v => pinReportReasonAtom(ctx, v as typeof data[number]['name'])}
           className="w-full"
         >
-          {REPORT_REASONS.map(report => (
+          {data.map(report => (
             <div key={report.name} className="flex p-2 items-start gap-4 w-full">
               <RadioGroupItem
                 className="relative top-1.5"
@@ -92,7 +94,7 @@ const PIN_STEPS: Record<number, JSX.Element> = {
 
 const pinReportDialogAction = action((ctx, open: boolean) => {
   if (!ctx.get(currentUserAtom)) {
-    return authDialogAtom(ctx, true)
+    return authDialogIsOpenAtom(ctx, true)
   }
 
   pinReportDialogIsOpenAtom(ctx, open)
@@ -114,6 +116,7 @@ export const PinReport = reatomComponent(({ ctx }) => {
       </ActionItem>
       <DialogContent className="flex flex-col gap-4 min-h-48 w-full">
         <DialogTitle className="text-center">Жалоба на пин</DialogTitle>
+        <DialogDescription></DialogDescription>
         {PIN_STEPS[ctx.spy(pinReportStepAtom)]}
       </DialogContent>
     </Dialog>

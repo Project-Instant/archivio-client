@@ -1,26 +1,21 @@
 import { lazy, Suspense, PropsWithChildren } from "react"
 import { reatomComponent } from "@reatom/npm-react"
-import { Header } from "@/shared/components/header/components/header"
 import { isAuthAtom } from "../models/user.model"
-import { PublicHeader } from "@/shared/components/header/components/public-header"
+import { Header } from "@/shared/components/header/components/header"
+import { logImport } from "@/shared/lib/utils/log-import"
 
-const AuthDialog = lazy(() => import("./auth-dialog").then(m => ({ default: m.AuthDialog })))
+const AuthDialog = lazy(() => {
+  const component = import("./auth-dialog").then(m => ({ default: m.AuthDialog }))
+  logImport("AuthDialog", component)
+  return component
+})
 
 export const AuthLayout = reatomComponent<PropsWithChildren>(({ ctx, children }) => {
-  return ctx.spy(isAuthAtom) ? (
+  return (
     <>
+      {!ctx.spy(isAuthAtom) && <Suspense><AuthDialog /></Suspense>}
       <Header />
       {children}
-    </>
-  ) : (
-    <>
-      <Suspense>
-        <AuthDialog />
-      </Suspense>
-      <div className="flex flex-col relative min-h-svh w-full">
-        <PublicHeader />
-        {children}
-      </div>
     </>
   )
 }, "AuthLayout")

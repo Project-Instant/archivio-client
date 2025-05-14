@@ -13,7 +13,7 @@ import {
 import { ReactNode, useRef } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar"
 import { Upload, X } from "lucide-react"
-import { currentUserAtom } from "@/(domains)/(auth)/models/user.model"
+import { getCurrentUser } from "@/(domains)/(auth)/models/user.model"
 import { Button } from "@/shared/ui/button"
 
 export const EditName = reatomComponent(({ ctx }) => {
@@ -54,6 +54,7 @@ const ActionWrapper = ({ children, onClick }: { onClick: () => void, children: R
 }
 
 export const EditAvatar = reatomComponent(({ ctx }) => {
+  const currentUser = getCurrentUser(ctx, { throwError: false })
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,11 +69,13 @@ export const EditAvatar = reatomComponent(({ ctx }) => {
     }
   }
 
+  if (!currentUser) return null;
+
   return (
     <div className="flex flex-col w-full">
       <p className="font-semibold text-lg">Аватар</p>
       <Avatar className="w-32 h-32 group">
-        <AvatarImage src={ctx.spy(newAvatarAtom) ?? undefined} className="group-hover:brightness-50" />
+        <AvatarImage src={ctx.spy(newAvatarAtom) ?? undefined} className="group-hover:brightness-50" alt="" />
         {ctx.spy(newAvatarAtom) && (
           <ActionWrapper onClick={() => resetAvatarAction(ctx)}>
             <X size={36} />
@@ -83,7 +86,7 @@ export const EditAvatar = reatomComponent(({ ctx }) => {
             <Upload size={36} />
           </ActionWrapper>
           <span className="text-xl group-hover:hidden">
-            {ctx.spy(currentUserAtom)?.login[0].toUpperCase()}
+            {currentUser.login[0].toUpperCase()}
           </span>
         </AvatarFallback>
         <input

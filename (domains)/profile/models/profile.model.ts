@@ -1,7 +1,8 @@
-import { atom, reatomAsync, reatomResource, sleep, withCache, withDataAtom, withErrorAtom, withStatusesAtom } from "@reatom/framework";
+import { atom, CtxSpy, reatomAsync, reatomResource, withCache, withComputed, withDataAtom, withErrorAtom, withReset, withStatusesAtom } from "@reatom/framework";
 import { User } from "@/(domains)/(auth)/models/user.model";
 import { ApiResponse, experimentalClient } from "@/shared/api/api-client";
 import { Pin } from "@/(domains)/pin/models/pin.model";
+import consola from "consola";
 
 export type Profile = {
   user: User,
@@ -14,12 +15,54 @@ export type Profile = {
   tags: string[] | null
 }
 
-export const profileParamAtom = atom<string | null>(null, "profileParam")
-export const profileFollowersAtom = atom<Profile["followers"]>(0, "profileFollowersAtom")
-export const profileFollowingAtom = atom<Profile["following"]>(0, "profileFollowingAtom")
-export const profileUserAtom = atom<Profile["user"] | null>(null, "profileUserAtom")
-export const profileCollectionAtom = atom<Profile["collection"] | null>(null, "profileCollectionAtom")
-export const profileTagsAtom = atom<string[] | null>(null, "profileTagsAtom")
+export const profilePrevParamAtom = atom<string | null>(null, "profilePrevParamAtom")
+export const profileParamAtom = atom<string | null>(null, "profileParam").pipe(
+  withComputed((ctx, state) => profilePrevParamAtom(ctx, state))
+)
+export const profileFollowersAtom = atom<Profile["followers"]>(0, "profileFollowersAtom").pipe(withReset())
+export const profileFollowingAtom = atom<Profile["following"]>(0, "profileFollowingAtom").pipe(withReset())
+export const profileUserAtom = atom<Profile["user"] | null>(null, "profileUserAtom").pipe(withReset())
+export const profileCollectionAtom = atom<Profile["collection"] | null>(null, "profileCollectionAtom").pipe(withReset())
+export const profileTagsAtom = atom<string[] | null>(null, "profileTagsAtom").pipe(withReset())
+export const profileIsLoadingAtom = atom<boolean>((ctx) => ctx.spy(profileUserAtom) ? false : true, "profileIsLoading")
+
+profileIsLoadingAtom.onChange((_, state) => consola.info("Is loading", state))
+profileUserAtom.onChange((_, state) => consola.info("User", state))
+
+export const getProfile = {
+  user(ctx: CtxSpy) {
+    return ctx.spy(profileUserAtom);
+  },
+  collection(ctx: CtxSpy) {
+    return ctx.spy(profileCollectionAtom);
+  },
+  tags(ctx: CtxSpy) {
+    return ctx.spy(profileTagsAtom);
+  },
+  followers(ctx: CtxSpy) {
+    return ctx.spy(profileFollowersAtom);
+  },
+  follows(ctx: CtxSpy) {
+    return ctx.spy(profileFollowingAtom);
+  }
+}
+
+profileParamAtom.onChange((ctx, newState) => {
+  const prevState = ctx.get(profilePrevParamAtom)
+
+  consola.info(`prev: ${prevState}`, `updated to ${newState}`)
+
+  if (prevState && prevState !== newState) {
+    consola.info("Profile resetted")
+
+    profileFollowersAtom.reset(ctx)
+    profileFollowingAtom.reset(ctx)
+    profileUserAtom.reset(ctx)
+    profileCollectionAtom.reset(ctx)
+    profileTagsAtom.reset(ctx)
+    return;
+  }
+})
 
 export const initProfileAction = reatomAsync(async (ctx, data: Profile) => {
   return await ctx.schedule(() => {
@@ -31,7 +74,7 @@ export const initProfileAction = reatomAsync(async (ctx, data: Profile) => {
   })
 }).pipe(withStatusesAtom())
 
-async function request(param: string, signal: AbortSignal) {
+async function getUserPins(param: string, signal: AbortSignal) {
   const res = await experimentalClient(`user/${param}/get-pins`, { throwHttpErrors: false, signal })
   const json = await res.json<ApiResponse<Pin[] | null>>()
 
@@ -46,66 +89,27 @@ export const createdPinsResource = reatomResource(async (ctx) => {
   const profileUser = ctx.spy(profileUserAtom)
   if (!profileUser) return null;
 
-  await sleep(50);
-
-  return await ctx.schedule(() => request(profileUser.login, ctx.controller.signal))
+  return await ctx.schedule(() => getUserPins(profileUser.login, ctx.controller.signal))
 }).pipe(withDataAtom(), withCache(), withErrorAtom(), withStatusesAtom())
 
 type Follower = User & {
   isFollowing: boolean
 }
 
-export const FOLLOWERS = [
-  {
-    init: "belkin",
-    rec: "aboba1234",
-    data: {
-      id: 1,
-      login: "aboba1234",
-      name: null,
-      avatarUrl: null,
-      createdAt: new Date(),
-      description: null,
-      isFollowing: true
-    },
-  },
-  {
-    init: "belkin",
-    rec: "pig",
-    data: {
-      id: 3,
-      login: "Pig Lili",
-      name: null,
-      avatarUrl: null,
-      createdAt: new Date(),
-      description: null,
-      isFollowing: true
-    },
-  },
-  {
-    init: "aboba1234",
-    rec: "belkin",
-    data: {
-      id: 2,
-      login: "belkin",
-      name: null,
-      avatarUrl: null,
-      createdAt: new Date(),
-      description: null,
-      isFollowing: true
-    }
-  }
-]
+async function getUserFollowers(param: string, signal: AbortSignal) {
+  const res = await experimentalClient(`user/${param}/get-followers`, { throwHttpErrors: false, signal })
+  const json = await res.json<ApiResponse<Follower[] | null>>()
 
-const getFollowers = async (login: string): Promise<Follower[] | null> => {
-  return FOLLOWERS.length >= 1 ? FOLLOWERS.filter(f => f.init === login).map(d => d.data) : null
+  if (!res.ok) {
+    return null;
+  }
+
+  return json.data;
 }
 
 export const followersListResource = reatomResource(async (ctx) => {
   const profileParam = ctx.spy(profileParamAtom)
   if (!profileParam) return null;
 
-  await sleep(100)
-
-  return await ctx.schedule(() => getFollowers(profileParam))
+  return await ctx.schedule(() => getUserFollowers(profileParam, ctx.controller.signal))
 }).pipe(withDataAtom(), withStatusesAtom())

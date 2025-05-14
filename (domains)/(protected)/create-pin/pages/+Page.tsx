@@ -2,9 +2,13 @@ import { BackNavigation } from "@/shared/components/navigation/back-navigation";
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper";
 import { lazy, Suspense } from "react";
 import { CreatePinButton } from "../components/create-pin-form-button";
+import { logImport } from "@/shared/lib/utils/log-import";
 
-const CreatePinForm = lazy(() => import("../components/create-pin-form")
-  .then(m => ({ default: m.CreatePinForm })))
+const CreatePinForm = lazy(() => {
+  const component = import("../components/create-pin-form").then(m => ({ default: m.CreatePinForm }))
+  logImport("CreatePinForm", component)
+  return component
+})
 
 export default function CreatePinPage() {
   return (

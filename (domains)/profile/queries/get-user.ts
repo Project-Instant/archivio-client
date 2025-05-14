@@ -19,7 +19,16 @@ export async function getUser(id: string) {
   }
 
   profile = {
-    user: { ...json.data, createdAt: dayjs().toDate() },
+    user: {
+      ...json.data,
+      createdAt: dayjs().toDate(),
+      avatarUrl: json.data.login === 'belkin'
+        ? "https://images.unsplash.com/photo-1744195467963-7d73a219a277?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        : null,
+      coverUrl: json.data.login === 'belkin' 
+        ? "https://images.unsplash.com/photo-1746713915201-4eed01ca887a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        : null
+    },
     collection: {
       pins: 0,
       savedPins: 0
@@ -28,6 +37,6 @@ export async function getUser(id: string) {
     following: 0,
     tags: ["Снаряжение", "Природа", "Урбанизм"]
   }
-
+  
   return profile
 }

@@ -39,11 +39,11 @@ const SettingsSidebar = () => {
 export default function LayoutSettings({ children }: { children: ReactNode }) {
   return (
     <ContainerWrapper>
-      <div className="flex items-start w-full gap-6 py-12 h-full">
-        <div className="w-1/4">
+      <div className="flex flex-col md:flex-row items-start w-full gap-6 py-12 h-full">
+        <div className="w-full md:w-1/4">
           <SettingsSidebar />
         </div>
-        <div className="w-3/4">
+        <div className="w-full md:w-3/4">
           {children}
         </div>
       </div>

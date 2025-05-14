@@ -1,6 +1,14 @@
 import { Button } from "@/shared/ui/button"
 import { Link } from "../link/Link"
 
+export const FullscreenNotFound = () => {
+  return (
+    <div className="flex justify-center items-center w-full h-full">
+      <NotFoundTemplate />
+    </div>
+  )
+}
+
 export const ContentNotFoundTemplate = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
@@ -9,7 +17,9 @@ export const ContentNotFoundTemplate = () => {
         width="42"
         height="42"
         viewBox="0 0 24 24"
-        fill="currentColor" className="icon icon-tabler icons-tabler-filled icon-tabler-square-rounded-x">
+        fill="currentColor"
+        className="icon icon-tabler icons-tabler-filled icon-tabler-square-rounded-x"
+      >
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
         <path
           d={`M12 2l.324 .001l.318 .004l.616 .017l.299
@@ -50,8 +60,8 @@ export const NotFoundTemplate = () => {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
-          strokeLinecap="round" 
+          strokeWidth="2"
+          strokeLinecap="round"
           strokeLinejoin="round"
           className="text-foreground"
         >

@@ -1,9 +1,9 @@
-import { pageContextAtom } from "@/(domains)/(auth)/models/user.model";
+import { currentUserAction } from "@/(domains)/(auth)/models/user.model";
 import { ApiResponse, experimentalClient } from "@/shared/api/api-client";
+import { navigateAction } from "@/shared/lib/utils/navigate";
 import { reatomResource, withCache, withDataAtom, withErrorAtom, withStatusesAtom } from "@reatom/async";
 import { action, atom } from "@reatom/core";
-import { withComputed, withReset } from "@reatom/framework";
-import { navigate } from "vike/client/router";
+import { withReset } from "@reatom/framework";
 
 export const pinParamAtom = atom<string | null>(null, "pinParamAtom")
 
@@ -49,7 +49,13 @@ export interface Pin {
   };
 }
 
-async function request(param: string, signal: AbortSignal): Promise<Pin | null> {
+export const pinCommentValueAtom = atom<string | null>(null, "pinCommentValueAtom")
+export const pinFullscreenScaleAtom = atom(1, "pinFullscreenScaleOption").pipe(withReset())
+export const pinIsFullscreenAtom = atom(false, "pinIsFullscreenAtom")
+
+pinIsFullscreenAtom.onChange((ctx, state) => !state && pinFullscreenScaleAtom.reset(ctx))
+
+async function getPin(param: string, signal: AbortSignal): Promise<Pin | null> {
   const res = await experimentalClient(`pin/${param}`, { throwHttpErrors: false, signal })
   const json = await res.json<ApiResponse<Pin | null>>()
 
@@ -60,30 +66,32 @@ async function request(param: string, signal: AbortSignal): Promise<Pin | null> 
   return json.data;
 }
 
-export const pinResource = reatomResource(async (ctx) => {
-  const param = ctx.spy(pinParamAtom)
-  if (!param) return null;
+type PinResource = {
+  data: Pin | null,
+  status: "not-found" | null
+}
 
-  const pin = await request(param, ctx.controller.signal)
-
-  if (!pin) {
-    return navigate("/not-found", { pageContext: { isAuth: ctx.get(pageContextAtom) } })
+export const pinResource = reatomResource<PinResource>(async (ctx) => {
+  const param = ctx.spy(pinParamAtom);
+  if (!param) {
+    return { data: null, status: null };
   }
 
-  return pin;
-}).pipe(withDataAtom(), withStatusesAtom(), withErrorAtom(), withCache())
+  if (ctx.spy(currentUserAction.statusesAtom).isPending) {
+    return { data: null, status: null };
+  }
+  
+  return await ctx.schedule(async () => {
+    const pin = await getPin(param, ctx.controller.signal)
 
-export const pinCommentValueAtom = atom("", "pinCommentValueAtom")
-export const pinFullscreenScaleAtom = atom(1, "pinFullscreenScaleOption").pipe(withReset())
-export const pinIsFullscreenAtom = atom(false, "pinIsFullscreenAtom").pipe(
-  withComputed((ctx, state) => {
-    if (state === false) {
-      pinFullscreenScaleAtom.reset(ctx)
+    if (!pin) {
+      navigateAction(ctx, "/not-found")
+      return { data: null, status: "not-found" };
     }
 
-    return state;
+    return { data: pin, status: null };
   })
-)
+}).pipe(withDataAtom(), withStatusesAtom(), withErrorAtom(), withCache())
 
 export const scaleAction = action((ctx, scale: boolean) => {
   const current = ctx.get(pinFullscreenScaleAtom)

@@ -584,3 +584,100 @@ export const COMMENTS = [
     updatedAt: null
   }
 ]
+
+export const REPORT_REASONS = [
+  {
+    name: "spam",
+    title: "Спам",
+    description: "Вводящие в заблуждение или повторяющиеся публикации"
+  },
+  {
+    name: "sexual",
+    title: "Изображения обнаженного тела, порнография или содержимое сексуального характера",
+    description: `
+      Содержимое сексуального характера с участием взрослых или изображением обнаженного тела, 
+      материалами в стиле нон-нюд либо с участием несовершеннолетних или со сценами умышленного злоупотребления ими.`
+  },
+  {
+    name: "self-mutilation",
+    title: "Членовредительство",
+    description: "Расстройства пищевого поведения, нанесение травм себе, суицид"
+  },
+  {
+    name: "false-information",
+    title: "Ложная информация",
+    description: "Ложная информация о здоровье, климате, голосованиях или теории заговора"
+  },
+  {
+    name: "aggressive",
+    title: "Агрессивные действия",
+    description: "Предрассудки, стереотипы, идея превосходства белой расы, оскорбления"
+  },
+  {
+    name: "dangerous-goods",
+    title: "Опасные товары",
+    description: "Наркотики, оружие, регулируемые товары"
+  },
+  {
+    name: "harassment",
+    title: "Преследование или критика",
+    description: "Оскорбления, угрозы, кибербуллинг, изображения обнаженного тела, опубликованные без разрешения"
+  },
+  {
+    name: "violence",
+    title: "Сцены насилия",
+    description: "Графическое изображение или пропаганда насилия"
+  },
+  {
+    name: "confidentiality",
+    title: "Нарушение конфиденциальности",
+    description: "Личные фотографии, персональная информация"
+  },
+  {
+    name: "intellectual-property",
+    title: "Это моя интеллектуальная собственность",
+    description: "Нарушение авторских прав или прав на товарный знак"
+  }
+] as const;
+
+export const FOLLOWERS = [
+  {
+    init: "belkin",
+    rec: "aboba1234",
+    data: {
+      id: 1,
+      login: "aboba1234",
+      name: null,
+      avatarUrl: null,
+      createdAt: new Date(),
+      description: null,
+      isFollowing: true
+    },
+  },
+  {
+    init: "belkin",
+    rec: "pig",
+    data: {
+      id: 3,
+      login: "Pig Lili",
+      name: null,
+      avatarUrl: null,
+      createdAt: new Date(),
+      description: null,
+      isFollowing: true
+    },
+  },
+  {
+    init: "aboba1234",
+    rec: "belkin",
+    data: {
+      id: 2,
+      login: "belkin",
+      name: null,
+      avatarUrl: null,
+      createdAt: new Date(),
+      description: null,
+      isFollowing: true
+    }
+  }
+]

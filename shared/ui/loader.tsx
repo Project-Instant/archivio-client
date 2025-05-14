@@ -1,5 +1,5 @@
 export const Loader = () => {
   return (
-    <div className="spin"/>
+    <div className="loader"/>
   )
 }

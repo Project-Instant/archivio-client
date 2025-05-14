@@ -3,10 +3,6 @@ import type { Devtools } from "@reatom/devtools";
 import { connectLogger, Ctx } from "@reatom/framework";
 import { reatomContext, useCreateCtx, useUpdate } from '@reatom/npm-react'
 
-interface ReatomContextProviderProps extends PropsWithChildren {
-  extend?: (ctx: Ctx) => void
-}
-
 declare global {
   var DEVTOOLS: undefined | Devtools
 }
@@ -20,7 +16,7 @@ async function loadDevtools(ctx: Ctx) {
       globalThis.DEVTOOLS = createDevtools({ ctx });
 
       console.info('Reatom DevTools connected.');
-    } catch (error) {
+    } catch {
       globalThis.DEVTOOLS = undefined;
     }
   } else {
@@ -35,9 +31,9 @@ const SyncDevtools = () => useUpdate(loadDevtools, [])
 const SyncLogger = () => useUpdate(logger, [])
 
 export function ReatomContextProvider({
-  children, extend
-}: ReatomContextProviderProps) {
-  const ctx = useCreateCtx(extend);
+  children
+}: PropsWithChildren) {
+  const ctx = useCreateCtx()
 
   return (
     <reatomContext.Provider value={ctx}>

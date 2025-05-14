@@ -12,7 +12,7 @@ export function getImageDimensions(file: File): Promise<{ width: number; height:
       URL.revokeObjectURL(objectUrl);
     };
 
-    img.onerror = (err) => {
+    img.onerror = (_) => {
       reject(new Error("Ошибка при загрузке изображения"));
       URL.revokeObjectURL(objectUrl);
     };

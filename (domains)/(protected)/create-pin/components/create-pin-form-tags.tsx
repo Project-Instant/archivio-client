@@ -32,7 +32,6 @@ const SearchedTagsList = reatomComponent(({ ctx }) => {
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
       </>
     )
   }

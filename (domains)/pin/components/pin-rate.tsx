@@ -1,4 +1,4 @@
-import { authDialogAtom } from "@/(domains)/(auth)/models/auth-dialog.model"
+import { authDialogIsOpenAtom } from "@/(domains)/(auth)/models/auth-dialog.model"
 import { currentUserAtom } from "@/(domains)/(auth)/models/user.model"
 import { Button } from "@/shared/ui/button"
 import { reatomAsync } from "@reatom/async"
@@ -11,7 +11,7 @@ const pinIsRateAtom = atom(false, "pinIsRateAtom")
 
 const ratePinAction = reatomAsync(async (ctx) => {
   if (!ctx.get(currentUserAtom)) {
-    return authDialogAtom(ctx, true)
+    return authDialogIsOpenAtom(ctx, true)
   }
 
   return await ctx.schedule(() => {

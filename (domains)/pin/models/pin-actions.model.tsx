@@ -9,8 +9,8 @@ export const cancelAction = action((ctx) => {
   pinIsHiddenAtom(ctx, false)
 })
 
-const successAction = action((ctx) => {
-  console.log("toast after success action")
+const successAction = action((_) => {
+  console.log("toast after success action", )
   // 
 })
 

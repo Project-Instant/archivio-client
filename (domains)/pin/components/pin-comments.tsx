@@ -6,6 +6,7 @@ import { Skeleton } from "@/shared/ui/skeleton"
 import { reatomResource, withCache, withDataAtom, withStatusesAtom } from "@reatom/async"
 import { reatomComponent } from "@reatom/npm-react"
 import { pinResource } from "../models/pin.model";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shared/ui/accordion";
 
 export type PinComment = {
   id: string,
@@ -32,10 +33,10 @@ async function request(param: string, signal: AbortSignal) {
 }
 
 const commentsResource = reatomResource(async (ctx) => {
-  const currentPinId = ctx.spy(pinResource.dataAtom)?.id
+  const currentPinId = ctx.spy(pinResource.dataAtom)?.data?.id
   if (!currentPinId) return
 
-  return await ctx.schedule( () => request(currentPinId, ctx.controller.signal))
+  return await ctx.schedule(() => request(currentPinId, ctx.controller.signal))
 }).pipe(withDataAtom([]), withCache(), withStatusesAtom())
 
 const List = reatomComponent(({ ctx }) => {
@@ -54,7 +55,7 @@ const List = reatomComponent(({ ctx }) => {
       <div key={comment.id} className="flex items-center gap-3 w-full">
         <Link href={wrapLink(comment.owner.login, "user")} className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={comment.owner.avatarUrl ?? undefined} />
+            <AvatarImage src={comment.owner.avatarUrl ?? undefined} alt=""/>
             <AvatarFallback>
               {comment.owner.login[0].toUpperCase()}
             </AvatarFallback>
@@ -69,10 +70,33 @@ const List = reatomComponent(({ ctx }) => {
   )
 })
 
-export const PinComments = () => {
+export const PinComments = reatomComponent(({ ctx }) => {
+  const data = ctx.spy(pinResource.dataAtom)
+  const pin = data?.data
+  if (!pin) return null;
+
+  if (!pin.details.commentsLength) {
+    return (
+      <p className="text-base text-secondary-foreground font-semibold">
+        Еще нет комментариев
+      </p>
+    )
+  }
+
   return (
-    <div className="flex flex-col gap-3 max-h-[120px] h-fit w-full overflow-hidden">
-      <List />
-    </div>
+    <Accordion type="single" collapsible>
+      <AccordionItem value="comments">
+        <AccordionTrigger>
+          <p className="text-base text-secondary-foreground font-semibold">
+            {pin.details.commentsLength} комментариев
+          </p>
+        </AccordionTrigger>
+        <AccordionContent>
+          <div className="flex flex-col gap-3 max-h-[120px] h-fit w-full overflow-hidden">
+            <List />
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   )
-}
+}, "PinComments")

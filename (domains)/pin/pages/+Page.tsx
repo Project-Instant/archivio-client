@@ -12,7 +12,7 @@ export default function PinPage() {
   return (
     <ContainerWrapper>
       <SyncPinParam />
-      <div className="flex flex-col gap-12 w-full justify-center h-full pt-16">
+      <div className="flex flex-col gap-12 w-full justify-center h-full">
         <PinHead />
         <PinRecommendations />
       </div>

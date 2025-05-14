@@ -1,26 +1,15 @@
 import { reatomComponent } from "@reatom/npm-react";
-import { profileUserAtom } from "../models/profile.model";
+import { getProfile, profileIsLoadingAtom } from "../models/profile.model";
 import { Calendar } from "lucide-react";
 import dayjs from "dayjs";
 import "dayjs/locale/ru"
+import { Skeleton } from "@/shared/ui/skeleton";
 
-type ProfileDescriptionProps = {
-  description: string
+export const ProfileDescription = ({ description }: { description: string }) => {
+  return <p className="text-lg text-muted-foreground">{description}</p>
 }
 
-export const ProfileDescription = ({ description }: ProfileDescriptionProps) => {
-  return (
-    <p className="text-lg text-muted-foreground">
-      {description}
-    </p>
-  )
-}
-
-type ProfileCreatedAtProps = {
-  createdAt: Date
-}
-
-export const ProfileCreatedAt = ({ createdAt }: ProfileCreatedAtProps) => {
+export const ProfileCreatedAt = ({ createdAt }: { createdAt: Date }) => {
   const formatted = dayjs(createdAt).locale("ru").format(`С MMM YYYY`)
 
   return (
@@ -32,9 +21,11 @@ export const ProfileCreatedAt = ({ createdAt }: ProfileCreatedAtProps) => {
 }
 
 export const ProfileAbout = reatomComponent(({ ctx }) => {
-  const profileUser = ctx.spy(profileUserAtom)
-  if (!profileUser) return null;
+  if (ctx.spy(profileIsLoadingAtom)) return <Skeleton className="h-8 w-48" />
 
+  const profileUser = getProfile.user(ctx)
+  if (!profileUser) return null;
+  
   return (
     <>
       {profileUser.description && <ProfileDescription description={profileUser.description} />}

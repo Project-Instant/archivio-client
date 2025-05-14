@@ -1,5 +1,5 @@
 import { reatomComponent } from "@reatom/npm-react";
-import { profileTagsAtom } from "../models/profile.model";
+import { getProfile, profileIsLoadingAtom } from "../models/profile.model";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 
@@ -13,15 +13,16 @@ const ProfileTagsSkeleton = () => {
   )
 }
 
+
 export const ProfileTags = reatomComponent(({ ctx }) => {
-  if (!ctx.spy(profileTagsAtom)) {
+  if (ctx.spy(profileIsLoadingAtom)) {
     return <ProfileTagsSkeleton />
   }
 
-  const tags = ctx.spy(profileTagsAtom);
-  if (!tags) return null;
+  const profileTags = getProfile.tags(ctx)
+  if (!profileTags) return null;
 
-  return tags.map((tag, idx) => (
+  return profileTags.map((tag, idx) => (
     <Badge key={idx} variant="secondary">
       {tag}
     </Badge>
