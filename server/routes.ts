@@ -157,7 +157,7 @@ export const sendAnalytics = new Hono().post("analytics/send", async (ctx) => {
 
   const dec = new Encoder().decode(new Uint8Array(ab))
 
-  return ctx.json(dec, 200)
+  return ctx.json<ApiResponse<unknown>>({ data: dec, ...successMeta }, 200)
 })
 
 export const getRepostReasons = new Hono().get("pin/report/get-reasons", async (ctx) => {

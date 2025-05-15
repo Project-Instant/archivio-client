@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /$
+Allow: /explore$
+Allow: /u/
+Allow: /p/
+Allow: /for-business$
+Allow: /sitemap.xml
+
+Disallow: /auth
+Disallow: /homefeed
+Disallow: /analytics
+Disallow: /create-pin
+Disallow: /create-collection
+Disallow: /settings/
+Disallow: /experimental/
+Disallow: /*? 
+
+Sitemap: https://mvp.fasberry.su/sitemap.xml
+
+User-agent: Yandex
+Allow: /
+Host: mvp.fasberry.su

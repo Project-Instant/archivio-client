@@ -1,5 +1,5 @@
 import { reatomComponent } from "@reatom/npm-react";
-import { currentUserAction, getCurrentUser, isAuthAtom } from "@/(domains)/(auth)/models/user.model";
+import { getCurrentUser } from "@/(domains)/(auth)/models/user.model";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { lazy, PropsWithChildren, Suspense } from "react";
 import { logImport } from "@/shared/lib/utils/log-import";
@@ -19,7 +19,9 @@ const ProtectedHeader = lazy(() => {
 const HeaderSkeleton = () => {
   return (
     <>
-      <div className="grow" />
+      <div className="flex items-center gap-2 grow">
+        <Skeleton className="h-9 w-16" />
+      </div>
       <>
         <Skeleton className="h-9 w-9 rounded-full" />
         <Skeleton className="h-9 w-9 rounded-full" />
@@ -41,23 +43,17 @@ const HeaderWrapper = ({ children }: PropsWithChildren) => {
 }
 
 const HeaderChild = reatomComponent(({ ctx }) => {
-  const currentUser = getCurrentUser(ctx, { throwError: false })
+  const currentUser = getCurrentUser(ctx)
 
-  const isLoading = (!currentUser && ctx.spy(isAuthAtom)) || (ctx.spy(currentUserAction.statusesAtom).isPending && ctx.spy(isAuthAtom))
-
-  if (isLoading) return <HeaderSkeleton />
-
-  return (
-    <Suspense fallback={<HeaderSkeleton />}>
-      {!currentUser ? <PublicHeader /> : <ProtectedHeader />}
-    </Suspense>
-  )
+  return !currentUser ? <PublicHeader /> : <ProtectedHeader />
 }, "Header")
 
 export const Header = () => {
   return (
     <HeaderWrapper>
-      <HeaderChild />
+      <Suspense fallback={<HeaderSkeleton />}> 
+        <HeaderChild />
+      </Suspense>
     </HeaderWrapper>
   )
 }

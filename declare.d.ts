@@ -3,6 +3,7 @@ declare global {
     interface PageContext {
       isAuth: boolean,
       statusCode: number;
+      snapshot: Rec<PersistRecord<unknown>>,
       Page: () => React.JSX.Element
     }
   }

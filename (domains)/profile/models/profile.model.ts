@@ -26,7 +26,6 @@ export const profileCollectionAtom = atom<Profile["collection"] | null>(null, "p
 export const profileTagsAtom = atom<string[] | null>(null, "profileTagsAtom").pipe(withReset())
 export const profileIsLoadingAtom = atom<boolean>((ctx) => ctx.spy(profileUserAtom) ? false : true, "profileIsLoading")
 
-profileIsLoadingAtom.onChange((_, state) => consola.info("Is loading", state))
 profileUserAtom.onChange((_, state) => consola.info("User", state))
 
 export const getProfile = {
@@ -53,8 +52,6 @@ profileParamAtom.onChange((ctx, newState) => {
   consola.info(`prev: ${prevState}`, `updated to ${newState}`)
 
   if (prevState && prevState !== newState) {
-    consola.info("Profile resetted")
-
     profileFollowersAtom.reset(ctx)
     profileFollowingAtom.reset(ctx)
     profileUserAtom.reset(ctx)

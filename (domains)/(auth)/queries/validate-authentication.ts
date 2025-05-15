@@ -34,13 +34,7 @@ export const validateAuthentication = async (
 }
 
 export const guardAuthentication = async (pageContext: PageContext) => {
-  consola.info(`Guard`,
-    JSON.stringify({
-      isAuth: pageContext.isAuth, 
-      statusCode: pageContext.statusCode, 
-      url: pageContext.urlParsed.pathname
-    }, null, 2)
-  )
+  consola.info(`Guard`, pageContext.urlParsed.pathname, pageContext.isAuth,  pageContext.statusCode)
 
   if (pageContext.statusCode === 7) {
     throw render('/development')

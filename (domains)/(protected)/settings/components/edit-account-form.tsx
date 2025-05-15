@@ -104,7 +104,7 @@ export const EditCountry = reatomComponent(({ ctx }) => {
 
 export const DeleteAccountButton = reatomComponent(({ ctx }) => {
   return (
-    <ConfirmDialog>
+    <ConfirmDialog name="delete-account">
       <DialogTrigger asChild>
         <Button className="font-semibold text-lg">
           Удалить

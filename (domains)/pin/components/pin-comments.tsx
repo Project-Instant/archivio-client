@@ -1,5 +1,5 @@
 import { ApiResponse, experimentalClient } from "@/shared/api/api-client";
-import { Link } from "@/shared/components/link/Link";
+import { Link } from "@/shared/components/link/link";
 import { wrapLink } from "@/shared/lib/helpers/wrap-link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Skeleton } from "@/shared/ui/skeleton"

@@ -4,7 +4,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shar
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu"
 import { ArrowDown } from "lucide-react"
 import { Button } from "@/shared/ui/button"
-import { Link } from "../../link/Link"
+import { Link } from "../../link/link"
 import { DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/shared/ui/dialog"
 import { getCurrentUser, isAuthAtom } from "@/(domains)/(auth)/models/user.model"
 import { authDialogIsOpenAtom } from "@/(domains)/(auth)/models/auth-dialog.model"
@@ -16,7 +16,7 @@ import { Skeleton } from "@/shared/ui/skeleton"
 
 const HeaderLogoutDialog = reatomComponent(({ ctx }) => {
   return (
-    <ConfirmDialog>
+    <ConfirmDialog name="logout">
       <DialogContent>
         <DialogTitle className="text-center">
           Выход из аккаунта
@@ -39,7 +39,8 @@ const HeaderLogoutDialog = reatomComponent(({ ctx }) => {
 
 const HeaderUserCard = reatomComponent(({ ctx }) => {
   const currentUser = getCurrentUser(ctx)
-
+  if (!currentUser) return null;
+  
   return (
     <div className="flex flex-col gap-2 w-full">
       <span className="text-foreground text-sm">Сейчас:</span>
@@ -66,7 +67,7 @@ const HeaderAuthorizeButton = reatomComponent(({ ctx }) => {
 }, "HeaderAuthorizeButton")
 
 export const HeaderUser = reatomComponent(({ ctx }) => {
-  const currentUser = getCurrentUser(ctx, { throwError: false })
+  const currentUser = getCurrentUser(ctx)
 
   if (!currentUser && ctx.spy(isAuthAtom)) {
     return <Skeleton className="h-9 w-24" />

@@ -2,7 +2,7 @@ import { ApiResponse, client } from "@/shared/api/api-client"
 import { AsyncCtx, reatomAsync, withStatusesAtom } from "@reatom/async"
 import { currentUserAtom } from "./user.model"
 import { toast } from "sonner"
-import { navigate, reload } from 'vike/client/router'
+import { reload } from 'vike/client/router'
 import { authDialogIsOpenAtom } from "./auth-dialog.model";
 import { wrapLink } from "@/shared/lib/helpers/wrap-link";
 import { Action, atom, AtomMut, Ctx } from "@reatom/core"
@@ -105,7 +105,7 @@ export const authAction = reatomAsync(async (ctx) => {
 
           authDialogIsOpenAtom(ctx, false)
           resetAtoms(ctx)
-          return navigate(wrapLink(parsed.value.login, "user"))
+          return window.location.href = wrapLink(parsed.value.login, "user")
         })
       }
     } else {

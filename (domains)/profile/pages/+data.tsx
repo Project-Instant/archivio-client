@@ -13,13 +13,18 @@ export async function data(pageContext: PageContextServer) {
 
   config({
     Head: <>
-      <meta name="description" content={data.user.description ?? `Страница пользователя ${data.user.login}`} />
+      <meta name="description" content={`Исследуйте пины и фотографии из путешествий от ${data.user.login}`} />
+      <meta property="twitter:description" content={`Исследуйте пины и фотографии из путешествий от ${data.user.login}`} />
       {data.user.avatarUrl && <meta property="og:image" content={data.user.avatarUrl} />}
+      {data.user.avatarUrl && <meta property="twitter:image" content={data.user.avatarUrl} />}
       <meta property="og:type" content="website" />
-      <meta property="og:url" content={`https://mvp.fasberry.su/${data.user.login}`} />
+      <meta property="og:url" content={`https://mvp.fasberry.su/u/${data.user.login}`} />
       <meta property="og:site_name" content={wrapTitle(data.user.login)} />
       <meta property="og:locale" content="ru_RU" />
       <meta property="og:locale:alternate" content="en_US" />
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content={`https://mvp.fasberry.su/u/${data.user.login}`} />
+      <meta property="twitter:title" content={wrapTitle(data.user.login)} />
     </>
   })
 

@@ -2,7 +2,7 @@ import { Separator } from "@/shared/ui/separator"
 import { SheetClose } from "@/shared/ui/sheet"
 import { Fragment } from "react/jsx-runtime"
 import { ActionItem } from "@/shared/components/action-item/action-item"
-import { Link } from "../../link/Link"
+import { Link } from "../../link/link"
 
 export const LINKS = [
   {

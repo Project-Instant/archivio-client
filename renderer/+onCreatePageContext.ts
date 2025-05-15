@@ -10,10 +10,5 @@ export async function onCreatePageContext(pageContext: PageContext) {
   pageContext.isAuth = data.isAuth
   pageContext.statusCode = data.statusCode
 
-  consola.info(`onCreatePageContext`,
-    JSON.stringify({
-      isAuth: data.isAuth,
-      statusCode: data.statusCode
-    }, null, 2)
-  )
+  consola.info(`onCreatePageContext`, data)
 }

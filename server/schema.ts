@@ -44,20 +44,6 @@ export const credentials = pgTable("credentials", {
 	unique("credentials_user_id_unique").on(table.userId),
 ]);
 
-export const pinsMeta = pgTable("pins_meta", {
-	pinId: bigserial("pin_id", { mode: "bigint" }).notNull(),
-	size: integer().notNull(),
-	height: integer().notNull(),
-	width: integer().notNull(),
-	locationId: integer("location_id"),
-}, (table) => [
-	foreignKey({
-			columns: [table.pinId],
-			foreignColumns: [pins.id],
-			name: "constraint_1"
-		}).onUpdate("cascade").onDelete("cascade"),
-]);
-
 export const pinsViews = pgTable("pins_views", {
 	id: serial().primaryKey().notNull(),
 	pinId: bigserial("pin_id", { mode: "bigint" }).notNull(),
@@ -82,6 +68,20 @@ export const usersSettings = pgTable("users_settings", {
 	foreignKey({
 			columns: [table.userId],
 			foreignColumns: [users.id],
+			name: "constraint_1"
+		}).onUpdate("cascade").onDelete("cascade"),
+]);
+
+export const pinsMeta = pgTable("pins_meta", {
+	pinId: bigserial("pin_id", { mode: "bigint" }).notNull(),
+	size: integer().notNull(),
+	height: integer().notNull(),
+	width: integer().notNull(),
+	locationId: integer("location_id"),
+}, (table) => [
+	foreignKey({
+			columns: [table.pinId],
+			foreignColumns: [pins.id],
 			name: "constraint_1"
 		}).onUpdate("cascade").onDelete("cascade"),
 ]);

@@ -1,7 +1,7 @@
 import { reatomResource, withDataAtom, withStatusesAtom } from "@reatom/framework";
 import { Pin, pinResource } from "./pin.model";
 import { ApiResponse, experimentalClient } from "@/shared/api/api-client";
-import { currentUserAction, currentUserAtom, getCurrentUser } from "@/(domains)/(auth)/models/user.model";
+import { getCurrentUser } from "@/(domains)/(auth)/models/user.model";
 
 async function request(param: string, signal: AbortSignal) {
   const res = await experimentalClient(`pin/${param}/get-similar`, { throwHttpErrors: false, signal });
@@ -23,14 +23,10 @@ export const pinRecommendationsResource = reatomResource<PinRecommendationsResou
   const currentParam = ctx.spy(pinResource.dataAtom)?.data?.id;
   if (!currentParam) return { data: null, status: null };
 
-  const currentUser = getCurrentUser(ctx, { throwError: false })
+  const currentUser = getCurrentUser(ctx)
 
   if (!currentUser) {
     return { data: null, status: "unauthorized" };
-  }
-
-  if (ctx.spy(currentUserAction.statusesAtom).isPending) {
-    return { data: null, status: null };
   }
 
   return await ctx.schedule(async () => {

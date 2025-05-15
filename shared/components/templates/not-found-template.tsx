@@ -1,10 +1,10 @@
 import { Button } from "@/shared/ui/button"
-import { Link } from "../link/Link"
+import { Link } from "../link/link"
 
 export const FullscreenNotFound = () => {
   return (
     <div className="flex justify-center items-center w-full h-full">
-      <NotFoundTemplate />
+      <ContentNotFoundTemplate />
     </div>
   )
 }

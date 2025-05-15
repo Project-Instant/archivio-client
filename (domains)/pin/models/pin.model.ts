@@ -1,4 +1,3 @@
-import { currentUserAction } from "@/(domains)/(auth)/models/user.model";
 import { ApiResponse, experimentalClient } from "@/shared/api/api-client";
 import { navigateAction } from "@/shared/lib/utils/navigate";
 import { reatomResource, withCache, withDataAtom, withErrorAtom, withStatusesAtom } from "@reatom/async";
@@ -74,10 +73,6 @@ type PinResource = {
 export const pinResource = reatomResource<PinResource>(async (ctx) => {
   const param = ctx.spy(pinParamAtom);
   if (!param) {
-    return { data: null, status: null };
-  }
-
-  if (ctx.spy(currentUserAction.statusesAtom).isPending) {
     return { data: null, status: null };
   }
   

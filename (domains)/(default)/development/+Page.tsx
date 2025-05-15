@@ -1,4 +1,4 @@
-import { Link } from "@/shared/components/link/Link";
+import { Link } from "@/shared/components/link/link";
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper";
 import { Button } from "@/shared/ui/button";
 

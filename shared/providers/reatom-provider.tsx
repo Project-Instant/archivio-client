@@ -2,6 +2,11 @@ import { PropsWithChildren } from "react";
 import type { Devtools } from "@reatom/devtools";
 import { connectLogger, Ctx } from "@reatom/framework";
 import { reatomContext, useCreateCtx, useUpdate } from '@reatom/npm-react'
+import consola from "consola";
+import { isSsr } from "../lib/utils/is-ssr";
+import { snapshotAtom } from "../lib/utils/with-ssr";
+import { usePageContext } from "vike-react/usePageContext";
+import { pageContextAtom } from "@/(domains)/(auth)/models/user.model";
 
 declare global {
   var DEVTOOLS: undefined | Devtools
@@ -11,11 +16,10 @@ async function loadDevtools(ctx: Ctx) {
   if (import.meta.env.DEV) {
     try {
       const { createDevtools } = await import('@reatom/devtools');
-      console.info('Connecting Reatom DevTools...');
 
       globalThis.DEVTOOLS = createDevtools({ ctx });
 
-      console.info('Reatom DevTools connected.');
+      consola.success('Reatom DevTools connected.');
     } catch {
       globalThis.DEVTOOLS = undefined;
     }
@@ -24,8 +28,18 @@ async function loadDevtools(ctx: Ctx) {
   }
 }
 
-const logger = (ctx: Ctx) => 
-  typeof window !== 'undefined' && import.meta.env.DEV ? connectLogger(ctx) : undefined
+const SyncPageContext = () => {
+  const { isAuth, isBackwardNavigation } = usePageContext();
+
+  useUpdate((ctx) =>
+    pageContextAtom(ctx, { isAuth, isBackwardNavigation }),
+    [usePageContext().isAuth, usePageContext().isBackwardNavigation]
+  )
+
+  return null;
+}
+
+const logger = (ctx: Ctx) => isSsr() && import.meta.env.DEV ? connectLogger(ctx) : undefined
 
 const SyncDevtools = () => useUpdate(loadDevtools, [])
 const SyncLogger = () => useUpdate(logger, [])
@@ -33,12 +47,15 @@ const SyncLogger = () => useUpdate(logger, [])
 export function ReatomContextProvider({
   children
 }: PropsWithChildren) {
-  const ctx = useCreateCtx()
+  const { snapshot } = usePageContext()
+
+  const ctx = useCreateCtx((ctx) => snapshotAtom(ctx, snapshot))
 
   return (
     <reatomContext.Provider value={ctx}>
+      <SyncPageContext />
       <SyncDevtools />
-      <SyncLogger/>
+      <SyncLogger />
       {children}
     </reatomContext.Provider>
   );

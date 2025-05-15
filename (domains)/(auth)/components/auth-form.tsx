@@ -1,11 +1,12 @@
-import { Link } from "@/shared/components/link/Link"
+import { Link } from "@/shared/components/link/link"
 import { authErrorAtom, isValidAtom, authAction, loginAtom, loginErrorAtom, passwordAtom, passwordErrorAtom, isLoginAtom } from "../models/auth.model"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Loader } from "@/shared/ui/loader"
 import { reatomComponent } from "@reatom/npm-react"
+import { authDialogIsOpenAtom } from "../models/auth-dialog.model"
 
-const AuthDialogFormSubmit = reatomComponent(({ ctx }) => {
+const AuthFormSubmit = reatomComponent(({ ctx }) => {
   return (
     <Button
       disabled={!ctx.spy(isValidAtom)}
@@ -15,9 +16,9 @@ const AuthDialogFormSubmit = reatomComponent(({ ctx }) => {
       {ctx.spy(isLoginAtom) ? "Войти" : "Зарегистрироваться"}
     </Button>
   )
-}, "AuthDialogFormSubmit")
+}, "AuthFormSubmit")
 
-const AuthDialogFormInput = reatomComponent(({ ctx }) => {
+const AuthFormInput = reatomComponent(({ ctx }) => {
   return (
     <>
       <Input
@@ -33,9 +34,9 @@ const AuthDialogFormInput = reatomComponent(({ ctx }) => {
       </span>
     </>
   )
-}, "AuthDialogFormInput")
+}, "AuthFormInput")
 
-const AuthDialogFormPassword = reatomComponent(({ ctx }) => {
+const AuthFormPassword = reatomComponent(({ ctx }) => {
   return (
     <>
       <Input
@@ -51,9 +52,9 @@ const AuthDialogFormPassword = reatomComponent(({ ctx }) => {
       </span>
     </>
   )
-}, "AuthDialogFormPassword")
+}, "AuthFormPassword")
 
-const AuthDialogChangeAuthType = reatomComponent(({ ctx }) => {
+const AuthChangeAuthType = reatomComponent(({ ctx }) => {
   return (
     <>
       {ctx.spy(isLoginAtom) ? "Еще не зарегистрированы?" : "Уже есть аккаунт?"}{" "}
@@ -65,18 +66,18 @@ const AuthDialogChangeAuthType = reatomComponent(({ ctx }) => {
       </span>
     </>
   )
-}, "AuthDialogChangeAuthType")
+}, "AuthChangeAuthType")
 
 const LoginForm = () => {
   return (
     <>
       <div className="flex flex-col w-full">
         <span className="text-lg">Логин</span>
-        <AuthDialogFormInput />
+        <AuthFormInput />
       </div>
       <div className="flex flex-col w-full">
         <span className="text-lg">Пароль</span>
-        <AuthDialogFormPassword />
+        <AuthFormPassword />
       </div>
       <Link href="#" className="w-fit text-sm text-right hover:underline">
         Забыли пароль?
@@ -90,23 +91,29 @@ const RegisterForm = () => {
     <>
       <div className="flex flex-col w-full">
         <span className="text-lg">Логин</span>
-        <AuthDialogFormInput />
+        <AuthFormInput />
       </div>
       <div className="flex flex-col w-full">
         <span className="text-lg">Пароль</span>
-        <AuthDialogFormPassword />
+        <AuthFormPassword />
       </div>
     </>
   )
 }
 
-export const AuthDialogForm = reatomComponent(({ ctx }) => {
+export const AuthFormWrapper = reatomComponent(({ ctx }) => {
+  if (ctx.spy(authDialogIsOpenAtom)) return null;
+
+  return <AuthForm />;
+}, "AuthFormWrapper")
+
+export const AuthForm = reatomComponent(({ ctx }) => {
   const isPending = ctx.spy(authAction.statusesAtom).isPending
 
   return (
     <div
       data-state={ctx.spy(isLoginAtom) ? "login" : "register"}
-      className="flex flex-col bg-background items-center justify-center m-2 gap-2 max-w-lg sm:m-0 p-6 rounded-3xl relative
+      className="flex flex-col bg-background items-center justify-center m-2 gap-2 max-w-lg sm:m-0 p-6 rounded-xl relative
         border-2 data-[state=login]:border-transparent data-[state=register]:border-emerald-600"
     >
       {isPending && (
@@ -128,7 +135,7 @@ export const AuthDialogForm = reatomComponent(({ ctx }) => {
         className="flex flex-col px-6 py-4 gap-4 relative w-full data-[state=pending]:pointer-events-none"
       >
         {ctx.spy(isLoginAtom) ? <LoginForm /> : <RegisterForm />}
-        <AuthDialogFormSubmit />
+        <AuthFormSubmit />
         <div className="flex items-center gap-2">
           <div className="h-px flex-1 bg-gradient-to-l from-white to-white/10" />
           <span className="text-white text-xs">*</span>
@@ -145,9 +152,9 @@ export const AuthDialogForm = reatomComponent(({ ctx }) => {
         </p>
         {ctx.spy(authErrorAtom) && <span className="text-red-500 text-sm">{ctx.spy(authErrorAtom)}</span>}
         <div className="text-center font-semibold text-sm mt-4">
-          <AuthDialogChangeAuthType />
+          <AuthChangeAuthType />
         </div>
       </div>
     </div>
   )
-}, "AuthDialogForm")
+}, "AuthForm")

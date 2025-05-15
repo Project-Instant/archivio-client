@@ -1,15 +1,5 @@
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper"
-import { AuthDialogForm } from "../components/auth-form";
-import { reatomComponent } from "@reatom/npm-react";
-import { authDialogIsOpenAtom } from "../models/auth-dialog.model";
-
-const AuthDialogFormWrapper = reatomComponent(({ ctx }) => {
-  if (ctx.spy(authDialogIsOpenAtom)) {
-    return null;
-  }
-
-  return <AuthDialogForm />;
-}, "AuthDialogFormWrapper")
+import { AuthFormWrapper } from "../components/auth-form";
 
 export default function AuthPage() {
   return (
@@ -26,7 +16,7 @@ export default function AuthPage() {
           <h1 className="m-2 text-4xl xl:leading-20 xl:text-6xl font-bold text-white xl:w-[30%]">
             {" "}
           </h1>
-          <AuthDialogFormWrapper />
+          <AuthFormWrapper />
         </div>
       </ContainerWrapper>
     </div>

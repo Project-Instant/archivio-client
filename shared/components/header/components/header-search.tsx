@@ -1,5 +1,5 @@
 import { Input } from "@/shared/ui/input"
-import { Sheet, SheetClose, SheetContent } from "@/shared/ui/sheet"
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/shared/ui/sheet"
 import { Skeleton } from "@/shared/ui/skeleton"
 import { reatomComponent } from "@reatom/npm-react"
 import { Search, X } from "lucide-react"
@@ -35,6 +35,8 @@ export const GlobalSearch = reatomComponent(({ ctx }) => {
   return (
     <Sheet open={ctx.spy(isSearchAtom)} onOpenChange={v => isSearchAtom(ctx, v)}>
       <SheetContent withClose={false} side="top" className="left-1/2 rounded-b-lg -translate-x-1/2 w-full mx-2 sm:w-2/3 lg:w-2/4">
+        <SheetTitle></SheetTitle>
+        <SheetDescription></SheetDescription>
         <div className="flex flex-col h-full gap-4 max-h-2/3 items-center justify-center w-full">
           <div className="flex items-center gap-2 relative w-full">
             <Search size={20} className="absolute left-4 text-muted-foreground" />
@@ -43,7 +45,7 @@ export const GlobalSearch = reatomComponent(({ ctx }) => {
               <X size={18} className="text-foreground" />
             </SheetClose>
           </div>
-          <SearchResult/>
+          <SearchResult />
         </div>
       </SheetContent>
     </Sheet>

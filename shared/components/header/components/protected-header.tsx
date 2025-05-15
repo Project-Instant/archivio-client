@@ -27,6 +27,7 @@ export const ProtectedHeader = () => {
         <Sheet>
           <SheetTrigger className="flex items-center cursor-pointer">
             <HeaderLogo />
+            <span className="hidden sm:inline font-bold relative right-1 text-lg">Archivio</span>
             <Menu size={20} className="text-foreground ml-2" />
           </SheetTrigger>
           <SheetContent side="top" className="rounded-b-xl">

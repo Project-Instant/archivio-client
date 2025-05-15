@@ -1,8 +1,9 @@
 import { getCookieValue } from "@/shared/lib/helpers/get-cookie";
 import { action, atom, withInit } from "@reatom/framework";
 import { withCookie } from "@reatom/persist-web-storage";
+import { PageContext } from "vike/types";
 
-type Theme = "dark" | "light"
+export type Theme = "dark" | "light"
 
 export const THEME_KEY_COOKIE = "theme-pref"
 export const DEFAULT_THEME = "light"
@@ -30,3 +31,27 @@ export const changeThemeAction = action((ctx) => {
 
   themeAtom(ctx, newTheme)
 });
+
+export function defineTheme(pageContext: PageContext): Theme {
+  const headers = pageContext.headers;
+  let theme: Theme = DEFAULT_THEME
+
+  if (headers) {
+    const getCookie = headers["cookie"]
+
+    const themeCookie = getCookie.split('; ').find(row => row.startsWith(`${THEME_KEY_COOKIE}=`))
+      ?.split('=')[1];
+
+    if (themeCookie) {
+      try {
+        const parsedData = JSON.parse(decodeURIComponent(themeCookie));
+
+        if (parsedData.data) {
+          theme = parsedData.data
+        }
+      } catch { }
+    }
+  }
+
+  return theme
+}

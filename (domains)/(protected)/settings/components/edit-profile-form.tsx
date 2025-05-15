@@ -1,14 +1,14 @@
 import { Input } from "@/shared/ui/input"
 import { reatomComponent } from "@reatom/npm-react"
-import { 
-  applyChangesAction, 
-  isChangesAtom, 
-  MAX_DESCRIPTION_LENGTH, 
-  MAX_NAME_LENGTH, 
-  newAvatarAtom, 
-  newDescriptionAtom, 
-  newNameAtom, 
-  resetAvatarAction 
+import {
+  applyChangesAction,
+  isChangesAtom,
+  MAX_DESCRIPTION_LENGTH,
+  MAX_NAME_LENGTH,
+  newAvatarAtom,
+  newDescriptionAtom,
+  newNameAtom,
+  resetAvatarAction
 } from "../models/edit-profile.model"
 import { ReactNode, useRef } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar"
@@ -20,7 +20,7 @@ export const EditName = reatomComponent(({ ctx }) => {
   return (
     <Input
       type="text"
-      className="w-2/4"
+      className="w-full md:w-2/4"
       maxLength={MAX_NAME_LENGTH}
       placeholder="Введите имя"
       value={ctx.spy(newNameAtom) ?? ""}
@@ -33,7 +33,7 @@ export const EditDescription = reatomComponent(({ ctx }) => {
   return (
     <Input
       type="text"
-      className="w-2/4"
+      className="w-full md:w-2/4"
       maxLength={MAX_DESCRIPTION_LENGTH}
       value={ctx.spy(newDescriptionAtom) ?? ""}
       onChange={e => newDescriptionAtom(ctx, e.target.value)}
@@ -54,7 +54,7 @@ const ActionWrapper = ({ children, onClick }: { onClick: () => void, children: R
 }
 
 export const EditAvatar = reatomComponent(({ ctx }) => {
-  const currentUser = getCurrentUser(ctx, { throwError: false })
+  const currentUser = getCurrentUser(ctx)
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

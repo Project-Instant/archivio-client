@@ -5,9 +5,10 @@ import { PinReport } from "./pin-report"
 import { hideAction } from "../models/pin-actions.model"
 import { reatomComponent } from "@reatom/npm-react"
 import { reatomAsync } from "@reatom/async"
-import { experimentalClient } from "@/shared/api/api-client"
+import { ApiResponse, experimentalClient } from "@/shared/api/api-client"
 import { Encoder } from "cbor-x"
-import { currentUserAtom } from "@/(domains)/(auth)/models/user.model"
+import { currentUserAtom, User } from "@/(domains)/(auth)/models/user.model"
+import { toast } from "sonner"
 
 const PinShare = () => {
   return (
@@ -32,6 +33,15 @@ const PinHide = reatomComponent(({ ctx }) => {
   )
 }, "PinHide")
 
+type Payload = {
+  key: string,
+  value: {
+    target: string,
+    initiator: User,
+    checked: boolean
+  }
+}
+
 const sendSignalAction = reatomAsync(async (ctx) => {
   if (!ctx.get(currentUserAtom)) return;
 
@@ -44,10 +54,25 @@ const sendSignalAction = reatomAsync(async (ctx) => {
     }
   }
 
-  return await ctx.schedule(() => experimentalClient.post("analytics/send", {
-    body: new Encoder().encode(payload),
-    headers: { "Content-Type": "application/cbor" },
-  }))
+  return await ctx.schedule(() => {
+    return experimentalClient.post("analytics/send", {
+      body: new Encoder().encode(payload),
+      headers: { "Content-Type": "application/cbor" },
+    })
+  })
+}, {
+  name: "sendSignalAction",
+  onFulfill: async (_, res) => {
+    if (!res) {
+      return toast.error("")
+    }
+
+    const json = await res.json<ApiResponse<Payload>>()
+
+    toast.success(json.isSuccess, {
+      description: `from ` + json.data.value.initiator.login
+    })
+  }
 })
 
 const PinSendAnalytics = reatomComponent(({ ctx }) => {

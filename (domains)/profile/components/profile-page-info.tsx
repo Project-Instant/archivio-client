@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { getCurrentUser } from "@/(domains)/(auth)/models/user.model";
-import { Link } from "@/shared/components/link/Link";
+import { Link } from "@/shared/components/link/link";
 import { FollowButton } from "./follow-button";
 
 const ProfileAvatarOrigin = reatomComponent(({ ctx }) => {

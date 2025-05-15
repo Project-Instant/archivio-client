@@ -9,6 +9,8 @@ export const pinAnalyticsResource = reatomResource(async (ctx) => {
   if (!pinId) return null;
 
   const currentUser = getCurrentUser(ctx)
+  if (!currentUser) return null;
+
   const pinOwner = ctx.spy(pinResource.dataAtom)?.data?.owner
   if (!pinOwner) return null;
 

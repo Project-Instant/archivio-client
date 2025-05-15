@@ -1,5 +1,5 @@
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/shared/ui/sheet"
-import { Link } from "../../link/Link"
+import { Link } from "../../link/link"
 import { HeaderLogo } from "./header-logo"
 import { HeaderUser } from "./header-user"
 import { Fragment } from "react/jsx-runtime"
@@ -62,6 +62,7 @@ const Logo = () => {
     <div className="grow">
       <Link href="/" className="flex items-center gap-2 w-fit">
         <HeaderLogo />
+        <span className="font-bold relative right-1 text-lg">Archivio</span>
       </Link>
     </div>
   )

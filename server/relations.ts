@@ -1,13 +1,13 @@
 import { relations } from "drizzle-orm/relations";
-import { users, pins, credentials, pinsMeta, pinsViews, usersSettings, collections, collectionsPins, follows } from "./schema";
+import { users, pins, credentials, pinsViews, usersSettings, pinsMeta, collections, collectionsPins, follows } from "./schema";
 
 export const pinsRelations = relations(pins, ({one, many}) => ({
 	user: one(users, {
 		fields: [pins.ownerId],
 		references: [users.id]
 	}),
-	pinsMetas: many(pinsMeta),
 	pinsViews: many(pinsViews),
+	pinsMetas: many(pinsMeta),
 	collectionsPins: many(collectionsPins),
 }));
 
@@ -32,13 +32,6 @@ export const credentialsRelations = relations(credentials, ({one}) => ({
 	}),
 }));
 
-export const pinsMetaRelations = relations(pinsMeta, ({one}) => ({
-	pin: one(pins, {
-		fields: [pinsMeta.pinId],
-		references: [pins.id]
-	}),
-}));
-
 export const pinsViewsRelations = relations(pinsViews, ({one}) => ({
 	pin: one(pins, {
 		fields: [pinsViews.pinId],
@@ -54,6 +47,13 @@ export const usersSettingsRelations = relations(usersSettings, ({one}) => ({
 	user: one(users, {
 		fields: [usersSettings.userId],
 		references: [users.id]
+	}),
+}));
+
+export const pinsMetaRelations = relations(pinsMeta, ({one}) => ({
+	pin: one(pins, {
+		fields: [pinsMeta.pinId],
+		references: [pins.id]
 	}),
 }));
 

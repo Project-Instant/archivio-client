@@ -22,7 +22,7 @@ export default function ApperancePage() {
             Вы можете выбрать один из двух цветовых режимов
           </span>
         </div>
-        <ThemeSwitcher fallback={<Skeleton className="h-9 w-12"/>} />
+        <ThemeSwitcher fallback={<Skeleton className="h-6 w-16"/>} />
       </div>
       <div className="flex items-center justify-between w-full">
         <div className="flex flex-col">
@@ -31,7 +31,7 @@ export default function ApperancePage() {
             От этого зависит количество колонок в сетке
           </span>
         </div>
-        <GridColumnsNumberSelector fallback={<Skeleton className="h-9 w-12"/>}/>
+        <GridColumnsNumberSelector fallback={<Skeleton className="h-6 w-16"/>}/>
       </div>
     </div>
   )

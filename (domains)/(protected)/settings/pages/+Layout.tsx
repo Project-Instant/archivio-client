@@ -1,5 +1,5 @@
 import { ActionItem } from "@/shared/components/action-item/action-item";
-import { Link } from "@/shared/components/link/Link";
+import { Link } from "@/shared/components/link/link";
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper";
 import { ReactNode } from "react";
 

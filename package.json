@@ -13,6 +13,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@qalisa/vike-plugin-sitemap": "^1.5.4",
     "@radix-ui/react-accordion": "1.2.10",
     "@radix-ui/react-aspect-ratio": "1.1.6",
     "@radix-ui/react-avatar": "1.1.4",
@@ -28,6 +29,7 @@
     "@radix-ui/react-switch": "1.2.2",
     "@radix-ui/react-tabs": "1.1.4",
     "@radix-ui/react-tooltip": "1.2.4",
+    "@radix-ui/react-visually-hidden": "^1.2.2",
     "@reatom/async": "3.16.8",
     "@reatom/core": "3.10.1",
     "@reatom/devtools": "0.13.1",
@@ -45,6 +47,7 @@
     "ky": "1.8.1",
     "kysely": "^0.28.2",
     "lucide-react": "0.468.0",
+    "minio": "^8.0.5",
     "nextjs-toploader": "3.8.16",
     "oxlint": "^0.16.10",
     "pg": "^8.16.0",

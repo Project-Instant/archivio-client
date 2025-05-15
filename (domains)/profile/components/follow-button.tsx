@@ -11,7 +11,7 @@ type FollowButtonProps = {
 export const FollowButton = reatomComponent<FollowButtonProps>(({
   ctx, target, isFollowing
 }) => {
-  const currentUser = getCurrentUser(ctx, { throwError: false })
+  const currentUser = getCurrentUser(ctx)
   if (!currentUser) return null;
 
   if (currentUser.login === target) return null;

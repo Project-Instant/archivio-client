@@ -1,4 +1,4 @@
-import { Link } from "@/shared/components/link/Link";
+import { Link } from "@/shared/components/link/link";
 import { NotFoundTemplate } from "@/shared/components/templates/not-found-template";
 import { ContainerWrapper } from "@/shared/components/wrappers/container-wrapper";
 import { Button } from "@/shared/ui/button";

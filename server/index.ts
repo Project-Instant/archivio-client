@@ -6,20 +6,23 @@ import { consola } from "consola";
 import { timing } from 'hono/timing'
 import type { TimingVariables } from 'hono/timing'
 import { createHonoCborEncodingMiddleware, HONO_SHOULD_ENCODE_CBOR_KEY } from './middlewares/cbor-middleware';
-import { 
-  createPin, 
-  getHomefeedPins, 
-  getPin, 
-  getPinComments, 
-  getRepostReasons, 
-  getSearchedTags, 
-  getSimilarPinsByPin, 
+import {
+  createPin,
+  getHomefeedPins,
+  getPin,
+  getPinComments,
+  getRepostReasons,
+  getSearchedTags,
+  getSimilarPinsByPin,
   getUserCollections,
-  getUserFollowers, 
-  getUserPins, 
-  sendAnalytics 
+  getUserFollowers,
+  getUserPins,
+  sendAnalytics
 } from './routes';
 import { logger } from "hono/logger"
+import { getMinioClient, initMinio } from './minio';
+import { showRoutes } from "hono/dev"
+import { createMiddleware } from 'hono/factory';
 
 declare module 'hono' {
   interface ContextVariableMap {
@@ -30,34 +33,50 @@ declare module 'hono' {
   }
 }
 
+const getMinioFiles = new Hono()
+  .get("/minio/get-buckets", async (ctx) => {
+    const minio = await getMinioClient()
+
+    const list = await minio.listBuckets()
+
+    return ctx.json({ data: list }, 200)
+  })
+
+const experimentalRoutes = new Hono()
+  .basePath("/experimental/v1")
+  .route("/", sendAnalytics)
+  .route("/", createPin)
+  .route("/", getUserCollections)
+  .route("/", getPin)
+  .route("/", getHomefeedPins)
+  .route("/", getUserPins)
+  .route("/", getSimilarPinsByPin)
+  .route("/", getPinComments)
+  .route("/", getRepostReasons)
+  .route("/", getSearchedTags)
+  .route("/", getUserFollowers)
+  .route("/", getMinioFiles)
+
+const loggerMiddleware = createMiddleware(async (ctx, next) => {
+  import.meta.env.PROD && logger()
+
+  await next()
+})
+
 async function startServer() {
   const app = new Hono()
     .use(
-      logger(),
+      loggerMiddleware,
       timing(),
       languageDetector({ supportedLanguages: ['en', 'ru'], fallbackLanguage: 'ru', }),
       createHonoCborEncodingMiddleware({ encoderOptions: {} }),
     )
-    .route("/experimental/v1", sendAnalytics)
-    .route("/experimental/v1", createPin)
-    .route("/experimental/v1", getUserCollections)
-    .route("/experimental/v1", getPin)
-    .route("/experimental/v1", getHomefeedPins)
-    .route("/experimental/v1", getUserPins)
-    .route("/experimental/v1", getSimilarPinsByPin)
-    .route("/experimental/v1", getPinComments)
-    .route("/experimental/v1", getRepostReasons)
-    .route("/experimental/v1", getSearchedTags)
-    .route("/experimental/v1", getUserFollowers)
+    .route("/", experimentalRoutes)
 
   apply(app, {
     pageContext(runtime) {
-      consola.info(`Runtime`,
-        JSON.stringify({
-          // @ts-ignore
-          isAuth: runtime.isAuth ?? null, statusCode: runtime.statusCode ?? null
-        }, null, 2)
-      )
+      // @ts-ignore
+      consola.info(`Runtime`, runtime.isAuth, runtime.statusCode)
 
       return {
         isAuth: null,
@@ -65,6 +84,10 @@ async function startServer() {
       }
     }
   })
+
+  initMinio()
+
+  showRoutes(app)
 
   return serve(app, {
     port: import.meta.env.APP_PORT,

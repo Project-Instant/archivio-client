@@ -1,8 +1,8 @@
 import { pageContextAtom } from "@/(domains)/(auth)/models/user.model";
-import { action } from "@reatom/core";
+import { reatomAsync } from "@reatom/async";
 import { navigate } from "vike/client/router";
 
-export const navigateAction = action((ctx, path: string) => {
+export const navigateAction = reatomAsync(async (ctx, path: string) => {
   const pc = ctx.get(pageContextAtom)
   if (!pc) return null;
 
